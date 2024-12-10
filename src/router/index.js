@@ -45,10 +45,11 @@ const routes = [
         component: Comp
       },
       {
-        path: "compdetail/:id", // 确保路径匹配，并且可以接收compId参数
+        path: "compdetail/:compId", // 确保路径匹配，并且可以接收compId参数
         name: "CompDetail",
         component: CompDetail,
       },
+  
       {
         path: "course",
         name: "Course",
