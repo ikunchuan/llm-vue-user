@@ -46,8 +46,19 @@
     </section>
 
     <!-- 展示卡片 -->
-    <section class="cards-section">
+    <!-- <section class="cards-section">
       <div class="card" v-for="(card, index) in cards" :key="index">
+        <img :src="card.image" alt="Card Image" />
+        <div class="card-title">{{ card.title }}</div>
+        <div class="card-info">{{ card.info }}</div>
+        <div class="card-footer">
+          <div class="price">{{ card.price }}</div>
+          <div class="rating">{{ card.rating }}</div>
+        </div>
+      </div>
+    </section> -->
+    <section class="cards-section">
+      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.id)">
         <img :src="card.image" alt="Card Image" />
         <div class="card-title">{{ card.title }}</div>
         <div class="card-info">{{ card.info }}</div>
@@ -75,7 +86,7 @@ export default {
       icons: ["图标 1", "图标 2", "图标 3", "图标 4", "图标 5", "图标 6", "图标 7", "图标 8", "图标 9", "图标 10"],
       // 展示卡片的内容
       cards: [
-        {
+        {id:1,
           image: "https://via.placeholder.com/300",
           title: "菲律滨 Balamban",
           info: "距离你 2,438 公里 | 1月20日至25日",
@@ -83,13 +94,14 @@ export default {
           rating: "4.92"
         },
         {
+          id:2,
           image: "https://via.placeholder.com/300",
           title: "斯里兰卡 Miriwadunna",
           info: "距离你 4,292 公里 | 3月6日至13日",
           price: "¥412 / 晚",
           rating: "4.96"
         },
-        {
+        {id:3,
           image: "https://via.placeholder.com/300",
           title: "菲律滨 薄瑙",
           info: "距离你 1,704 公里 | 1月1日至6日",
@@ -132,7 +144,12 @@ export default {
     // 保持抽屉打开
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
+    },
+    goToDetail(compId) {
+      // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
+      this.$router.push({ name: 'CompDetail', params: { compId: compId } });
     }
+    
   }
 };
 </script>

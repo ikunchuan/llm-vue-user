@@ -18,54 +18,14 @@
 
 // export default router;
 
-// import { createRouter, createWebHashHistory } from "vue-router";
-// import Home from "../components/Home.vue";
-// import Comp from "../componentsCompetition/Comp.vue";
 
-// const routes = [
-//   { path: "/", redirect: "/home" }, // 默认重定向到首页
-//   {
-//     path: "/home",
-//     name: "Home",
-//     component: Home, // 导航栏页面
-//   },
-//   {
-//     path: "/about",
-//     name: "About",
-//     component: Comp, // 关于我们页面
-//   },
-//   {
-//     path: "/services",
-//     name: "Services",
-//     component: Comp, // 服务页面
-//   },
-//   {
-//     path: "/community",
-//     name: "Community",
-//     component: Comp, // 社区页面
-//   },
-//   {
-//     path: "/comp",
-//     name: "Comp",
-//     component: Comp, // 竞赛中心页面
-//   },
-// ];
-
-// const router = createRouter({
-//   history: createWebHashHistory(),
-//   routes,
-// });
-
-// export default router;
-
-
-// index.js
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "../components/Home.vue";
 import Comp from "../componentsCompetition/Comp.vue";
-// import CompResources from "../components/CompResources.vue";
-// import CompKnowledge from "../components/CompKnowledge.vue";
-// import CompCommunity from "../components/CompCommunity.vue";
+import CompDetail from "../componentsCompetition/CompDetail.vue";
+import Course from "../componentsResources/Course.vue";
+import CourseDetail from "../componentsResources/CourseDetail.vue";
+
 
 const routes = [
   { path: "/", redirect: "/home" },
@@ -74,34 +34,37 @@ const routes = [
     name: "Home",
     component: Home,
     children: [
-      {
-        path: "",
-        name: "HomeDefault",
-        component: Comp // 默认显示的内容
-      },
+      // {
+      //   path: "",
+      //   name: "HomeDefault",
+      //   component: Comp // 默认显示的内容
+      // },
       {
         path: "comp",
         name: "Comp",
         component: Comp
       },
-    //   {
-    //     path: "resources",
-    //     name: "CompResources",
-    //     component: CompResources
-    //   },
-    //   {
-    //     path: "knowledge",
-    //     name: "CompKnowledge",
-    //     component: CompKnowledge
-    //   },
-    //   {
-    //     path: "community",
-    //     name: "CompCommunity",
-    //     component: CompCommunity
-    //   }
+      {
+        path: "compdetail/:id", // 确保路径匹配，并且可以接收compId参数
+        name: "CompDetail",
+        component: CompDetail,
+      },
+      {
+        path: "course",
+        name: "Course",
+        component: Course
+      },
+      {
+        path: 'coursedetail/:id',
+        component: CourseDetail,
+        name: 'coursedetail',
+        props: true,
+      },
+   
+   
     ]
   },
-  // 其他路由...
+  
 ];
 
 const router = createRouter({

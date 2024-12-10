@@ -1,47 +1,22 @@
+
 <template>
   <div>
+    
+    <div class="common-layout">
+    <el-container>
+      <el-header><div>
     <header class="navbar">
       <div class="navbar-container">
       <!-- 左侧 LOGO -->
       <div class="logo">LOGO</div>
 
-      <!-- 中间导航菜单 -->
-      <!-- <nav class="nav-menu">
-        <div 
-          class="nav-item" 
-          @mouseenter="toggleDrawer('about')" 
-          @mouseleave="toggleDrawer(null)"
-          @click="navigateToComp"
-        >
-          竞赛中心
-        </div>
-        <div 
-          class="nav-item" 
-          @mouseenter="toggleDrawer('services')" 
-          @mouseleave="toggleDrawer(null)"
-        >
-          资源中心
-        </div>
-        <div 
-          class="nav-item" 
-          @mouseenter="toggleDrawer('community')" 
-          @mouseleave="toggleDrawer(null)"
-        >
-          灵验知道
-        </div>
-        <div 
-          class="nav-item" 
-          @mouseenter="toggleDrawer('community')" 
-          @mouseleave="toggleDrawer(null)"
-        >
-          社区
-        </div>
-      </nav> -->
       <nav class="nav-menu">
           <div 
             class="nav-item" 
             v-for="item in navItems"
             :key="item.name"
+            @mouseenter="toggleDrawer('services')" 
+          @mouseleave="toggleDrawer(null)"
             @click="navigate(item.path)"
           >
             {{ item.name }}
@@ -92,15 +67,25 @@
       <button class="close-btn" @click="toggleDrawer(null)">关闭</button>
     </div>
     </div>
+  </div></el-header>
+      
+      
+      
+      
+      
+      <el-main> <router-view></router-view></el-main>
+      <!-- <el-footer>Footer</el-footer> -->
+    </el-container>
   </div>
-
-    <!-- Comp页面内容 -->
-    <!-- <router-view v-if="activeDrawer === 'about'" class="comp-content"></router-view> -->
-    <div class="content">
-      <router-view></router-view>
-    </div>
+   
+   
+   
   
+  </div>
 </template>
+
+
+
 
 
 
@@ -112,8 +97,8 @@ export default {
     return {
       // 导航项
       navItems: [
-        { name: "竞赛中心", path: "competition" },
-        { name: "资源中心", path: "resources" },
+        { name: "竞赛中心", path: "comp" },
+        { name: "资源中心", path: "course" },
         { name: "灵验知道", path: "knowledge" },
         { name: "社区", path: "community" },
       ],
@@ -128,17 +113,25 @@ export default {
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
     },
-    // navigateToComp() {
-    //   // this.$router.push('/comp');
-      
-    //   this.activeDrawer = null; // 导航时关闭抽屉
-    // }
+  
 
-    navigate(path) {
-      this.$router.push({ name: `Comp${path.charAt(0).toUpperCase() + path.slice(1)}` });
-      this.activeDrawer = null; // 关闭抽屉
-    }
-  }
+    // navigate(path) {
+    //   this.$router.push({ name: `Comp${path.charAt(0).toUpperCase() + path.slice(1)}` });
+    //   this.activeDrawer = null; // 关闭抽屉
+    // }
+    navigate(item) {
+  // 根据点击的导航项推送正确的路由
+  console.log(item); // 查看点击时传递的 item 对象
+  const path = `/home/${item}`;
+  this.$router.push({ path: path });
+  this.activeDrawer = null; // 关闭抽屉
+}
+  },
+  mounted() {
+  console.log(this.navItems); // 查看 navItems 数组的内容
+}
+
+
 };
 </script>
 
@@ -292,3 +285,12 @@ export default {
   color: #333;
 }
 </style>
+
+
+
+
+
+
+
+
+
