@@ -10,6 +10,9 @@ import 'element-plus/dist/index.css'
 //路由
 import router from './router/index.js'
 
+//引入axios
+import axios from 'axios'
+
 
 
 const app = createApp(App)
