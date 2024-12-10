@@ -99,7 +99,7 @@ export default {
       navItems: [
         { name: "竞赛中心", path: "comp" },
         { name: "资源中心", path: "course" },
-        { name: "灵验知道", path: "knowledge" },
+        { name: "灵验知道", path: "lingyan" },
         { name: "社区", path: "community" },
       ],
       // 导航项和抽屉状态

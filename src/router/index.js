@@ -25,6 +25,8 @@ import Comp from "../componentsCompetition/Comp.vue";
 import CompDetail from "../componentsCompetition/CompDetail.vue";
 import Course from "../componentsResources/Course.vue";
 import CourseDetail from "../componentsResources/CourseDetail.vue";
+import Lingyan from "../components/Lingyan.vue";
+
 
 
 const routes = [
@@ -60,6 +62,12 @@ const routes = [
         component: CourseDetail,
         name: 'CourseDetail',
         },
+        {
+          path: "lingyan",
+          name: "Lingyan",
+          component: Lingyan,
+        },
+      
    
    
     ]
