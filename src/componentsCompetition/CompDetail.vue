@@ -21,17 +21,47 @@
           <div class="header"></div>
           
           <!-- 右侧主内容 -->
-          <div class="content"></div>
+          <div class="content">
+          
+          <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
+          <p>竞赛描述：{{ competitionDetail.competitionDescription }}</p>
+          <!-- 其他竞赛详情信息 -->
+      
+          </div>
         </section>
       </div>
     </div>
   </template>
   
   <script>
-  export default {
-    name: "CompetitionLayout", // 组件名称
-  };
-  </script>
+  export default  {
+  name: 'CompDetail',
+  data() {
+    return {
+      competitionDetail: {}, // 存储竞赛详情数据
+      loading: true,        // 加载状态
+      error: null           // 错误信息
+    };
+  },
+  created() {
+    this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
+  },
+  methods: {
+    fetchCompetitionDetail() {
+      const compId = this.$route.params.compId; // 从路由参数中获取 compId
+      this.$http.get(`http://localhost:10086/comdetail/v1/detail/${compId}`)
+        .then(response => {
+          this.competitionDetail = response.data; // 将获取到的数据赋值给 competitionDetail
+          this.loading = false; // 关闭加载状态
+        })
+        .catch(error => {
+          this.error = error.message; // 捕获错误信息并赋值给 error
+          this.loading = false; // 关闭加载状态
+        });
+    }
+  }
+};
+</script>
   
   <style scoped>
   /* 全局背景色 */

@@ -45,10 +45,9 @@
       </div>
     </section>
 
-
     <!-- 展示卡片 -->
     <section class="cards-section">
-      <div class="card" v-for="(card, index) in cards" :key="index">
+      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.competitionId)">
         <img :src="'http://localhost:10086/images/upload/'+card.competitionImgUrl" alt="Card Image" />
         <div class="card-title">{{ card.competitionName }}</div>
         <div class="card-info">{{ card.levelName}}</div>
@@ -101,12 +100,12 @@ export default {
         }
       ],
       activeDrawer: null, // 当前激活的抽屉
-      cards:[],
+      cards:[],//存储后端查询后返回数据
     };
   },
   methods: {
       //获取竞赛数据
-      fetchCards() {
+    fetchCards() {
       this.loading = true;
       this.error = null;
       // 发送GET请求到后端API
@@ -122,8 +121,7 @@ export default {
           this.loading = false;
         });
     },
-
-     // 控制抽屉的开关
+    
     // 
     toggleDrawer(menu) {
       this.activeDrawer = menu;
@@ -139,9 +137,8 @@ export default {
     
   },
   mounted() {
-    this.fetchCards(); // 在组件挂载后加载数据
-  }
-
+    this.fetchCards();
+  },
 };
 </script>
 
