@@ -58,9 +58,8 @@ const routes = [
       {
         path: 'coursedetail/:id',
         component: CourseDetail,
-        name: 'coursedetail',
-        props: true,
-      },
+        name: 'CourseDetail',
+        },
    
    
     ]
