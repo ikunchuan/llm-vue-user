@@ -8,7 +8,7 @@
         <!-- 左侧内容区 -->
         <aside class="left-panel">
           <!-- 左侧标题 -->
-          <div class="title">竞赛标题</div>
+          <div class="title">{{ competitionDetail.competitionName }}</div>
           
           <!-- 左侧内容块 -->
           <div class="box"></div>
@@ -25,6 +25,17 @@
           
           <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
           <p>竞赛描述：{{ competitionDetail.competitionDescription }}</p>
+          <p>竞赛主办方：{{ competitionDetail.competitionOrganizer }}</p>
+          <p>竞赛开始时间：{{ competitionDetail.startDate }}</p>
+          <p>竞赛结束时间：{{ competitionDetail.endDate }}</p>
+          <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
+          <p>截止日期：{{ competitionDetail.registrationDeadline }}</p>
+          <p>竞赛日程安排：{{ competitionDetail.competitionSchedule }}</p>
+          <p>竞赛详情：{{ competitionDetail.detail }}</p>
+            
+            
+            
+
           <!-- 其他竞赛详情信息 -->
       
           </div>
