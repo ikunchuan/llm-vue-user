@@ -7,10 +7,6 @@ import App from './App.vue'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
-//bootstrap
-import './assets/js/bootstrap.min.js'
-import './assets/css/bootstrap.min.js'
-
 //路由
 import router from './router/index.js'
 
