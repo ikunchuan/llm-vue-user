@@ -3,132 +3,106 @@
     <!-- 主内容区域 -->
     <el-main>
         <el-row :gutter="20">
-        <!-- 左侧主内容 -->
-        <el-col :span="18">
-            <!-- 功能分类区域 -->
-            <div class="function-buttons">
-                <el-row :gutter="20">
-                    <el-col :span="6" v-for="(button, index) in buttons" :key="index">
-                    <el-card shadow="hover" class="function-card">
-                        <div class="card-content">
-                        <i :class="button.icon" class="icon"></i>
-                        <p class="text">{{ button.text }}</p>
+            <!-- 左侧主内容 -->
+            <el-col :span="18">
+                <!-- 功能分类区域 -->
+                <div class="function-buttons">
+                    <el-row :gutter="20">
+                        <el-col :span="6" v-for="(button, index) in buttons" :key="index">
+                        <el-card shadow="hover" class="function-card">
+                            <div class="card-content">
+                            <i :class="button.icon" class="icon"></i>
+                            <p class="text">{{ button.text }}</p>
+                            </div>
+                        </el-card>
+                        </el-col>
+                    </el-row>
+                </div>
+
+                <!-- 搜索与分类筛选 -->
+                <div class="search-filter bg-white p-3 rounded shadow-sm">
+
+                <el-tabs v-model="activeTab">
+                <el-input
+                    v-model="searchQuery"
+                    placeholder="搜索竞赛内容"
+                    class="mt-3"
+                    prefix-icon="el-icon-search"
+                    @click="navigateToPostDetail(item)"
+                />                
+                <el-tab-pane label="最热" name="hot">
+                        <!-- 内容列表1 -->
+                        <div class="content-list">
+                            <el-card
+                                v-for="(item, index) in filteredContentItems"
+                                :key="index"
+                                shadow="hover"
+                                class="mb-3"
+                                @click="navigateToDetail(item)"
+                            >
+                                <div>
+                                    <el-tag type="info" class="mb-2">{{ item.category }}</el-tag>
+                                    <h3>{{ item.title }}</h3>
+                                    <p class="text-muted">{{ item.summary }}</p>
+                                </div>
+                                <div class="stats d-flex justify-content-between">
+                                    <span>👍 {{ item.likes }}</span>
+                                    <span>💬 {{ item.comments }}</span>
+                                    <span>⭐ {{ item.saves }}</span>
+                                </div>
+                            </el-card>
+                        </div>
+
+                    </el-tab-pane>
+                    <el-tab-pane label="推荐" name="recommend">
+                        <!-- 内容列表2 -->
+                    </el-tab-pane>
+
+                    <el-tab-pane label="最新" name="latest">
+                        <!-- 内容列表3 -->
+                    </el-tab-pane>
+
+                </el-tabs>
+
+                </div>
+
+                <!-- 分页区域 -->
+                <div class="pagination mt-3">
+                <el-pagination
+                    background
+                    layout="prev, pager, next"
+                    :total="filteredContentItems.length"
+                    :page-size="5"
+                />
+                </div>
+            </el-col>
+
+            <!-- 右侧推荐栏 -->
+            <el-col :span="6">
+                <div class="sidebar">
+                    <el-card shadow="hover" class="mb-3">
+                        <h3>推荐关注</h3>
+                        <el-button>全部社区</el-button>
+                        <div
+                        v-for="(user, index) in users"
+                        :key="index"
+                        class="d-flex align-items-center mb-2"
+                        >
+                        <el-avatar :src="user.avatar" size="small" class="me-2" />
+                        {{ user.name }}
                         </div>
                     </el-card>
-                    </el-col>
-                </el-row>
-            </div>
-
-            <!-- 搜索与分类筛选 -->
-            <div class="search-filter bg-white p-3 rounded shadow-sm">
-            <el-tabs v-model="activeTab">
-                <el-tab-pane label="最热" name="hot"></el-tab-pane>
-                        <!-- 内容列表1 -->
-                    <div class="content-list">
-                        <el-card
-                            v-for="(item, index) in filteredContentItems"
-                            :key="index"
-                            shadow="hover"
-                            class="mb-3"
-                        >
-                            <div>
-                                <el-tag type="info" class="mb-2">{{ item.category }}</el-tag>
-                                <h3>{{ item.title }}</h3>
-                                <p class="text-muted">{{ item.summary }}</p>
-                            </div>
-                            <div class="stats d-flex justify-content-between">
-                                <span>👍 {{ item.likes }}</span>
-                                <span>💬 {{ item.comments }}</span>
-                                <span>⭐ {{ item.saves }}</span>
-                            </div>
-                        </el-card>
-                    </div>
-                <el-tab-pane label="推荐" name="recommend"></el-tab-pane>
-                    <!-- 内容列表2 -->
-                    <div class="content-list">
-                        <el-card
-                            v-for="(item, index) in filteredContentItems"
-                            :key="index"
-                            shadow="hover"
-                            class="mb-3"
-                        >
-                            <div>
-                                <el-tag type="info" class="mb-2">{{ item.category }}</el-tag>
-                                <h3>{{ item.title }}</h3>
-                                <p class="text-muted">{{ item.summary }}</p>
-                            </div>
-                            <div class="stats d-flex justify-content-between">
-                                <span>👍 {{ item.likes }}</span>
-                                <span>💬 {{ item.comments }}</span>
-                                <span>⭐ {{ item.saves }}</span>
-                            </div>
-                        </el-card>
-                    </div>
-                <el-tab-pane label="最新" name="latest"></el-tab-pane>
-                    <!-- 内容列表3 -->
-                    <div class="content-list">
-                        <el-card
-                            v-for="(item, index) in filteredContentItems"
-                            :key="index"
-                            shadow="hover"
-                            class="mb-3"
-                        >
-                            <div>
-                                <el-tag type="info" class="mb-2">{{ item.category }}</el-tag>
-                                <h3>{{ item.title }}</h3>
-                                <p class="text-muted">{{ item.summary }}</p>
-                            </div>
-                            <div class="stats d-flex justify-content-between">
-                                <span>👍 {{ item.likes }}</span>
-                                <span>💬 {{ item.comments }}</span>
-                                <span>⭐ {{ item.saves }}</span>
-                            </div>
-                        </el-card>
-                    </div>
-            </el-tabs>
-            <el-input
-                v-model="searchQuery"
-                placeholder="搜索竞赛内容"
-                class="mt-3"
-                prefix-icon="el-icon-search"
-            />
-            </div>
-
-
-
-            <!-- 分页区域 -->
-            <div class="pagination mt-3">
-            <el-pagination
-                background
-                layout="prev, pager, next"
-                :total="filteredContentItems.length"
-                :page-size="5"
-            />
-            </div>
-        </el-col>
-
-        <!-- 右侧推荐栏 -->
-        <el-col :span="6">
-            <div class="sidebar">
-            <el-card shadow="hover" class="mb-3">
-                <h3>推荐关注</h3>
-                <div
-                v-for="(user, index) in users"
-                :key="index"
-                class="d-flex align-items-center mb-2"
-                >
-                <el-avatar :src="user.avatar" size="small" class="me-2" />
-                {{ user.name }}
                 </div>
-            </el-card>
-            </div>
-        </el-col>
+            </el-col>
+
+
         </el-row>
     </el-main>
     </el-container>
 </template>
 
 <script>
+
 export default {
     name: "CompetitionCommunity",
     data() {
@@ -138,7 +112,7 @@ export default {
         { text: "职场与内推", icon: "el-icon-suitcase" },
         { text: "技术交流", icon: "el-icon-chat-dot-round" },
         { text: "创社区", icon: "el-icon-share" },
-        { text: "意见反馈", icon: "el-icon-message" },
+        { text: "创建社区", icon: "el-icon-message" },
         ],
 
         // 搜索与分类
@@ -163,14 +137,6 @@ export default {
             comments: 36,
             saves: 28,
         },
-        {
-            category: "AI",
-            title: "AI挑战赛",
-            summary: "探索前沿人工智能技术的竞赛...",
-            likes: 150,
-            comments: 60,
-            saves: 40,
-        },
         ],
 
         // 推荐关注
@@ -181,14 +147,22 @@ export default {
     };
     },
     computed: {
-    // 根据搜索条件过滤内容
-    filteredContentItems() {
-        if (!this.searchQuery) return this.contentItems;
-        return this.contentItems.filter((item) =>
-        item.title.includes(this.searchQuery)
-        );
+
+        filteredContentItems() {
+                if (!this.searchQuery) return this.contentItems;
+                return this.contentItems.filter((item) =>
+                    item.title.includes(this.searchQuery)
+                );
+        },
+
     },
-    },
+    methods: {
+        navigateToPostDetail(item) {
+            // 跳转到 PostDetail 页面，传递 postId
+            this.$router.push({ name: "PostDetail", params: { postId: item.id } });
+        },
+    }
+    
 };
 </script>
 
