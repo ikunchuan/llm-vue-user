@@ -1,75 +1,94 @@
 <template>
-  <div class="flex min-h-screen">
-    <!-- 侧边栏 -->
-    <div class="w-64 bg-gray-800 text-white p-4">
-      <div class="flex items-center mb-4">
-        <!-- <img src="/path-to-your-logo.svg" alt="Logo" class="h-8" /> -->
-        <h1 class="text-xl font-bold ml-2">LingYan</h1>
+  <div class="leetcode-container">
+      <h1>数学</h1>
+      <p>LeetCode·609题·公开</p>
+      <button @click="startPractice">开始练习</button>
+      <p>数字是利用符号语言研究数量、结构、变化以及空间等概念的一门学科，从某种角度看属于形式科学的。</p>
+      <p>2024/11/15 15:32 使用本数据集分析和揭示不同的社交媒体使用习惯对个体情绪状态的影响。</p>
+  
+      <table>
+          <thead>
+          <tr>
+              <th></th>
+              <th>概述文件</th>
+              <th>相关项目</th>
+              <th>评论</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="item in problems" :key="item.id">
+              <td>{{ item.id }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.relatedProject }}</td>
+              <td>{{ item.difficulty }}</td>
+          </tr>
+          </tbody>
+      </table>
+  
+      <div class="question">
+          <p>12. (单选题) 在kmeans算法中, 以下哪个策略可以用于避免陷入局部最优解?</p>
+          <ul>
+          <li>A. 多次随机初始化质心</li>
+          <li>B. 增加聚类个数</li>
+          <li>C. 减少聚类个数</li>
+          <li>D. 增加数据点的数量</li>
+          </ul>
       </div>
-      <nav class="space-y-2">
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">概览</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">动态</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">项目</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">数据</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">专栏</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">比赛</a>
-        <a href="#" class="block px-4 py-2 rounded hover:bg-gray-700">活动</a>
-      </nav>
-    </div>
-
-    <!-- 主内容区域 -->
-    <div class="flex-1 p-4">
-      <div class="max-w-3xl mx-auto">
-        <div class="bg-white shadow-lg rounded-lg p-4">
-          <div class="flex items-center mb-4">
-            <div class="mr-4">
-              <img class="h-12 w-12 rounded-full" src="https://via.placeholder.com/150" alt="头像">
-            </div>
-            <div>
-              <h2 class="text-lg font-semibold">Windir</h2>
-              <p class="text-gray-500">一枚热爱插画的视觉设计师</p>
-            </div>
-          </div>
-          <div class="mb-4">
-            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">编辑简介</button>
-          </div>
-          <div class="mb-4">
-            <h3 class="font-semibold mb-2">简介</h3>
-            <p>这里是用户的简介，可以包含一些关于用户的详细信息。</p>
-          </div>
-          <div class="mb-4">
-            <h3 class="font-semibold mb-2">技能</h3>
-            <div class="flex space-x-2">
-              <span class="px-2 py-1 bg-gray-200 rounded">技能1</span>
-              <span class="px-2 py-1 bg-gray-200 rounded">技能2</span>
-              <span class="px-2 py-1 bg-gray-200 rounded">技能3</span>
-            </div>
-          </div>
-          <div class="mb-4">
-            <h3 class="font-semibold mb-2">统计数据</h3>
-            <div class="flex space-x-4">
-              <div class="flex-1 text-center">
-                <h3 class="text-2xl font-bold">100</h3>
-                <p class="text-gray-500">关注</p>
-              </div>
-              <div class="flex-1 text-center">
-                <h3 class="text-2xl font-bold">50</h3>
-                <p class="text-gray-500">粉丝</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'LingYan',
-};
-</script>
-
-<style scoped>
-/* 这里可以添加一些自定义的TailwindCSS颜色和字体样式 */
-</style>
+  </template>
+  
+  <script>
+  export default {
+      data() {
+      return {
+          problems: [
+          { id: '2.15', description: '数相加', relatedProject: '', difficulty: '中等' },
+          { id: '7.1', description: '数反转', relatedProject: '', difficulty: '中等' },
+          { id: '9.', description: '回文数', relatedProject: '', difficulty: '简单' },
+          { id: '12.', description: '整数刻罗马数字', relatedProject: '', difficulty: '中等' },
+          { id: '13.', description: '罗马数字转整数', relatedProject: '', difficulty: '简单' },
+          { id: '29.', description: '两数相除', relatedProject: '', difficulty: '中等' },
+          { id: '43.', description: '字符相乘', relatedProject: '', difficulty: '中等' },
+          { id: '48.', description: '旋转图像', relatedProject: '', difficulty: '中等' },
+          { id: '50.', description: 'Pow(x, n)', relatedProject: '', difficulty: '中等' },
+          { id: '60.', description: '排列列', relatedProject: '', difficulty: '困难' }
+          ]
+      };
+      },
+      methods: {
+      startPractice() {
+          alert('开始练习');
+      }
+      }
+  };
+  </script>
+  
+  <style scoped>
+  .leetcode-container {
+      width: 80%;
+      margin: 0 auto;
+  }
+  
+  table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+  
+  th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+  }
+  
+  th {
+      background-color: #f2f2f2;
+  }
+  
+  .question {
+      margin-top: 20px;
+  }
+  
+  button {
+      margin-bottom: 10px;
+  }
+  </style>
