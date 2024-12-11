@@ -23,25 +23,25 @@
         </div>
       </section>
   
-      <!-- 图标分类 -->
-      <section class="icon-section">
-        <div class="icon-item" v-for="(icon, index) in icons" :key="index">
-          {{ icon }}
+      
+    <!-- 图标分类 -->
+    <section class="icon-section">
+      <div class="icon-item" v-for="(icon, index) in icons" :key="index">
+        {{ icon }}
+      </div>
+    </section>
+
+    <!-- 展示卡片 -->
+    <section class="cards-section">
+      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.courseId)">
+        <img :src="'http://localhost:10086/images/upload/'+card.courseImgUrl" alt="Card Image" />
+        <div class="card-title">{{ card.courseName }}</div>
+        <div class="card-info">{{ card.courseDescription}}</div>
+        <div class="card-footer">
+          <div class="price">{{ card.courseDifficultyLevel }}</div>
         </div>
-      </section>
-  
-    
-      <section class="cards-section">
-        <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.id)">
-          <img :src="card.image" alt="Card Image" />
-          <div class="card-title">{{ card.title }}</div>
-          <div class="card-info">{{ card.info }}</div>
-          <div class="card-footer">
-            <div class="price">{{ card.price }}</div>
-            <div class="rating">{{ card.rating }}</div>
-          </div>
-        </div>
-      </section>
+      </div>
+    </section>
     </div>
   </template>
   
@@ -56,30 +56,7 @@
         // 图标分类
         icons: ["图标 1", "图标 2", "图标 3", "图标 4", "图标 5", "图标 6", "图标 7", "图标 8", "图标 9", "图标 10"],
         // 展示卡片的内容
-        cards: [
-          {id:1,
-            image: "https://via.placeholder.com/300",
-            title: "菲律滨 Balamban",
-            info: "距离你 2,438 公里 | 1月20日至25日",
-            price: "¥1,944 / 晚",
-            rating: "4.92"
-          },
-          {
-            id:2,
-            image: "https://via.placeholder.com/300",
-            title: "斯里兰卡 Miriwadunna",
-            info: "距离你 4,292 公里 | 3月6日至13日",
-            price: "¥412 / 晚",
-            rating: "4.96"
-          },
-          {id:3,
-            image: "https://via.placeholder.com/300",
-            title: "菲律滨 薄瑙",
-            info: "距离你 1,704 公里 | 1月1日至6日",
-            price: "¥814 / 晚",
-            rating: "4.9"
-          }
-        ],
+        cards: [],//存储获取后端课程数据
         // 一级导航项
         navItems: [
           {
@@ -107,7 +84,23 @@
       };
     },
     methods: {
-       // 控制抽屉的开关
+      //获取竞赛数据
+      fetchCards() {
+      this.loading = true;
+      this.error = null;
+      // 发送GET请求到后端API
+      this.$http.get('http://localhost:10086/crs/v1')
+        .then(response => {
+          // 假设后端返回的数据是一个数组，每个元素都是一个卡片对象
+          this.cards = response.data;
+        })
+        .catch(error => {
+          this.error = '加载卡片数据失败，请稍后再试。';
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+      },
       // 
       toggleDrawer(menu) {
         this.activeDrawer = menu;
@@ -121,7 +114,10 @@
         this.$router.push({ name: 'CourseDetail', params: { id: courseId} });
       }
       
-    }
+    },
+    mounted() {
+    this.fetchCards();
+    },
   };
   </script>
   
