@@ -1,86 +1,64 @@
-
 <template>
-  <div>
-    
-    <div class="common-layout">
+  <div class="common-layout">
     <el-container>
-      <el-header><div>
-    <header class="navbar">
-      <div class="navbar-container">
-      <!-- 左侧 LOGO -->
-      <div class="logo">LOGO</div>
+      <el-header>
+        <header class="navbar">
+          <div class="navbar-container">
+            <!-- 左侧 LOGO -->
+            <div class="logo">LOGO</div>
 
-      <nav class="nav-menu">
-          <div 
-            class="nav-item" 
-            v-for="item in navItems"
-            :key="item.name"
-            @mouseenter="toggleDrawer('services')" 
-          @mouseleave="toggleDrawer('services')"
-            @click="navigate(item.path)"
-          >
-            {{ item.name }}
+            <nav class="nav-menu">
+              <div 
+                class="nav-item" 
+                v-for="item in navItems" :key="item.name"
+                @mouseenter="toggleDrawer(item)" 
+                @mouseleave="toggleDrawer(item)"
+                @click="navigate(item.path)"
+              >
+                {{ item.name }}
+              </div>
+            </nav>
+
+            <!-- 右侧用户信息 -->
+            <div class="user-info">
+              <img src="https://via.placeholder.com/32" alt="User" class="user-avatar" />
+              <span class="username">张三</span>
+            </div>
           </div>
-        </nav>
-
-      <!-- 右侧用户信息 -->
-      <div class="user-info">
-        <img src="https://via.placeholder.com/32" alt="User" class="user-avatar" />
-        <span class="username">张三</span>
-      </div>
-    </div>
-    </header>
+        </header>
 
     <!-- 抽屉内容 -->
     <div 
-      v-if="activeDrawer" 
-      class="drawer" 
-      @mouseenter="keepDrawerOpen" 
-      @mouseleave="toggleDrawer(null)"
-    >
-    <div class="drawer-content">
-      <div v-if="activeDrawer === 'about'">
-        <h3 class="drawer-title">关于我们</h3>
-        <p class="drawer-text">这里是关于我们的详细介绍...</p>
-        <div class="drawer-links">
-          <a href="#">公司简介</a>
-          <a href="#">团队文化</a>
-          <a href="#">公司历史</a>
+          v-if="activeDrawer" 
+          class="drawer" 
+          @mouseenter="keepDrawerOpen" 
+          @mouseleave="toggleDrawer(null)"
+        >
+          <div class="drawer-content">
+            <div v-if="activeDrawer.name === '资源中心'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">资源中心</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('competition')">竞赛资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="button-container">
+                <button class="close-btn" @click="toggleDrawer(null)">关闭</button>
+            </div>          
+          </div>
         </div>
-      </div>
-      <div v-if="activeDrawer === 'services'">
-        <h3 class="drawer-title">服务</h3>
-        <p class="drawer-text">这里是我们的服务内容...</p>
-        <div class="drawer-links">
-          <a href="#">咨询服务</a>
-          <a href="#">技术支持</a>
-        </div>
-      </div>
-      <div v-if="activeDrawer === 'community'">
-        <h3 class="drawer-title">社区</h3>
-        <p class="drawer-text">这里是社区相关信息...</p>
-        <div class="drawer-links">
-          <a href="#">热门话题</a>
-          <a href="#">最新活动</a>
-        </div>
-      </div>
-      <button class="close-btn" @click="toggleDrawer(null)">关闭</button>
-    </div>
-    </div>
-  </div></el-header>
+      </el-header>
       
-      
-      
-      
-      
-      <el-main> <router-view></router-view></el-main>
-      <!-- <el-footer>Footer</el-footer> -->
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
-  </div>
-   
-   
-   
-  
   </div>
 </template>
 
@@ -97,19 +75,22 @@ export default {
     return {
       // 导航项
       navItems: [
-        { name: "竞赛中心", path: "comp" },
-        { name: "资源中心", path: "course" },
-        { name: "灵验知道", path: "lingyan" },
-        { name: "社区", path: "community" },
-        { name: "个人中心", path: "me" },
+        { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
+        { name: "资源中心", path: "course", drawerContent: "这里是资源中心的详细介绍..." },
+        { name: "灵验知道", path: "lingyan", drawerContent: "这里是灵验知道的详细介绍..." },
+        { name: "社区", path: "community", drawerContent: "这里是社区的详细介绍..." },
+        { name: "个人中心", path: "me", drawerContent: "这里是个人中心的详细介绍..." },
       ],
-      // 导航项和抽屉状态
       activeDrawer: null,
     };
   },
   methods: {
-    toggleDrawer(menu) {
-      this.activeDrawer = menu;
+    toggleDrawer(item) {
+      this.activeDrawer = item;
+    },
+    navigateToPath(path) {
+      this.$router.push({ path: `/${path}` });
+      this.activeDrawer = null; // 关闭抽屉
     },
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
@@ -210,6 +191,7 @@ export default {
   max-width: 1000px;
   width: 100%;
   text-align: center;
+  margin-top: 40px; /* 调整这个值来改变与抽屉顶部的距离 */
 }
 
 /* 当抽屉打开时，设置transform为0，显示抽屉 */
@@ -251,8 +233,24 @@ export default {
 }
 
 /* 关闭按钮 */
+/* 其他样式保持不变 */
+.drawer-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 使内容在垂直方向上均匀分布 */
+  align-items: flex-start; /* 使内容在水平方向上靠左对齐 */
+  max-width: 1000px;
+  width: 100%;
+  margin-top: 40px;
+}
+
+.button-container {
+  margin-top: auto; /* 将容器推到底部 */
+  margin-left: auto; /* 自动左边距，使容器内容靠右 */
+  width: fit-content; /* 根据内容自动调整宽度 */
+}
+
 .close-btn {
-  margin-top: 20px;
   padding: 10px 20px;
   background-color: #5a67d8;
   color: #fff;
@@ -261,6 +259,14 @@ export default {
   cursor: pointer;
   font-size: 1em;
   transition: background-color 0.3s;
+}
+
+.close-btn:hover {
+  background-color: #4c51bf;
+}
+
+.pull-right {
+  margin-left: auto; /* 使元素靠右 */
 }
 
 .close-btn:hover {
@@ -285,6 +291,46 @@ export default {
   font-size: 1em;
   color: #333;
 }
+.resource-center {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.left-column {
+  width: 20%;
+  text-align: center;
+  border: 1px solid #E0E0E0; /* 边框颜色 */
+      border-radius: 5px;
+}
+
+.right-column {
+  width: 75%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: 1px solid #E0E0E0; /* 边框颜色 */
+      border-radius: 5px;
+}
+
+.resource-box {
+  width: 45%;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #E0E0E0; /* 边框颜色 */
+  border-radius: 5px;
+}
+
+.resource-link {
+  cursor: pointer;
+  color: #5a67d8;
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 1.2em; /* 使字体更大 */
+  transition: color 0.3s ease;}
+
+
+
 </style>
 
 
