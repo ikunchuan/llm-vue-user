@@ -16,7 +16,7 @@
             v-for="item in navItems"
             :key="item.name"
             @mouseenter="toggleDrawer('services')" 
-          @mouseleave="toggleDrawer(null)"
+          @mouseleave="toggleDrawer('services')"
             @click="navigate(item.path)"
           >
             {{ item.name }}

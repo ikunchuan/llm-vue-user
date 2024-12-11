@@ -13,8 +13,13 @@
   
           <!-- 课程详细信息 -->
           <div class="details">
-            <h1>课程标题</h1>
-            <p>这里是课程的简短介绍，描述课程内容和亮点。</p>
+            <h1>{{ courseDetail.courseName }}</h1>
+            <p>课程介绍:{{ courseDetail.courseDescription }}</p>
+            <p>预计学习时长:{{ courseDetail.courseDuration }}</p>
+            <p>课程等级:{{ courseDetail.courseDifficultyLevel }}</p>
+            <p>用户评分:{{ courseDetail.courseRating }}</p>
+            <p>课程价格:{{ courseDetail.coursePrice }}</p>
+            
           </div>
         </section>
   
@@ -52,7 +57,31 @@
   <script>
   export default {
     name: "CoursePage", // 组件名称
-   
+    data() {
+    return {
+      courseDetail: {}, // 存储竞赛详情数据
+      loading: true,        // 加载状态
+      error: null           // 错误信息
+    };
+  },
+  created() {
+    this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
+  },
+  methods: {
+    fetchCompetitionDetail() {
+      const courseId = this.$route.params.courseId; // 从路由参数中获取 compId
+      this.$http.get(`http://localhost:10086/crs/v1/${courseId}`)
+        .then(response => {
+          this.courseDetail = response.data; // 将获取到的数据赋值给 competitionDetail
+          this.loading = false; // 关闭加载状态
+        })
+        .catch(error => {
+          this.error = error.message; // 捕获错误信息并赋值给 error
+          this.loading = false; // 关闭加载状态
+        });
+    }
+  }
+    
   };
   </script>
   

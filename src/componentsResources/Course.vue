@@ -111,7 +111,7 @@
       },
       goToDetail(courseId) {
         // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-        this.$router.push({ name: 'CourseDetail', params: { id: courseId} });
+        this.$router.push({ name: 'CourseDetail', params: { courseId: courseId} });
       }
       
     },
