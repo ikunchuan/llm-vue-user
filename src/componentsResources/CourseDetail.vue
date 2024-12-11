@@ -52,6 +52,7 @@
   <script>
   export default {
     name: "CoursePage", // 组件名称
+   
   };
   </script>
   

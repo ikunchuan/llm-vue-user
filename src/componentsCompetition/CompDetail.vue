@@ -11,6 +11,7 @@
           <div class="title">{{ competitionDetail.competitionName }}</div>
           
           <!-- 左侧内容块 -->
+            <!-- 左侧内容块 -->
           <div class="box"></div>
           <div class="box"></div>
         </aside>
@@ -23,6 +24,7 @@
           <!-- 右侧主内容 -->
           <div class="content">
           
+          <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
           <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
           <p>竞赛描述：{{ competitionDetail.competitionDescription }}</p>
           <p>竞赛主办方：{{ competitionDetail.competitionOrganizer }}</p>

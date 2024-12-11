@@ -52,10 +52,7 @@
     name: "Navbar",
     data() {
       return {
-        // 推荐导航的选项
-        sidebarItems: ["推荐数据源", "每日挑战", "机器学习新手必备", "医疗健康数据洞察", "遥感数据探索分析"],
-        // 推荐卡片的内容
-        recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"],
+      
         // 图标分类
         icons: ["图标 1", "图标 2", "图标 3", "图标 4", "图标 5", "图标 6", "图标 7", "图标 8", "图标 9", "图标 10"],
         // 展示卡片的内容
@@ -119,9 +116,9 @@
       keepDrawerOpen() {
         // 不做任何操作，保持抽屉打开
       },
-      goToDetail(compId) {
+      goToDetail(courseId) {
         // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-        this.$router.push({ name: 'CourseDetail', params: { compId: compId } });
+        this.$router.push({ name: 'CourseDetail', params: { id: courseId} });
       }
       
     }

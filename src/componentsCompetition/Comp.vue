@@ -67,6 +67,7 @@ export default {
   data() {
     return {
       // 推荐导航的选项
+      // 推荐导航的选项
       sidebarItems: ["推荐数据源", "每日挑战", "机器学习新手必备", "医疗健康数据洞察", "遥感数据探索分析"],
       // 推荐卡片的内容
       recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"],
