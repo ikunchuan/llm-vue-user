@@ -12,7 +12,7 @@ import router from './router/index.js'
 
 //引入axios
 import axios from 'axios'
-// 引入自定义主题
+
 
 import './assets/tailwind.css';
 
