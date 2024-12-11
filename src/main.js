@@ -10,6 +10,8 @@ import 'element-plus/dist/index.css'
 //路由
 import router from './router/index.js'
 
+import './assets/tailwind.css';
+
 
 
 const app = createApp(App)
