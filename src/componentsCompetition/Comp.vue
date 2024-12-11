@@ -6,8 +6,8 @@
     <section class="recommend-section">
       <!-- 左侧推荐导航 -->
       <div class="recommend-sidebar">
-        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index">
-          {{ item }}
+        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index" @click="selectSidebarItem(item)">
+          {{ item.name }}
         </div>
       </div>
       <!-- 右侧推荐卡片 -->
@@ -22,21 +22,23 @@
     <section class="filters-section">
       <!-- 位置搜索框 -->
       <div class="filter-item">
-        <input type="text" placeholder="1" />
+        <input type="text" placeholder="请输入相应竞赛名称" />
       </div>
       <!-- 日期选择器 -->
       <div class="filter-item">
         <input type="date" />
       </div>
-      <!-- 人数输入框 -->
+      <!-- 日期选择器 -->
       <div class="filter-item">
-        <input type="number" placeholder="1" />
+        <input type="date" />
       </div>
+    
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <button>1</button>
+        <button>搜索</button>
       </div>
     </section>
+
 
     <!-- 图标分类 -->
     <section class="icon-section">
@@ -77,13 +79,18 @@ export default {
     return {
       // 推荐导航的选项
       // 推荐导航的选项
-      sidebarItems: ["推荐数据源", "每日挑战", "机器学习新手必备", "医疗健康数据洞察", "遥感数据探索分析"],
-      // 推荐卡片的内容
-      recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"],
-      // 图标分类
-      icons: [
-
-        ],
+      // sidebarItems: ["推荐竞赛", "热门竞赛", "热门课程", "热门社区", "我的成长"],
+      
+      // recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"],
+      sidebarItems: [
+      { name: "推荐竞赛", recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"] },
+      { name: "热门竞赛", recommendCards: ["Competition A", "Competition B"] },
+      { name: "热门课程", recommendCards: ["Course 1", "Course 2"] },
+      { name: "热门社区", recommendCards: ["Community 1", "Community 2"] },
+      { name: "我的成长", recommendCards: ["My Growth 1", "My Growth 2"] }
+    ],
+    recommendCards: [], 
+   
       // 展示卡片的内容
       cards: [
         
@@ -145,7 +152,10 @@ export default {
     goToDetail(compId) {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CompDetail', params: { compId: compId } });
-    }
+    },
+    selectSidebarItem(item) {
+    this.recommendCards = item.recommendCards;
+  },
     
   },
   mounted() {
