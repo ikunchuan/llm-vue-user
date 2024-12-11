@@ -27,6 +27,7 @@ import Course from "../componentsResources/Course.vue";
 import CourseDetail from "../componentsResources/CourseDetail.vue";
 import Lingyan from "../components/Lingyan.vue";
 import me from "../components/me.vue";
+import Community from "../componentsCommunity/Community.vue";
 
 
 
@@ -69,8 +70,11 @@ const routes = [
           component: Lingyan,
         },
         {
+          path: "community",
+          component:Community,
+        },
+        {
           path: "me",
-  
           component: me,
         },
       
