@@ -28,6 +28,9 @@ import CourseDetail from "../componentsResources/CourseDetail.vue";
 import Lingyan from "../components/Lingyan.vue";
 import me from "../components/me.vue";
 import Community from "../componentsCommunity/Community.vue";
+import CommuDetail from "../componentsCommunity/CommuDetail.vue";
+import CommuSearch from "../componentsCommunity/CommuSearch.vue";
+import PostDetail from "../componentsCommunity/PostDetail.vue";
 
 
 
@@ -72,6 +75,21 @@ const routes = [
         {
           path: "community",
           component:Community,
+        },
+        {
+          path: "commudetail/:userName",
+          name: "CommuDetail",
+          component:CommuDetail,
+        },
+        {
+          path: "commusearch",
+          name: "CommuSearch",
+          component:CommuSearch,
+        },
+        {
+          path: "postdetail",
+          name: "PostDetail",
+          component:PostDetail,
         },
         {
           path: "me",
