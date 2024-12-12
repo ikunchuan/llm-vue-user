@@ -31,6 +31,8 @@ import Community from "../componentsCommunity/Community.vue";
 import CommuDetail from "../componentsCommunity/CommuDetail.vue";
 import CommuSearch from "../componentsCommunity/CommuSearch.vue";
 import PostDetail from "../componentsCommunity/PostDetail.vue";
+import Question from "../componentsResources/Quesion.vue";
+import AnswerDetail from "../componentsResources/AnswerDetail.vue";
 
 
 
@@ -67,6 +69,18 @@ const routes = [
         component: CourseDetail,
         name: 'CourseDetail',
         },
+
+        {
+          path: "question",
+          name: "Question",
+          component: Question
+        },
+        {
+          path: 'answerdetail/:answerId',
+          component: AnswerDetail,
+          name: 'AnswerDetail',
+          },
+        
         {
           path: "lingyan",
           name: "Lingyan",

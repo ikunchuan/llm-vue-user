@@ -4,6 +4,7 @@
 
     <!-- 推荐模块 -->
     <section class="recommend-section">
+
       <!-- 左侧推荐导航 -->
       <div class="recommend-sidebar">
         <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
@@ -11,32 +12,34 @@
           {{ item.name }}
         </div>
       </div>
+
       <!-- 右侧推荐卡片 -->
       <div class="recommend-cards">
         <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
-          {{ card }}
+          <img :src="card" alt="Card Image" />
         </div>
       </div>
     </section>
 
     <!-- 筛选条件 -->
     <section class="filters-section">
-      <!-- 课程搜索框 -->
+      <!-- 竞赛名称搜索框 -->
       <div class="filter-item">
-        <input v-model="searchQuery" type="text" placeholder="请输入相应竞赛名称" />
+        <el-input placeholder="请输入相应竞赛名称" v-model="searchName"></el-input>
       </div>
-      <!-- 日期选择器 -->
+      <!-- 开始日期选择器 -->
       <div class="filter-item">
-        <input type="date" />
+        <el-date-picker v-model="searchStartDate" type="date" placeholder="选择开始日期">
+        </el-date-picker>
       </div>
-      <!-- 日期选择器 -->
+      <!-- 结束日期选择器 -->
       <div class="filter-item">
-        <input type="date" />
+        <el-date-picker v-model="searchEndDate" type="date" placeholder="选择结束日期">
+        </el-date-picker>
       </div>
-
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <button @click="performSearch">搜索</button>
+        <el-button type="primary" @click="searchCompetitions">搜索</el-button>
       </div>
     </section>
 
@@ -57,7 +60,7 @@
 
     <!-- 展示卡片 -->
     <section class="cards-section">
-      <div class="card" v-for="(card, index) in filteredCards" :key="index" @click="goToDetail(card.competitionId)">
+      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.competitionId)">
         <img :src="'http://localhost:10086/images/upload/' + card.competitionImgUrl" alt="Card Image" />
         <div class="card-title">{{ card.competitionName }}</div>
         <div class="card-info">{{ card.levelName }}</div>
@@ -78,24 +81,27 @@ export default {
   name: "Navbar",
   data() {
     return {
-      // 推荐导航的选项
-      // 推荐导航的选项
-      // sidebarItems: ["推荐竞赛", "热门竞赛", "热门课程", "热门社区", "我的成长"],
 
-      // recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"],
+      //推荐板块
       sidebarItems: [
-        { name: "推荐竞赛", recommendCards: ["DDE Platform", "OpenDataLab", "NBSDC.CN"] },
-        { name: "热门竞赛", recommendCards: ["Competition A", "Competition B"] },
-        { name: "热门课程", recommendCards: ["Course 1", "Course 2"] },
-        { name: "热门社区", recommendCards: ["Community 1", "Community 2"] },
-        { name: "我的成长", recommendCards: ["My Growth 1", "My Growth 2"] }
+        { name: "热门竞赛", type: "competition", popular: true, recommendCards: [] },
+        { name: "热门课程", type: "course", popular: true, recommendCards: [] },
+        { name: "热门社区", type: "community", popular: true, recommendCards: [] },
+        { name: "我的成长", type: "growth", recommendCards: [] }
       ],
       recommendCards: [],
+      currentType: null,
 
       // 展示卡片的内容
-      cards: [],
-      searchQuery: '', //存储搜索条件
-      filteredCards: [],//用于存储筛选后的卡片
+      cards: [
+
+      ],
+
+      //条件查询数据
+      searchName: '',
+      searchStartDate: '',
+      searchEndDate: '',
+
       // 一级导航项
       navItems: [
         {
@@ -124,6 +130,61 @@ export default {
     };
   },
   methods: {
+    //推荐板块的热门社区和热门竞赛
+    selectSidebarItem(item) {
+      this.currentType = item.type;
+      this.recommendCards = item.recommendCards;
+      if (item.popular) {
+        this.fetchPopularItems(item.type);
+      }
+    },
+
+    //推荐板块的热门社区和热门竞赛popular=1
+    fetchPopularItems(type) {
+      const payload = { popular: 1, type: type };
+      axios.post('comp/v1/search', payload)
+        .then(response => {
+          // 检查 response.data 是否包含 list 属性，并且它是一个数组
+          if (response.data && Array.isArray(response.data.list)) {
+            const items = response.data.list;
+            if (type === 'community') {
+              // 假设社区数据也在 list 数组中，并且有 communityImageUrl 字段
+              this.recommendCards = items.map(item => item.communityImageUrl);
+            } else if (type === 'competition') {
+              // 提取竞赛的图片 URL
+              this.recommendCards = items.map(item => item.competitionImgUrl);
+            } else if (type === 'course') {
+              // 提取竞赛的图片 URL
+              this.recommendCards = items.map(item => item.courseImgUrl);
+            }
+          } else {
+            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('获取数据失败:', error.response ? error.response.data : error.message);
+        });
+    },
+
+    //条件查询方法
+    searchCompetitions() {
+      const payload = {
+        competitionName: this.searchName,
+        startDate: this.searchStartDate,
+        endDate: this.searchEndDate
+      };
+      axios.post('comp/v1/search', payload)
+        .then(response => {
+          if (response.data && Array.isArray(response.data.list)) {
+            this.cards = response.data.list;
+          } else {
+            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('查询失败:', error.response ? error.response.data : error.message);
+        });
+    },
     //获取竞赛数据
     fetchCards() {
       this.loading = true;
@@ -133,7 +194,6 @@ export default {
         .then(response => {
           // 假设后端返回的数据是一个数组，每个元素都是一个卡片对象
           this.cards = response.data;
-          this.filteredCards = response.data; // 初始时显示所有卡片
         })
         .catch(error => {
           this.error = '加载卡片数据失败，请稍后再试。';
@@ -142,16 +202,7 @@ export default {
           this.loading = false;
         });
     },
-    // 搜索按钮点击事件
-    performSearch() {
-      if (this.searchQuery) {
-        this.filteredCards = this.cards.filter(card =>
-          card.competitionName.toLowerCase().includes(this.searchQuery.toLowerCase())
-        );
-      } else {
-        this.filteredCards = this.cards; // 如果搜索框为空，显示所有卡片
-      }
-    },
+
     // 
     toggleDrawer(menu) {
       this.activeDrawer = menu;
@@ -164,9 +215,6 @@ export default {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CompDetail', params: { compId: compId } });
     },
-    selectSidebarItem(item) {
-      this.recommendCards = item.recommendCards;
-    },
 
   },
   mounted() {
@@ -174,9 +222,6 @@ export default {
   },
 };
 </script>
-
-
-
 
 <style scoped>
 /* 外部容器，控制整体布局的宽度和居中 */
@@ -194,8 +239,6 @@ export default {
   border-radius: 10px;
   /* 可选：添加圆角效果 */
 }
-
-
 
 /* 推荐模块样式 */
 .recommend-section {
