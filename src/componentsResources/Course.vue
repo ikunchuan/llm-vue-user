@@ -26,8 +26,14 @@
 
     <!-- 图标分类 -->
     <section class="icon-section">
-      <div class="icon-item" v-for="(icon, index) in icons" :key="index">
-        {{ icon }}
+      <div class="icon-item">
+        <div class="icon-container">
+          <img src="../assets/img/1.png" alt="Logo" class="logo" />
+          <img src="../assets/img/2.png" alt="Image 2" class="logo" />
+          <img src="../assets/img/3.png" alt="Image 3" class="logo" />
+          <img src="../assets/img/4.png" alt="Image 4" class="logo" />
+          <img src="../assets/img/5.png" alt="Image 5" class="logo" />
+        </div>
       </div>
     </section>
 
@@ -55,8 +61,6 @@ export default {
   data() {
     return {
 
-      // 图标分类
-      icons: ["图标 1", "图标 2", "图标 3", "图标 4", "图标 5", "图标 6", "图标 7", "图标 8", "图标 9", "图标 10"],
       // 展示卡片的内容
       cards: [],//存储获取后端课程数据
       searchQuery: '', //存储搜索条件
@@ -174,19 +178,51 @@ export default {
   /* 添加圆角 */
 }
 
-/* 图标分类样式 */
 .icon-section {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 10px;
+  display: flex;
+  /* 使用 Flexbox 布局 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
   margin: 20px auto;
   max-width: 960px;
   /* 限制宽度 */
-  padding: 10px;
+  padding: 20px;
+  /* 内边距 */
   background-color: #ffffff;
+  /* 背景色 */
   border-radius: 10px;
-  /* 添加圆角 */
+  /* 圆角 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 阴影效果 */
+}
+
+.icon-container {
+  display: flex;
+  /* 使用 flexbox 让图片并排 */
+  justify-content: center;
+  /* 居中对齐 */
+  align-items: center;
+  /* 垂直居中 */
+  margin: 0 auto;
+  /* 让整个容器居中 */
+  gap: 110px;
+  /* 设置图片之间的间距 */
+}
+
+.logo {
+  width: 30px;
+  /* 设置图片宽度 */
+  height: auto;
+  /* 保持图片宽高比 */
+  transition: transform 0.2s;
+  /* 添加动画效果（可选） */
+}
+
+.logo:hover {
+  transform: scale(1.2);
+  /* 鼠标悬停放大图片（可选） */
 }
 
 /* 展示卡片样式 */
