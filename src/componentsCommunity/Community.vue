@@ -38,7 +38,7 @@
                                 :key="index"
                                 shadow="hover"
                                 class="mb-3"
-                                @click="navigateToDetail(item)"
+                                @click="navigateToPostDetail(item)"
                             >
                                 <div>
                                     <el-tag type="info" class="mb-2">{{ item.category }}</el-tag>
@@ -82,14 +82,15 @@
                 <div class="sidebar">
                     <el-card shadow="hover" class="mb-3">
                         <h3>推荐关注</h3>
-                        <el-button>全部社区</el-button>
+                        <el-button @click="goToCommuSearch()" >全部社区</el-button>
                         <div
-                        v-for="(user, index) in users"
+                        v-for="(users, index) in users"
                         :key="index"
                         class="d-flex align-items-center mb-2"
+                         @click="navigateToCommuDetail(users)"
                         >
-                        <el-avatar :src="user.avatar" size="small" class="me-2" />
-                        {{ user.name }}
+                        <el-avatar :src="users.avatar" size="small" class="me-2" />
+                        {{ users.name }}
                         </div>
                     </el-card>
                 </div>
@@ -161,6 +162,14 @@ export default {
             // 跳转到 PostDetail 页面，传递 postId
             this.$router.push({ name: "PostDetail", params: { postId: item.id } });
         },
+    },
+    goToCommuSearch() {
+        // 跳转到 CommuSearch 页面
+        this.$router.push({ name:'CommuSearch'});
+    },
+    navigateToCommuDetail(users) {
+        // 假设用户对象中有id属性，用于导航到具体的CommuDetail页面
+        this.$router.push({ name: 'CommuDetail', params: { userName: users.name } });
     }
     
 };
