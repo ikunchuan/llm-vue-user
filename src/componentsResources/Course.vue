@@ -5,21 +5,13 @@
 
     <!-- 筛选条件 -->
     <section class="filters-section">
-      <!-- 位置搜索框
+      <!-- 竞赛名称搜索框 -->
       <div class="filter-item">
-        <input type="text" placeholder="2" />
-      </div>
-      日期选择器
-      <div class="filter-item">
-        <input type="date" />
-      </div> -->
-      <!-- 课程输入框 -->
-      <div class="filter-item">
-        <input v-model="searchQuery" type="text" placeholder="请输入课程名称" />
+        <el-input placeholder="请输入相应课程名称" v-model="searchName"></el-input>
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <button @click="performSearch">搜索</button>
+        <el-button type="primary" @click="searchCompetitions">搜索</el-button>
       </div>
     </section>
 
@@ -161,7 +153,19 @@ export default {
   /* 可选：添加圆角效果 */
 }
 
-
+/* 筛选条件样式 */
+.filters-section {
+  display: flex;
+  gap: 10px;
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 960px;
+  /* 调整宽度 */
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  /* 添加圆角 */
+}
 
 
 /* 筛选条件样式 */
