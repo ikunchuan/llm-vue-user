@@ -1,6 +1,3 @@
-
-
-
 <template>
   <div class="main-layout">
 
@@ -42,60 +39,13 @@
 
   <!-- 展示卡片 -->
   <section class="cards-section">
-    <div class="card">
-        <img src="../assets/img/6.png" alt="程序设计" class="card-img" />
+    <div class="card" v-for="card in cards" :key="card.id" @click="goToAnswerDetail(card.id)">
+        <img :src="card.image" alt="card.title" class="card-img" />
         <div class="card-content">
-          <div class="card-title">程序设计</div>
+          <div class="card-title">{{ card.title }}</div>
         </div>
       </div>
-      <div class="card">
-        <img src="../assets/img/7.png" alt="网络安全" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">网络安全</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/12.png" alt="人工智能与大数据" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">人工智能与大数据</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/9.png" alt="数据挖掘与分析" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">数据挖掘与分析</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/10.png" alt="数学" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">数学</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/14.png" alt="数学建模" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">数学建模</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/8.png" alt="语言表达" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">语言表达</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/13.png" alt="英语应用" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">英语应用</div>
-        </div>
-      </div>
-      <div class="card">
-        <img src="../assets/img/11.png" alt="跨文化交流" class="card-img" />
-        <div class="card-content">
-          <div class="card-title">跨文化交流</div>
-        </div>
-      </div>
+ 
   </section>
   </div>
 </template>
@@ -105,6 +55,7 @@
 export default {
   name: "MainLayout",
   name: "Navbar",
+  name: "Question",
   data() {
     return {
     
@@ -112,6 +63,17 @@ export default {
       // icons: [],
       // 展示卡片的内容
       cards: [
+      { id: 1, title: "程序设计", image: "src/assets/img/6.png" },
+        { id: 2, title: "网络安全", image: "src/assets/img/7.png" },
+        { id: 3, title: "人工智能与大数据", image: "src/assets/img/12.png" },
+        { id: 4, title: "数据挖掘与分析", image: "src/assets/img/9.png" },
+        { id: 5, title: "数学", image: "src/assets/img/10.png" },
+        { id: 6, title: "数学建模", image: "src/assets/img/14.png" },
+        { id: 7, title: "语言表达", image: "src/assets/img/8.png" },
+        { id: 8, title: "英语应用", image: "src/assets/img/13.png" },
+        { id: 9, title: "跨文化交流", image: "src/assets/img/11.png" },
+     
+        // 添加更多卡片数据
       ],
       // 一级导航项
       navItems: [
@@ -148,6 +110,9 @@ export default {
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
     },
+    goToAnswerDetail(answerId){
+    this.$router.push({ name: 'AnswerDetail', params: { answerId: answerId} });
+   }
     // goToDetail(courseId) {
     //   // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
     //   this.$router.push({ name: 'CourseDetail', params: { courseId: courseId} });
@@ -155,7 +120,8 @@ export default {
     
   },
   mounted() {
-  // this.fetchCards();
+   
+   
   },
 };
 </script>
