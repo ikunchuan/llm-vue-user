@@ -1,148 +1,158 @@
-
-
 <template>
-    <div class="layout-container">
-      <!-- 上框 -->
-      <div class="top-info">
-        <div class="info-content">
-          
-      
-          
-          <div class="info-details">
-            <div class="info-text">
-              <img src="https://img95.699pic.com/element/40119/6081.png_860.png" alt="数学" class="math-icon" >
-          <h1>数学</h1>
-              <p>LeetCode·609题·公开</p>
-              <p>数字是利用符号语言研究数量、结构、变化以及空间等概念的一门学科，从某种角度看属于形式科学的...</p>
-            </div>
-            <div class="info-footer">
-              <span>2024/11/15 15:32</span>
-              <span>使用本数据集分析和揭示不同的社交媒体使用习惯对个体情绪状态的影响。</span>
-            </div>
+  <el-container>
+    <!-- 页面头部 -->
+    <el-header class="top-info">
+      <el-container>
+        <el-aside width="200px" class="header-info">
+          <el-avatar shape="square" :size="80" :src="url" />
+        </el-aside>
+        <el-main>
+          <h2>{{ categoryName }}</h2>
+          <p class="info-footer">{{ categoryDescription }}</p>
+        </el-main>
+      </el-container>
+    </el-header>
+
+    <el-container>
+      <!-- 左侧导航 -->
+      <el-aside width="250px" class="aside-menu">
+        <el-scrollbar>
+          <el-menu :default-active="currentProblem" class="el-menu-vertical-demo" @select="selectProblem">
+            <el-menu-item v-for="problem in problems" :key="problem.id" :index="problem.id">
+              {{ problem.title }}
+            </el-menu-item>
+          </el-menu>
+        </el-scrollbar>
+      </el-aside>
+
+      <!-- 主要内容区域 -->
+      <el-main>
+        <el-card shadow="hover" class="content-card">
+          <h3>{{ currentProblemTitle }}</h3>
+          <p>{{ currentProblemContent }}</p>
+          <el-input v-model="answer" placeholder="请输入答案"></el-input>
+          <div class="actions">
+            <el-button type="primary" @click="startPractice">开始答题</el-button>
+            <el-button type="success" @click="submitAnswer">提交答案</el-button>
+            <span class="timer">计时：{{ timer }} 秒</span>
           </div>
-        </div>
-      </div>
-      <!-- 下框 -->
-      <div class="row-container">
-        
-          <el-tabs :tab-position="tabPosition"  class="demo-tabs">
-            <el-tab-pane label="User">User</el-tab-pane>
-            <el-tab-pane label="Config">Config</el-tab-pane>
-            <el-tab-pane label="Role">Role</el-tab-pane>
-            <el-tab-pane label="Taskddwwdwdwdwdwdwdw">Taskddwwdwdwdwdwdwdw</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-            <el-tab-pane label="Task">Task</el-tab-pane>
-          </el-tabs>
-      </div>
-    </div>
-  </template>
-  
-  <script lang="ts">
-  import { ref } from 'vue'
-  import type { TabsInstance } from 'element-plus'
-  
-  
-  export default {
-    setup() {
-      const tabPosition = ref("left") // 控制标签页的排列方向
-      return { tabPosition }
-    },
-    data() {
-      return {
-        problems: [
-          // ... your problems array
-        ],
-        currentProblem: null // Add a new property to store the currently selected problem
-      };
-    },
-    methods: {
-      startPractice() {
-        alert('开始练习');
-      },
-      selectProblem(problem) {
-        this.currentProblem = problem; // Update the currentProblem when a problem is selected
+        </el-card>
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+
+<script>
+import { ref, reactive, onMounted } from 'vue';
+
+export default {
+  setup() {
+    const problems = ref([
+      { id: '1', title: '题目一', content: '这是题目一的内容' },
+      { id: '2', title: '题目二', content: '这是题目二的内容' },
+      { id: '3', title: '题目三', content: '这是题目三的内容' },
+    ]);
+
+    const categoryName = ref('数学类别');
+    const categoryDescription = ref('这是数学类别的介绍信息');
+    const url = ref('https://img95.699pic.com/element/40119/6081.png_860.png');
+
+    const currentProblem = ref(problems.value[0].id);
+    const currentProblemTitle = ref(problems.value[0].title);
+    const currentProblemContent = ref(problems.value[0].content);
+
+    const answer = ref('');
+    const timer = ref(0);
+    let timerInterval = null;
+
+    const startPractice = () => {
+      timer.value = 0;
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timer.value++;
+      }, 1000);
+    };
+
+    const selectProblem = (problemId) => {
+      const problem = problems.value.find((p) => p.id === problemId);
+      if (problem) {
+        currentProblem.value = problem.id;
+        currentProblemTitle.value = problem.title;
+        currentProblemContent.value = problem.content;
+        answer.value = '';
+        if (timerInterval) clearInterval(timerInterval);
       }
-    }
-  };
-  </script>
-  
-  <style scoped>
-  .layout-container {
-    display: flex;
-    flex-direction: column; /* 上下排列 */
-    gap: 20px; /* 两个大框之间的间距 */
-    width: 90%;
-    margin: 0 auto;
-  }
-  /* 页面顶部信息样式 */
-  .top-info {
-    background-color: #f8f8f8; /* 背景颜色 */
-    padding: 20px; /* 内边距 */
-    display: flex; /* 使用flex布局 */
-    align-items: center; /* 垂直居中 */
-    margin-left: auto;
-    margin-right: auto;
-    width: 1200px; /* 自定义宽度 */
-    height: 200px; /* 自定义高度 */
-    border: 1px solid #E0E0E0; /* 边框颜色 */
-      border-radius: 5px;
-  }
-  
-  .math-icon {
-    width: 40px; /* 图标宽度 */
-    height: 40px; /* 图标高度 */
-    margin-right: 20px; /* 图标与文本之间的间距 */
-  }
-  
-  .info-content {
-    display: flex; /* 使用flex布局 */
-    align-items: center; /* 垂直居中 */
-    
-  }
-  
-  .info-details {
-    display: flex; /* 使用flex布局 */
-    flex-direction: column; /* 垂直排列子元素 */
-  }
-  
-  .info-text {
-    margin-bottom: 10px; /* 与底部信息之间的间距 */
-  }
-  
-  .info-footer {
-    color: #888; /* 底部信息的颜色 */
-    font-size: 14px; /* 字体大小 */
-  }
-  .row-container {
-    display: flex;
-    gap: 20px; /* 左右小框之间的间距 */
-    flex: 1;
-    margin-left: auto;
-    margin-right: auto;
-    width: 1250px; /* 自定义宽度，可以根据需要调整 */
-    height: 600px; 
-    /* 注释掉或者根据需要调整 */
-    background-color: #F4F6F8; /* 浅灰背景 */
-      border: 1px solid #E0E0E0; /* 边框颜色 */
-      border-radius: 5px;
-  }
-  
-  /* 为el-tabs设置样式 */
-  .demo-tabs {
-    width: 1200px; /* 设置一个固定的宽度，比如800px */
-    height: 600px; /* 设置一个固定的高度 */
-    margin-left: auto;
-    margin-right: auto; /* 使容器水平居中 */
-  }
-  
-  </style>
+    };
+
+    const submitAnswer = () => {
+      alert(`提交答案：${answer.value}`);
+    };
+
+    onMounted(() => {
+      startPractice();
+    });
+
+    return {
+      problems,
+      categoryName,
+      categoryDescription,
+      url,
+      currentProblem,
+      currentProblemTitle,
+      currentProblemContent,
+      answer,
+      timer,
+      startPractice,
+      selectProblem,
+      submitAnswer,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.top-info {
+  width: 100%;
+  height: auto;
+  padding: 10px;
+  background-color: #f8f8f8;
+  padding: 2px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header-row {
+  align-items: center;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.aside-menu {
+  background-color: #f5f7fa;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.content-card {
+  margin-bottom: 20px;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timer {
+  font-weight: bold;
+  color: #333;
+}
+
+.info-footer {
+  color: #888;
+  font-size: 14px;
+}
+</style>
