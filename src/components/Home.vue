@@ -35,9 +35,70 @@
           @mouseleave="toggleDrawer(null)"
         >
           <div class="drawer-content">
+            <div v-if="activeDrawer.name === '竞赛中心'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">竞赛中心</h3>
+                <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 100px; height: 100px;">
+              </div>
+              <div class="right-column">
+                <!-- 大标题 -->
+                <h1>最新动态</h1>
+                
+                <!-- 图片区域 -->
+                <div class="image-section">
+                  <img src="../assets/img/1.png" alt="图片1描述">
+                  <img src="../assets/img/1.png" alt="图片2描述">
+                  <img src="../assets/img/1.png" alt="图片3描述">
+                </div>
+                
+                <!-- 底部文字区域 -->
+                <div class="text-container">
+                  <p>这里是图片下方的文字描述。</p>
+                </div>
+              </div>
+            </div>
             <div v-if="activeDrawer.name === '资源中心'" class="resource-center">
               <div class="left-column">
                 <h3 class="drawer-title">资源中心</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="activeDrawer.name === '灵验知道'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">灵验知道</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="activeDrawer.name === '社区'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">社区</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="activeDrawer.name === '个人中心'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">个人中心</h3>
                 <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
                 <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
               </div>
@@ -98,7 +159,7 @@ export default {
     },
   
 
- 
+
     navigate(item) {
   // 根据点击的导航项推送正确的路由
   console.log(item); // 查看点击时传递的 item 对象
@@ -298,18 +359,49 @@ export default {
 .left-column {
   width: 20%;
   text-align: center;
-  border: 1px solid #E0E0E0; /* 边框颜色 */
-      border-radius: 5px;
+  padding: 10px 0px; /* 添加内边距 */
 }
 
+/* 调整.right-column的布局为垂直排列 */
 .right-column {
-  width: 75%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  border: 1px solid #E0E0E0; /* 边框颜色 */
-      border-radius: 5px;
+  width: 70%; /* 占满整个容器宽度 */
+  display: block; /* 改为块级元素，不再使用flex布局 */
+  
+  padding: 20px; /* 添加内边距 */
 }
+
+/* 大标题样式，使其靠左显示 */
+.right-column h1 {
+  text-align: left; /* 文字靠右对齐 */
+  margin-top: 20px; /* 与上边的间隔 */
+  margin-bottom: 20px; /* 与下边的间隔 */
+}
+
+
+
+/* 图片区域的容器样式 */
+.image-section {
+  display: flex; /* 使用flex布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  gap: 60px; /* 图片之间的间隔 */
+  margin-top: 20px; /* 与标题的间隔 */
+  margin-bottom: 20px; /* 与下方文字的间隔 */
+}
+
+/* 图片样式 */
+.image-section img {
+  width: 120px; /* 图片宽度 */
+  height: 120px; /* 图片高度 */
+  object-fit: cover; /* 确保图片覆盖整个区域，但可能会裁剪 */
+}
+
+/* 底部文字区域样式 */
+.text-container {
+  text-align: center; /* 文字居中 */
+  margin-top: 20px; /* 与图片区域的间隔 */
+}
+
 
 .resource-box {
   width: 45%;
@@ -326,7 +418,7 @@ export default {
   text-align: center;
   font-size: 1.2em; /* 使字体更大 */
   transition: color 0.3s ease;}
-
+/* 图片区域的容器样式 */
 
 
 </style>
