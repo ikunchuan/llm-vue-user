@@ -39,7 +39,7 @@
               <div class="left-column">
                 <h3 class="drawer-title">资源中心</h3>
                 <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                <div class="resource-link" @click="navigateToPath('competition')">竞赛资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
               </div>
               <div class="right-column">
                 <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
@@ -89,7 +89,8 @@ export default {
       this.activeDrawer = item;
     },
     navigateToPath(path) {
-      this.$router.push({ path: `/${path}` });
+      this.$router.push({ path:`/home/${path}`});
+      // `/${path}`
       this.activeDrawer = null; // 关闭抽屉
     },
     keepDrawerOpen() {
@@ -97,10 +98,7 @@ export default {
     },
   
 
-    // navigate(path) {
-    //   this.$router.push({ name: `Comp${path.charAt(0).toUpperCase() + path.slice(1)}` });
-    //   this.activeDrawer = null; // 关闭抽屉
-    // }
+ 
     navigate(item) {
   // 根据点击的导航项推送正确的路由
   console.log(item); // 查看点击时传递的 item 对象

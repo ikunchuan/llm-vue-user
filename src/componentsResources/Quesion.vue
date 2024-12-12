@@ -140,29 +140,7 @@ export default {
     };
   },
   methods: {
-    goToDetail(courseId) {
-      // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-      this.$router.push({ name: 'AnswerDetail', params: { courseId: courseId} });
-    },
-  
-    //获取竞赛数据
-    // fetchCards() {
-    // this.loading = true;
-    // this.error = null;
-    // // 发送GET请求到后端API
-    // this.$http.get('http://localhost:10086/crs/v1')
-    //   .then(response => {
-    //     // 假设后端返回的数据是一个数组，每个元素都是一个卡片对象
-    //     this.cards = response.data;
-    //   })
-    //   .catch(error => {
-    //     this.error = '加载卡片数据失败，请稍后再试。';
-    //   })
-    //   .finally(() => {
-    //     this.loading = false;
-    //   });
-    // },
-    // 
+
     toggleDrawer(menu) {
       this.activeDrawer = menu;
     },
@@ -170,14 +148,14 @@ export default {
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
     },
-    goToDetail(courseId) {
-      // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-      this.$router.push({ name: 'CourseDetail', params: { courseId: courseId} });
-    }
+    // goToDetail(courseId) {
+    //   // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
+    //   this.$router.push({ name: 'CourseDetail', params: { courseId: courseId} });
+    // }
     
   },
   mounted() {
-  this.fetchCards();
+  // this.fetchCards();
   },
 };
 </script>
