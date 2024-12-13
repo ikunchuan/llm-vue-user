@@ -12,8 +12,18 @@
           
           <!-- 左侧内容块 -->
             <!-- 左侧内容块 -->
-          <div class="box"></div>
-          <div class="box"></div>
+          <div class="box"> 
+            <p>竞赛开始时间：{{ competitionDetail.startDate }}</p>
+          <p>竞赛结束时间：{{ competitionDetail.endDate }}</p>
+          <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
+            <el-button type="primary" @click="toggleFavorite">收藏竞赛</el-button></div>
+          <div class="box">
+            <div class="anchor-nav">
+        <a href="#schedule">竞赛日程安排</a>
+        <a href="#details">竞赛详情</a>
+        <!-- 根据需要添加更多锚点 -->
+      </div>
+          </div>
         </aside>
   
         <!-- 右侧内容区 -->
@@ -23,14 +33,18 @@
           
           <!-- 右侧主内容 -->
           <div class="content">
+            <div class="steps-container">
+            <el-steps style="max-width: 600px" :active="1">
+    <el-step title="Step 1" description="Some description" />
+    <el-step title="Step 2" description="Some description" />
+    <el-step title="Step 3" description="Some description" />
+  </el-steps></div>
           
           <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
-          <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
+          
           <p>竞赛描述：{{ competitionDetail.competitionDescription }}</p>
           <p>竞赛主办方：{{ competitionDetail.competitionOrganizer }}</p>
-          <p>竞赛开始时间：{{ competitionDetail.startDate }}</p>
-          <p>竞赛结束时间：{{ competitionDetail.endDate }}</p>
-          <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
+          
           <p>截止日期：{{ competitionDetail.registrationDeadline }}</p>
           <p>竞赛日程安排：{{ competitionDetail.competitionSchedule }}</p>
           <p>竞赛详情：{{ competitionDetail.detail }}</p>
@@ -77,13 +91,32 @@
 </script>
   
   <style scoped>
+  .steps-container {
+  margin-top: 30px;  /* 距离顶部 30px */
+  margin-bottom: 20px; /* 距离下面内容 20px */
+  width: 80%; /* 控制宽度，确保不会太宽 */
+  margin-left: auto; /* 水平居中 */
+  margin-right: auto; /* 水平居中 */
+}
   /* 全局背景色 */
   body {
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #F4F6F8; /* 浅灰背景 */
   }
-  
+  /* 锚点导航样式 */
+.anchor-nav {
+  margin-top: 20px;
+}
+.anchor-nav a {
+  display: block;
+  margin-bottom: 10px;
+  color: #42b983; /* Element UI 主题色 */
+  text-decoration: none;
+}
+.anchor-nav a:hover {
+  text-decoration: underline;
+}
  
   
   /* 主内容区样式 */

@@ -48,11 +48,11 @@
     <section class="icon-section">
       <div class="icon-item">
         <div class="icon-container">
-          <img src="../assets/img/1.png" alt="Logo" class="logo" />
-          <img src="../assets/img/2.png" alt="Image 2" class="logo" />
-          <img src="../assets/img/3.png" alt="Image 3" class="logo" />
-          <img src="../assets/img/4.png" alt="Image 4" class="logo" />
-          <img src="../assets/img/5.png" alt="Image 5" class="logo" />
+          <img src="../assets/img/1.png" alt="Logo" class="logo" @click="onIconClick(1)" />
+        <img src="../assets/img/2.png" alt="Image 2" class="logo" @click="onIconClick(2)" />
+        <img src="../assets/img/3.png" alt="Image 3" class="logo" @click="onIconClick(3)" />
+        <img src="../assets/img/4.png" alt="Image 4" class="logo" @click="onIconClick(4)" />
+        <img src="../assets/img/5.png" alt="Image 5" class="logo" @click="onIconClick(5)" />
         </div>
       </div>
     </section>
@@ -90,10 +90,16 @@ export default {
       recommendCards: [],
       currentType: null,
 
+      iconCategories: {
+        '1': 1,
+        '2': 2,
+        '3': 3,
+        '4': 4,
+        '5': 5,
+      },
       // 展示卡片的内容
-      cards: [
-
-      ],
+      cards: [],
+      filteredCards: [],
 
       //条件查询数据
       searchName: '',
@@ -209,10 +215,39 @@ export default {
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
     },
+    onIconClick(iconKey) {
+      const categoryId = this.iconCategories[iconKey];
+      this.searchByCategory(categoryId);
+    },
+    searchByCategory(categoryId) {
+      const competitionSearch = { categoryId };
+      axios.post('comp/v1/search', competitionSearch, {
+        params: {
+          pageNum: 1,
+          pageSize: 5
+        }
+      })
+      .then(response => {
+        if (response.data) {
+          this.cards = response.data.list;
+          this.filteredCards = response.data.list;
+        } else {
+          console.error('后端返回的数据格式不正确:', response.data);
+        }
+      })
+      .catch(error => {
+        console.error('查询失败:', error.response ? error.response.data : error.message);
+      });
+    },
     goToDetail(compId) {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CompDetail', params: { compId: compId } });
     },
+    searchCompetitions() {
+      this.filteredCards = this.searchName
+        ? this.cards.filter(card => card.courseName.includes(this.searchName))
+        : this.cards;
+    }
 
   },
   mounted() {
