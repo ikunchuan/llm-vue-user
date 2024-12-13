@@ -17,20 +17,24 @@
             <el-card class="login-card">
                 <h2 class="login-title">登录你的账号</h2>
                 <div class="register-tip">
-                    <el-text style="font-size: 16px;">没有账户？<el-link type="primary"
-                            @click="goToRegister">去注册</el-link></el-text>
+                    <el-text style="font-size: 16px;">没有账户？
+                        <el-link type="primary" @click="goToRegister" style="font-size: 16px;"
+                            :underline="false">去注册</el-link>
+                    </el-text>
                 </div>
 
-                <el-form :model="loginForm" :rules="rules" ref="loginFormRef" label-width="0">
+                <el-form :model="loginForm" :rules="rules" label-width="0">
                     <el-tabs v-model="activeTab">
                         <el-tab-pane label="账号密码登录" name="password">
-                            <el-form-item prop="username">
-                                <el-input v-model="loginForm.username" placeholder="请输入用户名" clearable />
+                            <el-form-item prop="userName">
+                                <el-input v-model="loginForm.userName" placeholder="请输入用户名" clearable />
                             </el-form-item>
-                            <el-form-item prop="password">
-                                <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" />
+                            <el-form-item prop="userPassword">
+                                <el-input v-model="loginForm.userPassword" type="password" placeholder="请输入密码"
+                                    show-password />
                             </el-form-item>
-                            <el-checkbox v-model="loginForm.rememberMe">记住我</el-checkbox>
+                            <el-checkbox v-model="loginForm.rememberMe" style="margin-bottom: 20px;"
+                                @click="handleCheckBoxVal">记住我</el-checkbox>
                         </el-tab-pane>
                         <!-- 
                         <el-tab-pane label="手机号验证码登录" name="sms">
@@ -45,24 +49,20 @@
                     </el-tabs>
 
                     <el-form-item>
-                        <el-row justify="space-evenly">
-                            <el-col :span="12"><el-button type="primary" block
-                                    @click="handleLogin">登录</el-button></el-col>
-                            <el-col :span="12"><el-button type="primary" size="small" text
-                                    @click="resstForm">重置</el-button>
-                            </el-col>
-                        </el-row>
+                        <el-button type="primary" block @click="handleLogin">登录</el-button>
+                        <el-button type="primary" size="small" text @click="resstForm">重置</el-button>
                     </el-form-item>
                 </el-form>
 
                 <div class="other-login">
                     <span style="font-size: 14px;">其他方式</span>
-                    <!-- <el-button icon="<i class='el-icon-wechat'></i>" circle></el-button>
-                    <el-button icon="<i class='el-icon-s-unfold'></i>" circle></el-button> -->
+                    <el-divider />
+                    <el-button icon="i" circle style="margin-right:30px; border: none;" size="large"></el-button>
+                    <el-button icon="i" circle style="border: none;" size="large"></el-button>
                 </div>
 
                 <div class="agreement">
-                    <el-text style="font-size: 14px;">点击【登录】表示你已同意
+                    <el-text style="font-size: 14px;">点击[登录]表示你已同意
                         <el-link style="font-size: 14px;" type="primary" :underline="false"
                             @click="goToTOS">服务条款</el-link>
                         和
@@ -80,36 +80,38 @@ export default {
         return {
             activeTab: "password",
             loginForm: {
-                username: "",
-                password: "",
+                userName: "",
+                userPassword: "",
                 rememberMe: false,
             },
             rules: {
                 username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
                 password: [{ required: true, message: "请输入密码", trigger: "blur" }],
-                phone: [{ required: true, message: "请输入手机号", trigger: "blur" }],
-                code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
             },
         };
     },
     methods: {
+        // 异步处理登录
         async handleLogin() {
-            this.$htttp.post(`/uis/v1/login`, this.loginForm).then((result) => {
+            try {
+                const response = await this.$http.post('/uis/v1/login', this.loginForm);
                 if (response.data.code === 200) {
                     this.$message.success('登录成功！');
-                    // 将用户名存储在本地存储中
-                    localStorage.setItem('userName', response.data.message);
-                    // 登录成功后跳转到首页
+                    console.log('信息', response.data);
+                    localStorage.setItem('userid', response.data.data.userid);
+                    localStorage.setItem('username', response.data.data.username);
                     this.$router.push('/home');
                 } else {
                     this.$message.error('登录失败！请检查用户名和密码');
                 }
-            }).catch((err) => {
+            } catch (err) {
+                console.error('登录请求失败:', err);
                 this.$message.error('登录请求失败！');
-            });
+            }
         },
+
         resstForm() {
-            this.loginForm.resetFields();
+            this.loginForm = {};
         },
         goToRegister() {
             this.$router.push('/register');

@@ -15,7 +15,7 @@
                                     <el-avatar :size="80" :src="avatarUrl" style="margin-bottom: 5px" />
                                     <div>
                                         <p style="margin: 0; font-weight: 500">
-                                            {{ userInfo.userName }}
+                                            {{ userInfo.username }}
                                         </p>
                                         <p style="margin: 0; font-size: 14px; color: var(--el-color-info)">
                                             {{ userInfo.userLocal }}
@@ -36,12 +36,12 @@
                     <el-col :span="10">
                         <el-space :size="20" :spacer="spacer" alignment="center" direction="horizontal">
                             <el-space direction="vertical" size="10">
-                                <span class="stat-text"><a href="#followers">关注</a></span>
-                                <span class="stat-number">{{ countFollowers }}</span>
+                                <span class="stat-text">关注</span>
+                                <span class="stat-number">{{ countFollowers() }}</span>
                             </el-space>
                             <el-space direction="vertical" size="10">
-                                <span class="stat-text"><a href="#fans">粉丝</a></span>
-                                <span class="stat-number">{{ countFans }}</span>
+                                <span class="stat-text">粉丝</span>
+                                <span class="stat-number">{{ countFans() }}</span>
                             </el-space>
                         </el-space>
                     </el-col>
@@ -50,11 +50,13 @@
                 <div class="activity-stats">
                     <div class="activity-item">
                         <span class="activity-text">获得浏览:</span>
-                        <span class="activity-number">{{ countPostViews }}</span>
+                        <span class="activity-number"></span>
+                        <!-- {{ countPostViews() }} -->
                     </div>
                     <div class="activity-item">
                         <span class="activity-text">获得点赞:</span>
-                        <span class="activity-number">{{ countPostLikes }}</span>
+                        <span class="activity-number"></span>
+                        <!-- {{ countPostLikes() }} -->
                     </div>
                     <div class="activity-item">
                         <span class="activity-text">项目被 Fork:</span>
@@ -62,7 +64,8 @@
                     </div>
                     <div class="activity-item">
                         <span class="activity-text">获得评论:</span>
-                        <span class="activity-number">{{ countPostComments }}</span>
+                        <span class="activity-number"></span>
+                        <!-- {{ countPostComments() }} -->
                     </div>
                 </div>
 
@@ -156,17 +159,17 @@ export default {
             return this.fansInfo.length;
         },
 
-        countPostViews() {
-            return this.userInfo.postViewCount;
-        },
+        // countPostViews() {
+        //     return this.postInfo.postView.length;
+        // },
 
-        countPostLikes() {
-            return this.userInfo.postLikeCount;
-        },
+        // countPostLikes() {
+        //     return this.postInfo.postLike.length;
+        // },
 
-        countPostComments() {
-            return this.userInfo.postCommentCount;
-        },
+        // countPostComments() {
+        //     return this.postInfo.postComment.length;
+        // },
     },
     mounted() {
         const userId = localStorage.getItem('userid');
@@ -183,8 +186,9 @@ export default {
 
         this.$http.get(`/uis/v1/user/follower/${userId}`)
             .then(response => {
-                console.log('User data:', response.data);
+                console.log('follower data:', response.data);
                 this.followersInfo = response.data;
+                console.log(this.followersInfo.length);
                 this.loading = false;
             }).catch(error => {
                 console.error('Error fetching user data:', error);
@@ -194,8 +198,9 @@ export default {
 
         this.$http.get(`/uis/v1/user/fans/${userId}`)
             .then(response => {
-                console.log('User data:', response.data);
+                console.log('fans data:', response.data);
                 this.fansInfo = response.data;
+                console.log(this.fansInfo.length);
                 this.loading = false;
             }).catch(error => {
                 console.error('Error fetching user data:', error);
@@ -203,7 +208,6 @@ export default {
                 this.loading = false;
             })
 
-        this.$http.get
 
     },
     components: {
