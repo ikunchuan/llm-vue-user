@@ -221,7 +221,7 @@ export default {
     },
     searchByCategory(categoryId) {
       const competitionSearch = { categoryId };
-      axios.post('comp/v1/search', competitionSearch, {
+      this.$http.post('comp/v1/search', competitionSearch, {
         params: {
           pageNum: 1,
           pageSize: 5

@@ -18,9 +18,9 @@
 
 // export default router;
 
-
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "../components/Home.vue";
+import Login from "../components/Login.vue";
 import Comp from "../componentsCompetition/Comp.vue";
 import CompDetail from "../componentsCompetition/CompDetail.vue";
 import Course from "../componentsResources/Course.vue";
@@ -31,13 +31,17 @@ import Community from "../componentsCommunity/Community.vue";
 import CommuDetail from "../componentsCommunity/CommuDetail.vue";
 import CommuSearch from "../componentsCommunity/CommuSearch.vue";
 import PostDetail from "../componentsCommunity/PostDetail.vue";
+import PostCreat from "../componentsCommunity/PostCreat.vue";
 import Question from "../componentsResources/Quesion.vue";
 import AnswerDetail from "../componentsResources/AnswerDetail.vue";
 
-
-
 const routes = [
   { path: "/", redirect: "/home" },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+  },
   {
     path: "/home",
     name: "Home",
@@ -51,70 +55,71 @@ const routes = [
       {
         path: "comp",
         name: "Comp",
-        component: Comp
+        component: Comp,
       },
       {
         path: "compdetail/:compId", // 确保路径匹配，并且可以接收compId参数
         name: "CompDetail",
         component: CompDetail,
       },
-  
+
       {
         path: "course",
         name: "Course",
-        component: Course
+        component: Course,
       },
       {
-        path: 'coursedetail/:courseId',
+        path: "coursedetail/:courseId",
         component: CourseDetail,
-        name: 'CourseDetail',
-        },
+        name: "CourseDetail",
+      },
 
-        {
-          path: "question",
-          name: "Question",
-          component: Question
-        },
-        {
-          path: 'answerdetail/:answerId',
-          component: AnswerDetail,
-          name: 'AnswerDetail',
-          },
-        
-        {
-          path: "lingyan",
-          name: "Lingyan",
-          component: Lingyan,
-        },
-        {
-          path: "community",
-          component:Community,
-        },
-        {
-          path: "commudetail/:userName",
-          name: "CommuDetail",
-          component:CommuDetail,
-        },
-        {
-          path: "commusearch",
-          name: "CommuSearch",
-          component:CommuSearch,
-        },
-        {
-          path: "postdetail",
-          name: "PostDetail",
-          component:PostDetail,
-        },
-        {
-          path: "me",
-          component: me,
-        },
-      
-   
-   
-    ]
+      {
+        path: "question",
+        name: "Question",
+        component: Question,
+      },
+      {
+        path: "answerdetail/:answerId",
+        component: AnswerDetail,
+        name: "AnswerDetail",
+      },
+
+      {
+        path: "lingyan",
+        name: "Lingyan",
+        component: Lingyan,
+      },
+      {
+        path: "community",
+        component: Community,
+      },
+      {
+        path: "commudetail/:communityId/:communityName",
+        name: "CommuDetail",
+        component: CommuDetail,
+      },
+      {
+        path: "commusearch",
+        name: "CommuSearch",
+        component: CommuSearch,
+      },
+      {
+        path: "postcreat",
+        name: "PostCreat",
+        component: PostCreat,
+      },
+      {
+        path: "postdetail",
+        name: "PostDetail",
+        component: PostDetail,
+      },
+      {
+        path: "me",
+        component: me,
+      },
+    ],
   },
-  
 ];
 
 const router = createRouter({

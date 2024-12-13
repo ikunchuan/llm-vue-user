@@ -2,45 +2,43 @@
   <!-- 根模板，包含整个页面的结构 -->
   <div>
     <!-- 顶部导航栏 -->
+  </div>
 
-
-    <!-- 主内容区域 -->
-    <div class="main">
-      <!-- 视频和课程信息区域 -->
-      <section class="course-info">
-        <!-- 视频占位区 -->
-        <div class="video"></div>
-
-        <!-- 课程详细信息 -->
-        <div class="details">
-          <h1>{{ courseDetail.courseName }}</h1>
-          <p>课程介绍:{{ courseDetail.courseDescription }}</p>
-          <p>预计学习时长:{{ courseDetail.courseDuration }}</p>
-          <p>课程等级:{{ courseDetail.courseDifficultyLevel }}</p>
-          <p>用户评分:{{ courseDetail.courseRating }}</p>
-          <p>课程价格:{{ courseDetail.coursePrice }}</p>
-
-        </div>
-      </section>
-
-      <!-- 标签切换区域 -->
-      <div class="tabs">
-        <!-- 标签按钮 -->
-        <div class="tab active">介绍</div>
-        <div class="tab" @click="onTabClick('chapter')">目录</div>
-        <div class="tab">评价</div>
+  <!-- 主内容区域 -->
+  <div class="main">
+    <!-- 视频和课程信息区域 -->
+    <section class="course-info">
+      <!-- 视频占位区 -->
+      <div class="video">
+        <BilibiliPlayer bvid="BV1Eb411u7Fw" />
       </div>
 
+      <!-- 课程详细信息 -->
+      <div class="details">
+        <h1>{{ courseDetail.courseName }}</h1>
+        <p>课程介绍:{{ courseDetail.courseDescription }}</p>
+        <p>预计学习时长:{{ courseDetail.courseDuration }}</p>
+        <p>课程等级:{{ courseDetail.courseDifficultyLevel }}</p>
+        <p>用户评分:{{ courseDetail.courseRating }}</p>
+        <p>课程价格:{{ courseDetail.coursePrice }}</p>
+
+      </div>
+    </section>
+
+    <!-- 标签切换区域 -->
+    <div class="tabs">
+      <!-- 标签按钮 -->
+      <div class="tab active">介绍</div>
+      <div class="tab">目录</div>
+      <div class="tab">评价</div>
+    </div>
+    <section class="content">
       <!-- 内容区 -->
-      <div class="content-area" v-if="!loadingChapter && showChapterContent">
-        <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
+      <div class="content-area">
+        <!-- 左侧内容区 -->
         <section class="content-left">
           <h2>章节内容</h2>
-          <section class="cards-section">
-            <div class="card" v-for="(card, index) in chapterDetail" :key="index">
-              <div class="card-title">{{ card.chapterName }}</div>
-            </div>
-          </section>
+          <p>这里可以放置详细的章节信息或课程内容。</p>
         </section>
 
         <!-- 右侧推荐课程区 -->
@@ -49,20 +47,51 @@
           <p>展示与本课程相关的推荐课程。</p>
         </aside>
       </div>
+    </section>
+
+    <!-- 标签切换区域 -->
+    <div class="tabs">
+      <!-- 标签按钮 -->
+      <div class="tab active">介绍</div>
+      <div class="tab" @click="onTabClick('chapter')">目录</div>
+      <div class="tab">评价</div>
     </div>
 
-    <!-- 底部区域 -->
-    <footer class="footer">
-      © 2024 课程平台 - 版权所有
-    </footer>
+    <!-- 内容区 -->
+    <div class="content-area" v-if="!loadingChapter && showChapterContent">
+      <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
+      <section class="content-left">
+        <h2>章节内容</h2>
+        <section class="cards-section">
+          <div class="card" v-for="(card, index) in chapterDetail" :key="index">
+            <div class="card-title">{{ card.chapterName }}</div>
+          </div>
+        </section>
+      </section>
+
+      <!-- 右侧推荐课程区 -->
+      <aside class="content-right">
+        <h2>推荐课程</h2>
+        <p>展示与本课程相关的推荐课程。</p>
+      </aside>
+    </div>
   </div>
 </template>
 
 <script>
+import BilibiliPlayer from "../components/BilibiliPlayer.vue";
 export default {
   name: "CoursePage", // 组件名称
+  components: {
+    BilibiliPlayer,
+  },
   data() {
     return {
+      bvid: null,
+      videoList: [
+        // { bvid: "BV1Eb411u7Fw" },
+        // { bvid: "BV1A54y1s7SM" },
+      ],
       courseDetail: {}, // 存储竞赛详情数据
       chapterDetail: [],//存储章节详情数据
       loading: true,        // 加载状态
@@ -74,6 +103,10 @@ export default {
   created() {
     this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
 
+  },
+  mounted() {
+    const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
+    this.fetchBvid(courseId);  // 获取对应的 bvid
   },
   methods: {
     fetchCompetitionDetail() {
