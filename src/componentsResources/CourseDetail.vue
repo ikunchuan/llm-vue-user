@@ -9,7 +9,8 @@
         <!-- 视频和课程信息区域 -->
         <section class="course-info">
           <!-- 视频占位区 -->
-          <div class="video"></div>
+          <div class="video">   <BilibiliPlayer bvid="BV1Eb411u7Fw" />
+          </div>
   
           <!-- 课程详细信息 -->
           <div class="details">
@@ -55,10 +56,19 @@
   </template>
   
   <script>
+  import BilibiliPlayer from "../components/BilibiliPlayer.vue";
   export default {
     name: "CoursePage", // 组件名称
+    components: {
+    BilibiliPlayer,
+  },
     data() {
     return {
+      bvid :null,
+      videoList: [
+        // { bvid: "BV1Eb411u7Fw" },
+        // { bvid: "BV1A54y1s7SM" },
+      ],
       courseDetail: {}, // 存储竞赛详情数据
       loading: true,        // 加载状态
       error: null           // 错误信息
@@ -67,6 +77,10 @@
   created() {
     this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
   },
+  mounted() {
+  const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
+  this.fetchBvid(courseId);  // 获取对应的 bvid
+},
   methods: {
     fetchCompetitionDetail() {
       const courseId = this.$route.params.courseId; // 从路由参数中获取 compId
@@ -79,7 +93,36 @@
           this.error = error.message; // 捕获错误信息并赋值给 error
           this.loading = false; // 关闭加载状态
         });
+    },
+    fetchBvid(courseId) {
+    // 假设有一个函数可以根据课程 ID 获取 bvid
+    // 这里的获取过程可以是 API 请求，也可以是静态数据查询
+    const courseData = this.getCourseDataById(courseId);  // 获取课程数据
+    this.bvid = courseData.bvid;  // 设置对应的 bvid
+
+    // 如果 bvid 存在，就开始播放视频
+    if (this.bvid) {
+      this.loadVideo(this.bvid);
     }
+  },
+
+  // 假设这是通过 bvid 加载视频的方法
+  loadVideo(bvid) {
+    const videoUrl = `https://www.bilibili.com/video/${bvid}`;
+    this.$nextTick(() => {
+      // 这里的 videoPlayer 是你在页面右上角的 <video> 元素
+      this.$refs.videoPlayer.src = videoUrl;
+    });
+  },
+
+  // 假设的根据课程 ID 获取课程数据的方法
+  getCourseDataById(courseId) {
+    // 你可以从数据库或者静态数据中查询课程
+    const courses = [
+     
+    ];
+    return courses.find(course => course.id === courseId);
+  },
   }
     
   };

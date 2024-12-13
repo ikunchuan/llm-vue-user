@@ -94,7 +94,7 @@ const routes = [
         component: Community,
       },
       {
-        path: "commudetail/:userName",
+        path: "commudetail/:communityId",
         name: "CommuDetail",
         component: CommuDetail,
       },
