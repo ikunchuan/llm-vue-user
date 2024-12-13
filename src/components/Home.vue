@@ -12,7 +12,7 @@
                 class="nav-item" 
                 v-for="item in navItems" :key="item.name"
                 @mouseenter="toggleDrawer(item)" 
-                @mouseleave="toggleDrawer(item)"
+                @mouseleave="keepDrawerOpen"
                 @click="navigate(item.path)"
               >
                 {{ item.name }}
@@ -27,8 +27,8 @@
           </div>
         </header>
 
-    <!-- 抽屉内容 -->
-    <div 
+        <!-- 抽屉内容 -->
+        <div 
           v-if="activeDrawer" 
           class="drawer" 
           @mouseenter="keepDrawerOpen" 
@@ -46,9 +46,14 @@
                 
                 <!-- 图片区域 -->
                 <div class="image-section">
-                  <img src="../assets/img/1.png" alt="图片1描述">
-                  <img src="../assets/img/1.png" alt="图片2描述">
-                  <img src="../assets/img/1.png" alt="图片3描述">
+                  <!-- 其他可能的 v-for 使用 -->
+                  <div v-for="(comp, index) in popularCompetitions" :key="index">
+                    <img
+                      :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl"
+                     
+                      @click="goToCompetitionDetail(comp.competitionId)"
+                    />
+                  </div>
                 </div>
                 
                 <!-- 底部文字区域 -->
@@ -123,56 +128,67 @@
   </div>
 </template>
 
-
-
-
-
-
-
 <script>
+import axios from 'axios';
+
 export default {
   name: "Home",
   data() {
     return {
-      // 导航项
       navItems: [
-        { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
-        { name: "资源中心", path: "course", drawerContent: "这里是资源中心的详细介绍..." },
-        { name: "灵验知道", path: "lingyan", drawerContent: "这里是灵验知道的详细介绍..." },
-        { name: "社区", path: "community", drawerContent: "这里是社区的详细介绍..." },
-        { name: "个人中心", path: "me", drawerContent: "这里是个人中心的详细介绍..." },
+        { name: "竞赛中心", path: "comp" },
+        { name: "资源中心", path: "course" },
+        { name: "灵验知道", path: "lingyan" },
+        { name: "社区", path: "community" },
+        { name: "个人中心", path: "me" },
       ],
       activeDrawer: null,
+      popularCompetitions: [],
     };
   },
   methods: {
     toggleDrawer(item) {
       this.activeDrawer = item;
-    },
-    navigateToPath(path) {
-      this.$router.push({ path:`/home/${path}`});
-      // `/${path}`
-      this.activeDrawer = null; // 关闭抽屉
+      if (!item) {
+        this.popularCompetitions = [];
+      }
+      this.fetchPopularCompetitions();
     },
     keepDrawerOpen() {
-      // 不做任何操作，保持抽屉打开
+      // 保持抽屉打开，不进行任何操作
     },
-  
-
-
     navigate(item) {
-  // 根据点击的导航项推送正确的路由
-  console.log(item); // 查看点击时传递的 item 对象
-  const path = `/home/${item}`;
-  this.$router.push({ path: path });
-  this.activeDrawer = null; // 关闭抽屉
-}
+      if (item.path) {
+        this.$router.push({ path: `/home/${item.path}` });
+      }
+      this.activeDrawer = null; // 关闭抽屉
+    },
+    fetchPopularCompetitions() {
+      const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
+      axios
+        .post('comp/v1/search', competitionSearch)
+        .then(response => {
+          if (response.data && response.data.list) {
+            // 截取前三条数据
+            this.popularCompetitions = response.data.list.slice(0, 3);
+          } else {
+            console.error('后端返回的数据格式不正确:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('获取推荐竞赛失败:', error.response ? error.response.data : error.message);
+        });
+    },
+    goToCompetitionDetail(competitionId) {
+      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+    },
+    goToCompetitionDetail(competitionId) {
+      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+    },
   },
   mounted() {
-  console.log(this.navItems); // 查看 navItems 数组的内容
-}
-
-
+    this.fetchPopularCompetitions(); // 获取推荐竞赛
+  }
 };
 </script>
 
