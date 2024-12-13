@@ -186,7 +186,10 @@ export default {
             // 跳转到社区详情页并传递 communityId
             this.$router.push({
                 name: 'CommuDetail',
-                params: { communityId: community.communityId }
+                params: {
+                    communityId: community.communityId,
+                    communityName: community.communityName
+                }
             });
         },
         // 点击标签页时触发的事件

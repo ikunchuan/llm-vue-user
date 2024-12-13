@@ -3,14 +3,13 @@
     <!-- 社区头部 -->
     <div class="community-header">
       <div class="header-content">
+        <!-- 显示社区名称 -->
         <h2>{{ communityName }}的社区</h2>
         <p>
-          版主:
-          <el-avatar src="https://via.placeholder.com/32" size="small" />
-          精品案例、教程、培训活动
+          <!--这里要查询，显示一下社区的category作为标签，还有社区的创建人-->
         </p>
         <div class="header-buttons">
-          <el-button type="primary" size="small">订阅</el-button>
+          <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
           <el-button type="success" size="small">+关注</el-button>
         </div>
       </div>
@@ -29,39 +28,23 @@
 
           <!-- 搜索和发帖 -->
           <div class="search-and-post">
-            <el-input v-model="searchQuery" placeholder="搜索帖子" prefix-icon="el-icon-search" class="search-input" />
-            <el-button type="primary" size="small">发帖</el-button>
+            <!-- 搜索框，用于搜索帖子 -->
+            <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search" class="search-input" />
           </div>
-
-          <!-- 帖子列表
-          <div class="post-list">
-            <div v-for="(post, index) in filteredPostsList" :key="index" class="post-item">
-              <div class="post-header">
-                <el-tag type="info">{{ post.postname }}</el-tag>
-                <span class="post-title">{{ post.title }}</span>
-              </div>
-              <div class="post-info">
-                <span>{{ post.author }}</span> ·
-                <span>{{ post.time }}</span> · 阅读 {{ post.views }} · 评论
-                {{ post.comments }}
-              </div>
-            </div>
-          </div>
-        </el-col> -->
 
           <!-- 帖子列表 -->
           <div class="post-list">
             <div v-for="(post, index) in filteredPostsList" :key="index" class="post-item">
               <div class="post-header">
-                <el-tag type="info">{{ post.postname }}</el-tag>
+                <el-tag type="info">{{ post.tag }}</el-tag>
                 <span class="post-title">{{ post.postTitle }}</span>
               </div>
               <div class="post-content">{{ post.postContent }}</div>
-              <div class="post-info">
+              <!-- <div class="post-info">
                 <span>点赞: {{ post.likes }}</span> ·
                 <span>评论: {{ post.comments }}</span> ·
                 <span>收藏: {{ post.favorites }}</span>
-              </div>
+              </div> -->
             </div>
           </div>
         </el-col>
@@ -71,6 +54,7 @@
           <el-card class="ranking-card" shadow="hover">
             <h3>积分排行</h3>
             <div class="ranking-list">
+              <!-- 遍历积分排行列表 -->
               <div class="ranking-item" v-for="(user, index) in rankings" :key="index">
                 <span class="ranking">{{ index + 1 }}</span>
                 <el-avatar :src="user.avatar" size="small" />
@@ -80,7 +64,6 @@
             </div>
           </el-card>
         </el-col>
-
       </el-row>
     </div>
   </div>
@@ -88,74 +71,48 @@
 
 <script>
 import axios from 'axios';
+
 export default {
   name: "CommuDetail",
   created() {
-    const communityId = this.$route.params.communityId;
-    console.log("Community ID from URL:", communityId); // 确保能够获取到 ID
-    // 使用 communityId 执行其他操作（如获取社区详细信息等）
-
+    // 组件创建时获取帖子信息
     this.fetchPosts();
   },
   data() {
     return {
+      // 社区ID和名称从路由参数中获取
       communityId: this.$route.params.communityId,
       communityName: this.$route.params.communityName,
       activeTab: "all",
-      searchQuery: "",
-      posts: [], // 修正变量名为 posts
-      rankings: [
-        {
-          name: "傲气的感慨",
-          avatar: "https://via.placeholder.com/32",
-          score: "4,577",
-        },
-        {
-          name: "隔壁脸袋",
-          avatar: "https://via.placeholder.com/32",
-          score: "3,767",
-        },
-        {
-          name: "呆呆敲代码的小Y",
-          avatar: "https://via.placeholder.com/32",
-          score: "3,626",
-        },
-        {
-          name: "晓晓晓晓晓晓晓",
-          avatar: "https://via.placeholder.com/32",
-          score: "2,637",
-        },
-        {
-          name: "无水先生",
-          avatar: "https://via.placeholder.com/32",
-          score: "2,500",
-        },
+      searchQuery: "", // 搜索关键词
+      posts: [], // 帖子列表
+      rankings: [ // 积分排行列表
+        // ...用户数据
       ],
     };
   },
   computed: {
+    // 根据搜索关键词过滤帖子列表
     filteredPostsList() {
-      // 根据搜索关键字过滤帖子
       if (!this.searchQuery) return this.posts;
       return this.posts.filter((post) =>
-        post.title.includes(this.searchQuery)
+        post.postTitle.includes(this.searchQuery) || post.postContent.includes(this.searchQuery)
       );
     },
   },
+
   methods: {
-    openPost(id) {
-      console.log(`查看帖子 ID: ${id}`);
-    },
+    // 获取帖子信息的方法
     fetchPosts() {
-      console.log('获得的社区ID:', this.communityId)
-      if (this.communityId) {
-        // 请求后端获取帖子
+      if (this.communityName) {
+// 请求后端获取特定社区的帖子
         axios.post(`v1/posts/search`, {
-          communityId: this.communityId,
+          communityName: this.communityName,
+          query: this.searchQuery, // 搜索关键词
         })
           .then(response => {
-            console.log('获取的帖子列表：', response.data); // 调试输出
-            // 假设后端返回的数据结构
+            console.log("获取到的帖子数据：", response.data);
+            // 确保后端返回的数据结构中包含 list，并且只包含特定社区的帖子
             this.posts = response.data.list || response.data;
           })
           .catch(error => {
@@ -163,7 +120,13 @@ export default {
           });
       }
     },
-  },
+    goToPostCreat() {
+      // 跳转到帖子详情页
+      this.$router.push({
+        name: 'PostCreat',
+      });
+    }
+  }
 };
 </script>
 
@@ -193,9 +156,7 @@ export default {
 /* 搜索和发帖 */
 .search-and-post {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin: 20px 0;
 }
 
 .search-input {
