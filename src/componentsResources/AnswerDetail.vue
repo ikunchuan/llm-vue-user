@@ -7,7 +7,7 @@
           <el-avatar shape="square" :size="80" :src="url" />
         </el-aside>
         <el-main>
-          <h2>{{ categoryName }}</h2>
+          <h2>{{ categoryInfo.categoryName }}</h2>
           <p class="info-footer">{{ categoryDescription }}</p>
         </el-main>
       </el-container>
@@ -17,9 +17,9 @@
       <!-- 左侧导航 -->
       <el-aside width="250px" class="aside-menu">
         <el-scrollbar>
-          <el-menu :default-active="currentProblem" class="el-menu-vertical-demo" @select="selectProblem">
-            <el-menu-item v-for="problem in problems" :key="problem.id" :index="problem.id">
-              {{ problem.title }}
+          <el-menu :default-active="currentProblem" class="el-menu-vertical-demo" @select="selectQuestion">
+            <el-menu-item v-for="problem in answerDetail" :key="problem.questionId" :index="problem.questionId">
+              {{ problem.questionTitle }}
             </el-menu-item>
           </el-menu>
         </el-scrollbar>
@@ -28,8 +28,8 @@
       <!-- 主要内容区域 -->
       <el-main>
         <el-card shadow="hover" class="content-card">
-          <h3>{{ currentProblemTitle }}</h3>
-          <p>{{ currentProblemContent }}</p>
+          <h3>{{ selectedQuestion.questionTitle }}</h3>
+          <p>{{ selectedQuestion.questionText }}</p>
           <el-input v-model="answer" placeholder="请输入答案"></el-input>
           <div class="actions">
             <el-button type="primary" @click="startPractice">开始答题</el-button>
@@ -46,68 +46,68 @@
 import { ref, reactive, onMounted } from 'vue';
 
 export default {
-  setup() {
-    const problems = ref([
-      { id: '1', title: '题目一', content: '这是题目一的内容' },
-      { id: '2', title: '题目二', content: '这是题目二的内容' },
-      { id: '3', title: '题目三', content: '这是题目三的内容' },
-    ]);
 
-    const categoryName = ref('数学类别');
-    const categoryDescription = ref('这是数学类别的介绍信息');
-    const url = ref('https://img95.699pic.com/element/40119/6081.png_860.png');
-
-    const currentProblem = ref(problems.value[0].id);
-    const currentProblemTitle = ref(problems.value[0].title);
-    const currentProblemContent = ref(problems.value[0].content);
-
-    const answer = ref('');
-    const timer = ref(0);
-    let timerInterval = null;
-
-    const startPractice = () => {
-      timer.value = 0;
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timer.value++;
-      }, 1000);
-    };
-
-    const selectProblem = (problemId) => {
-      const problem = problems.value.find((p) => p.id === problemId);
-      if (problem) {
-        currentProblem.value = problem.id;
-        currentProblemTitle.value = problem.title;
-        currentProblemContent.value = problem.content;
-        answer.value = '';
-        if (timerInterval) clearInterval(timerInterval);
-      }
-    };
-
-    const submitAnswer = () => {
-      alert(`提交答案：${answer.value}`);
-    };
-
-    onMounted(() => {
-      startPractice();
-    });
-
+  data() {
     return {
-      problems,
-      categoryName,
-      categoryDescription,
-      url,
-      currentProblem,
-      currentProblemTitle,
-      currentProblemContent,
-      answer,
-      timer,
-      startPractice,
-      selectProblem,
-      submitAnswer,
+      answerDetail: {}, // 存储题目数据
+      categoryInfo: [], // 存储类别表信息
+      loading: true, // 加载状态
+      error: null, // 错误信息
+      currentQuestion: 1, // 当前选中的题目ID，默认是第一个
+      selectedQuestion: {} // 当前选中的题目详情
     };
   },
+
+  created() {
+    this.fetchAnswerDetail(); // 在组件创建时获取课程详情
+
+  },
+  methods: {
+    fetchAnswerDetail() {
+      const categoryId = this.$route.params.answerId;
+      this.$http.get(`http://localhost:10086/qst/v1/cate/${categoryId}`)
+        .then(response => {
+          this.answerDetail = response.data;
+          if (Array.isArray(this.answerDetail)) {
+            this.selectedQuestion = this.answerDetail.find(question => question.questionId === this.currentQuestion);
+          } else {
+            console.error('answerDetail is not an array');
+          }
+          this.loading = false;
+        })
+        .catch(error => {
+          this.error = error.message;
+          this.loading = false;
+        });
+    },
+    //获取类别数据
+    fetchcatoryDetail() {
+      const categoryId = this.$route.params.answerId; // 从路由参数中获取 answerId
+      this.$http.get(`http://localhost:10086/cat/v1/${categoryId}`)
+        .then(response => {
+          this.categoryInfo = response.data; // 将获取到的数据赋值给 answerDetail
+          this.loading = false; // 关闭加载状态
+        })
+        .catch(error => {
+          this.error = error.message; // 捕获错误信息并赋值给 error
+          this.loading = false; // 关闭加载状态
+        });
+    },
+    //获取具体题目
+    selectQuestion(questionId) {
+      this.currentQuestion = questionId;
+      this.selectedQuestion = this.answerDetail.find(question => question.questionId === questionId);
+      console.log(this.selectedQuestion); // Debug to check if the question is found
+    },
+
+
+
+  },
+  mounted() {
+    this.fetchcatoryDetail();
+  },
 };
+
 </script>
 
 <style scoped>

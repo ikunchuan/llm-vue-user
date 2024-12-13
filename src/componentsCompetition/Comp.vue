@@ -74,8 +74,6 @@
 
 
 <script>
-import axios from 'axios'; // 引入axios
-
 export default {
   name: "MainLayout",
   name: "Navbar",
