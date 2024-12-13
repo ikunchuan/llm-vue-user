@@ -20,11 +20,12 @@
     <section class="icon-section">
       <div class="icon-item">
         <div class="icon-container">
-          <img src="../assets/img/1.png" alt="Logo" class="logo" />
-          <img src="../assets/img/2.png" alt="Image 2" class="logo" />
-          <img src="../assets/img/3.png" alt="Image 3" class="logo" />
-          <img src="../assets/img/4.png" alt="Image 4" class="logo" />
-          <img src="../assets/img/5.png" alt="Image 5" class="logo" />
+          <img src="../assets/img/1.png" alt="Logo" class="logo" @click="onIconClick(1)" />
+        <img src="../assets/img/2.png" alt="Image 2" class="logo" @click="onIconClick(2)" />
+        <img src="../assets/img/3.png" alt="Image 3" class="logo" @click="onIconClick(3)" />
+        <img src="../assets/img/4.png" alt="Image 4" class="logo" @click="onIconClick(4)" />
+        <img src="../assets/img/5.png" alt="Image 5" class="logo" @click="onIconClick(5)" />
+          
         </div>
       </div>
     </section>
@@ -52,7 +53,13 @@ export default {
   name: "Navbar",
   data() {
     return {
-
+      iconCategories: [
+        { id: 1, src: '../assets/img/1.png' },
+        { id: 2, src: '../assets/img/2.png' },
+        { id: 3, src: '../assets/img/3.png' },
+        { id: 4, src: '../assets/img/4.png' },
+        { id: 5, src: '../assets/img/5.png' }
+      ],
       // 展示卡片的内容
       cards: [],//存储获取后端课程数据
       searchQuery: '', //存储搜索条件
@@ -112,6 +119,15 @@ export default {
         this.filteredCards = this.cards; // 如果搜索框为空，显示所有卡片
       }
     },
+    performSearch(categoryId) {
+      if (categoryId) {
+        this.filteredCards = this.cards.filter(card =>
+          card.categoryId === categoryId
+        );
+      } else {
+        this.filteredCards = this.cards; // 如果没有传递 categoryId，显示所有卡片
+      }
+    },
     // 
     toggleDrawer(menu) {
       this.activeDrawer = menu;
@@ -120,9 +136,19 @@ export default {
     keepDrawerOpen() {
       // 不做任何操作，保持抽屉打开
     },
+    
+
+    onIconClick(iconId) {
+      this.filteredCards = this.cards.filter(card => card.categoryId === iconId);
+    },
     goToDetail(courseId) {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CourseDetail', params: { courseId: courseId } });
+    },
+    searchCompetitions() {
+      this.filteredCards = this.searchName
+        ? this.cards.filter(card => card.courseName.includes(this.searchName))
+        : this.cards;
     }
 
   },
