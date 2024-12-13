@@ -31,6 +31,7 @@ import Community from "../componentsCommunity/Community.vue";
 import CommuDetail from "../componentsCommunity/CommuDetail.vue";
 import CommuSearch from "../componentsCommunity/CommuSearch.vue";
 import PostDetail from "../componentsCommunity/PostDetail.vue";
+import PostCreat from "../componentsCommunity/PostCreat.vue";
 import Question from "../componentsResources/Quesion.vue";
 import AnswerDetail from "../componentsResources/AnswerDetail.vue";
 
@@ -94,7 +95,7 @@ const routes = [
         component: Community,
       },
       {
-        path: "commudetail/:communityId",
+        path: "commudetail/:communityId/:communityName",
         name: "CommuDetail",
         component: CommuDetail,
       },
@@ -102,6 +103,11 @@ const routes = [
         path: "commusearch",
         name: "CommuSearch",
         component: CommuSearch,
+      },
+      {
+        path: "postcreat",
+        name: "PostCreat",
+        component: PostCreat,
       },
       {
         path: "postdetail",
