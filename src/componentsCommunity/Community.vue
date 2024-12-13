@@ -57,12 +57,18 @@
 
                     <div class="sidebar">
                         <el-card shadow="hover" class="mb-3">
+                            <!-- <div v-for="community in popularCommunities" :key="community.id"
+                                class="d-flex align-items-center mb-2" @click="navigateToCommuDetail(community)">
+                                <el-avatar :src="community.avatar" size="small" class="me-2" />
+                                {{ community.communityName }}
+                            </div> -->
+
                             <h3>推荐关注</h3>
                             <el-button @click="goToCommuSearch()">全部社区</el-button>
-                            <div v-for="(users, index) in users" :key="index" class="d-flex align-items-center mb-2"
-                                @click="navigateToCommuDetail(users)">
-                                <el-avatar :src="users.avatar" size="small" class="me-2" />
-                                {{ users.name }}
+                            <div v-for="(community, index) in popularCommunities" :key="index"
+                                @click="navigateToCommuDetail(community)">
+                                <el-avatar :src="community.avatar" size="small" class="me-2" />
+                                {{ community.communityName }}
                             </div>
                         </el-card>
                     </div>
@@ -104,6 +110,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 
 export default {
     name: "CompetitionCommunity",
+
     data() {
         return {
             // 功能分类按钮
@@ -115,13 +122,12 @@ export default {
             // 搜索与分类,默认展示最热帖子
             activeTab: "hot",
             searchQuery: "",
+
             // 内容列表
             contentItems: [],
+
             // 推荐关注
-            users: [
-                { name: "编程大佬", avatar: "https://via.placeholder.com/32" },
-                { name: "AI极客", avatar: "https://via.placeholder.com/32" },
-            ],
+            popularCommunities: [], // 存储推荐社区的数据
 
             //创建社区返回的表单数据
             form: {
@@ -142,15 +148,17 @@ export default {
     },
     created() {
         this.fetchHotPosts(); // 在组件创建时获取最热帖子
+        this.fetchPopularCommunities(); // 获取推荐社区
     },
     computed: {
+        // 根据搜索关键字过滤帖子
         filteredContentItems() {
             if (!this.searchQuery) return this.contentItems;
             return this.contentItems.filter((item) =>
                 item.postTitle ? item.postTitle.includes(this.searchQuery) : false
             );
         },
-
+        // 添加一个计算属性，用于过滤掉没有父级的类别
         filteredCatIdAndName() {
             return this.catIdAndName.filter(item => item.parentId != null);
         },
@@ -169,9 +177,17 @@ export default {
             // 跳转到 CommuSearch 页面
             this.$router.push({ name: 'CommuSearch' });
         },
-        navigateToCommuDetail(users) {
-            // 假设用户对象中有id属性，用于导航到具体的CommuDetail页面
-            this.$router.push({ name: 'CommuDetail', params: { userName: users.name } });
+
+        // 点击进入社区详情页面
+        navigateToCommuDetail(community) {
+            // 使用索引从 communityIds 中获取对应的 communityId
+            // const communityId = this.communityIds[index];
+            console.log('点击的社区ID:', community.communityId);  // 确保社区ID能够正确获取
+            // 跳转到社区详情页并传递 communityId
+            this.$router.push({
+                name: 'CommuDetail',
+                params: { communityId: community.communityId }
+            });
         },
         // 点击标签页时触发的事件
         handleTabClick(tab) {
@@ -289,6 +305,30 @@ export default {
                 ElMessage({ message: '获取社区列表失败', type: 'error' });
             });
         },
+        // 获取热门社区
+        fetchPopularCommunities() {
+            console.log('获取热门社区...');
+            const communitySearch = {
+                popular: 1
+            };
+            axios.post('/v1/cmns/search', communitySearch)
+                .then(response => {
+                    console.log('热门社区数据:', response.data);
+
+                    // 假设后端返回的数据是一个数组
+                    this.popularCommunities = response.data.list; // 这里直接取出数组
+
+                    // // 使用 map 提取每个社区的 communityId
+                    // const communityIds = this.popularCommunities.map(community => community.communityId);
+                    // console.log('热门社区 ID 列表:', communityIds); // 输出每个社区的 ID
+                    // // 如果需要，你可以将 communityIds 存储在数据中
+                    // this.communityIds = communityIds;
+                })
+                .catch(error => {
+                    console.error('获取推荐社区失败:', error);
+                    ElMessage.error('获取推荐社区失败');
+                });
+        },
 
     },
     mounted() {
@@ -304,7 +344,7 @@ export default {
 <style scoped>
 .main-page {
     margin: 0 auto;
-    max-width: 900px;
+    max-width: 1200px;
     padding: 20px;
     background-color: #f4f6f8;
 }
