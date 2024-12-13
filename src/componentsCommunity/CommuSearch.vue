@@ -105,9 +105,20 @@ export default {
                 });
         },
         navigateToCommuDetail(community) {
-            // 使用社区对象中的 id 属性作为参数跳转到 CommuDetail 页面
-            this.$router.push({ name: 'CommuDetail', params: { communityId: community.communityId } });
-        },
+            if (!community || !community.communityId) {
+                console.error('社区 ID 为空，无法跳转');
+                return;
+            }
+            console.log('跳转的社区 ID:', community.communityId);
+            this.$router.push({
+                name: 'CommuDetail',
+                params: {
+                    communityId: community.communityId,
+                    communityName: community.communityName
+                }, 
+            });
+        }
+
     },
 };
 </script>
