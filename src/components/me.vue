@@ -1,129 +1,242 @@
 <template>
-    <div class="profile-container-wrapper">
-        <div class="profile-container">
-            <div class="profile-header">
-                <div class="avatar-container">
-                    <img class="avatar" src="https://via.placeholder.com/80" alt="头像">
+    <el-container class="profile">
+        <el-aside width="20%" class="profile-container">
+            <el-card>
+                <div class="profile-header" size="10">
+                    <el-space wrap>
+                        <el-popover :width="300"
+                            popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                            <template #reference>
+                                <!-- shape：square； border: 1px solid #007bff;-->
+                                <el-avatar :size="80" :src="avatarUrl" style="margin-left: 10; " />
+                            </template>
+                            <template #default>
+                                <div class="demo-rich-conent" style="display: flex; gap: 16px; flex-direction: column">
+                                    <el-avatar :size="80" :src="avatarUrl" style="margin-bottom: 5px" />
+                                    <div>
+                                        <p style="margin: 0; font-weight: 500">
+                                            {{ userInfo.userName }}
+                                        </p>
+                                        <p style="margin: 0; font-size: 14px; color: var(--el-color-info)">
+                                            {{ userInfo.userLocal }}
+                                        </p>
+                                    </div>
+                                    <p style="margin: 0">
+                                        {{ userInfo.userEmail }}
+                                    </p>
+                                </div>
+                            </template>
+                        </el-popover>
+                        <h3>{{ userInfo.userName }}</h3>
+                    </el-space>
+                    <p style="font-size: 17px;">{{ userInfo.userEmail }}</p>
                 </div>
-                <div class="profile-info">
-                    <div class="profile-details">
-                        <h2>Windir</h2>
-                        <p>一枚热爱插画的视觉设计师</p>
+
+                <el-row justify="center">
+                    <el-col :span="10">
+                        <el-space :size="20" :spacer="spacer" alignment="center" direction="horizontal">
+                            <el-space direction="vertical" size="10">
+                                <span class="stat-text"><a href="#followers">关注</a></span>
+                                <span class="stat-number">{{ countFollowers }}</span>
+                            </el-space>
+                            <el-space direction="vertical" size="10">
+                                <span class="stat-text"><a href="#fans">粉丝</a></span>
+                                <span class="stat-number">{{ countFans }}</span>
+                            </el-space>
+                        </el-space>
+                    </el-col>
+                </el-row>
+
+                <div class="activity-stats">
+                    <div class="activity-item">
+                        <span class="activity-text">获得浏览:</span>
+                        <span class="activity-number">{{ countPostViews }}</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-text">获得点赞:</span>
+                        <span class="activity-number">{{ countPostLikes }}</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-text">项目被 Fork:</span>
+                        <span class="activity-number">0</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-text">获得评论:</span>
+                        <span class="activity-number">{{ countPostComments }}</span>
                     </div>
                 </div>
-            </div>
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-text">关注</span>
-                    <span class="stat-number">1</span>
-                </div>
-                <div class="stat-separator"></div>
-                <div class="stat-item">
-                    <span class="stat-text">粉丝</span>
-                    <span class="stat-number">0</span>
-                </div>
-            </div>
-            <div class="activity-stats">
-                <div class="activity-item">
-                    <span class="activity-text">获得浏览:</span>
-                    <span class="activity-number">0</span>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-text">获得点赞:</span>
-                    <span class="activity-number">0</span>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-text">项目被 Fork:</span>
-                    <span class="activity-number">0</span>
-                </div>
-                <div class="activity-item">
-                    <span class="activity-text">获得评论:</span>
-                    <span class="activity-number">0</span>
-                </div>
-            </div>
-            <div class="introduction">
-                <h3>简介</h3>
-                <button class="edit-button">编辑简介</button>
-            </div>
-            <div class="badges">
-                <h3>徽章</h3>
-                <p>空空如也, 看看如何 <a href="#">解锁徽章></a></p>
-            </div>
-            <div class="skills">
-                <h3>技能</h3><a href="#">技能树</a>
-                <div class="skill-item">理论 <span>0</span></div>
-                <div class="skill-item">应用 <span>0</span></div>
-            </div>
-            <div class="activity">
-                <p>嚯，这个人还没有动静呢</p>
-            </div>
-        </div>
 
-        <!-- 新增的框，放在最大的框右边 -->
-        <div class="side-box">
-            <div class="side-nav">
-                <a href="#overview" class="nav-item">概览</a>
-                <a href="#activity" class="nav-item">动态</a>
-                <a href="#projects" class="nav-item">项目</a>
-                <a href="#data" class="nav-item">数据</a>
-                <a href="#columns" class="nav-item">专栏</a>
-                <a href="#contests" class="nav-item">比赛</a>
-                <a href="#events" class="nav-item">活动</a>
-            </div>
-            <h3>侧边框</h3>
-            <p>一些额外的信息</p>
-        </div>
-    </div>
+                <div>
+                    <h4>简介</h4>
+                    <p style="font-size:17px;">{{ userInfo.userBio }}</p>
+                    <button class="edit-button">编辑简介</button>
+                </div>
+
+                <div class="badges">
+                    <h4>徽章</h4>
+                    <p style="font-size:17px;">空空如也, 看看如何 <a href="#">解锁徽章></a></p>
+                </div>
+
+                <div class="skills">
+                    <h4>技能</h4>
+                    <a href="#" style="font-size: 17px;">技能树</a>
+                    <div style="font-size: 17px;">理论 <span>0</span></div>
+                    <div style="font-size: 17px;">应用 <span>0</span></div>
+                </div>
+
+                <div class="activity">
+                    <p style="font-size: 17px;">嚯，这个人还没有动静呢</p>
+                </div>
+            </el-card>
+        </el-aside>
+
+        <el-main>
+            <el-card style="width: 99%" class="right">
+
+                <el-row justify="center">
+                    <el-col :span="2">
+                        <el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#overview" class="nav-item">概览</a>
+                        </el-space>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#activity" class="nav-item">动态</a></el-space>
+                    </el-col>
+                    <el-col :span="2">
+                        <el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#projects" class="nav-item">项目</a></el-space>
+                    </el-col>
+                    <el-col :span="2"><el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#data" class="nav-item">数据</a></el-space>
+                    </el-col>
+                    <el-col :span="2"><el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#columns" class="nav-item">专栏</a></el-space>
+                    </el-col>
+                    <el-col :span="2"><el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#contests" class="nav-item">比赛</a></el-space>
+                    </el-col>
+                    <el-col :span="2"><el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
+                            <a href="#events" class="nav-item">活动</a></el-space>
+                    </el-col>
+                </el-row>
+
+                <h3>侧边框</h3>
+                <p>一些额外的信息</p>
+                <RouterView></RouterView>
+            </el-card>
+        </el-main>
+    </el-container>
 </template>
 
 <script>
+import { h } from 'vue'
+import { ElDivider } from 'element-plus';
+import { RouterView } from 'vue-router';
+
 export default {
-    name: 'ProfilePage',
+    data() {
+        return {
+            name: 'ProfilePage',
+            spacer: h(ElDivider, { direction: 'vertical' }),
+            // avatarUrl: this.userInfo.userProfilePicture,
+            loading: true,
+            userInfo: {}, //存储用户数据
+            followersInfo: [], //用户关注
+            fansInfo: [],  //用户粉丝
+        };
+    },
+
+    methods: {
+        countFollowers() {
+            return this.followersInfo.length;
+        },
+
+        countFans() {
+            return this.fansInfo.length;
+        },
+
+        countPostViews() {
+            return this.userInfo.postViewCount;
+        },
+
+        countPostLikes() {
+            return this.userInfo.postLikeCount;
+        },
+
+        countPostComments() {
+            return this.userInfo.postCommentCount;
+        },
+    },
+    mounted() {
+        const userId = localStorage.getItem('userid');
+        this.$http.get(`/uis/v1/ui/${userId}`)
+            .then(response => {
+                console.log('User data:', response.data);
+                this.userInfo = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            }).finally(() => {
+                this.loading = false;
+            });
+
+        this.$http.get(`/uis/v1/user/follower/${userId}`)
+            .then(response => {
+                console.log('User data:', response.data);
+                this.followersInfo = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            }).finally(() => {
+                this.loading = false;
+            })
+
+        this.$http.get(`/uis/v1/user/fans/${userId}`)
+            .then(response => {
+                console.log('User data:', response.data);
+                this.fansInfo = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            }).finally(() => {
+                this.loading = false;
+            })
+
+        this.$http.get
+
+    },
+    components: {
+
+    },
 };
 </script>
 
 <style scoped>
-.profile-container-wrapper {
-    display: flex; /* 使用flex布局 */
-    justify-content: space-between; /* 内容分布 */
-    gap: 1px; /* 设置子元素之间的间距，调整为较小的值 */
+.profile {
+    width: 90%;
+    margin-left: 1%;
+    display: flex;
+    justify-self: start;
+}
+
+.right {
+    height: auto;
 }
 
 .profile-container {
-    width: 350px;
-    border: 1px solid #ccc;
-    padding: 20px;
-    margin: 60px;
-    position: relative;
+    display: fixed;
+    z-index: 99;
     background: #fff;
-    border-radius: 8px;   /* 边框圆角 */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);/* 边框阴影 */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header {
-    display: flex;
-    align-items: center;
     background-color: #ebd1d1;
     padding: 10px;
     border-radius: 8px;
     margin-bottom: 10px;
-}
-
-.avatar-container {
-    display: flex;
-    align-items: center;
-    margin-right: 30px;
-}
-
-.avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid #007bff;
-}
-
-.profile-info {
-    flex-grow: 1;
 }
 
 .stats {
@@ -171,9 +284,11 @@ export default {
 
 .activity-text {
     margin-right: 5px;
+    font-size: 17px;
 }
 
 .activity-number {
+    font-size: 17px;
     font-weight: bold;
     color: #007bff;
 }
@@ -208,46 +323,44 @@ a:hover {
     border-color: #007bff;
 }
 
-/* 侧边框的样式 */
 .side-box {
-    width: 1000px; /* 侧边框宽度 */
     border: 1px solid #ccc;
     padding: 20px;
-    margin-top: 60px; /* 上边距与主框相等 */
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .side-nav {
-    display: flex; /* 使用 flex 布局 */
-    justify-content: space-around; /* 平均分配各导航项之间的距离 */
-    align-items: center; /* 垂直居中对齐 */
-    list-style: none; /* 移除默认的列表样式 */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
 .nav-item {
-    display: block; /* 使链接成为块级元素 */
+    display: block;
     padding: 10px 20px;
     color: #495057;
     text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 17px;
+    font-weight: bold;
     transition: background-color 0.3s ease;
 }
 
 .nav-item:hover,
 .nav-item.active {
-    background-color: #f8f9fa;
-    color: #007bff;
+    background-color: #007bff;
+    text-decoration: none;
+    color: #fff;
 }
 
-/* 侧边框的其他样式 */
 .side-box h3 {
-  margin: 20px 0 10px; /* 调整标题的上下边距 */
+    margin: 20px 0 10px;
 }
+
 .side-box p {
     margin-top: 10px;
     font-size: 14px;
