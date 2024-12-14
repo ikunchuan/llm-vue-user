@@ -34,9 +34,15 @@ import PostDetail from "../componentsCommunity/PostDetail.vue";
 import PostCreat from "../componentsCommunity/PostCreat.vue";
 import Question from "../componentsResources/Quesion.vue";
 import AnswerDetail from "../componentsResources/AnswerDetail.vue";
+import HomePage from "../components/HomePage.vue";
 
 const routes = [
   { path: "/", redirect: "/home" },
+  {
+    path: "/homepage",
+    name: "homepage",
+    component: HomePage,
+  },
   {
     path: "/login",
     name: "Login",
