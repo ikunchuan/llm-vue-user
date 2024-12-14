@@ -25,29 +25,6 @@
       </div>
     </section>
 
-    <!-- 标签切换区域 -->
-    <div class="tabs">
-      <!-- 标签按钮 -->
-      <div class="tab active">介绍</div>
-      <div class="tab">目录</div>
-      <div class="tab">评价</div>
-    </div>
-    <section class="content">
-      <!-- 内容区 -->
-      <div class="content-area">
-        <!-- 左侧内容区 -->
-        <section class="content-left">
-          <h2>章节内容</h2>
-          <p>这里可以放置详细的章节信息或课程内容。</p>
-        </section>
-
-        <!-- 右侧推荐课程区 -->
-        <aside class="content-right">
-          <h2>推荐课程</h2>
-          <p>展示与本课程相关的推荐课程。</p>
-        </aside>
-      </div>
-    </section>
 
     <!-- 标签切换区域 -->
     <div class="tabs">
@@ -106,7 +83,8 @@ export default {
   },
   mounted() {
     const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
-    this.fetchBvid(courseId);  // 获取对应的 bvid
+
+
   },
   methods: {
     fetchCompetitionDetail() {
@@ -115,6 +93,7 @@ export default {
         .then(response => {
           this.courseDetail = response.data; // 将获取到的数据赋值给 courseDetail
           this.loading = false; // 关闭加载状态
+          this.fetchBvid(courseId);  // 获取对应的 bvid
         })
         .catch(error => {
           this.error = error.message; // 捕获错误信息并赋值给 error
