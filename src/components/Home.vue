@@ -163,6 +163,33 @@
                   </div>
                 </div>
               </div>
+              <div v-if="activeDrawer?.name === '社区'" class="resource-center">
+                <div class="left-column">
+                  <h3 class="drawer-title">社区</h3>
+                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+                </div>
+                <div class="right-column">
+                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                    <h4>{{ box.title }}</h4>
+                    <p>{{ box.content }}</p>
+                  </div>
+                </div>
+              </div>
+              <div v-if="activeDrawer?.name === '个人中心'" class="resource-center">
+                <div class="left-column">
+                  <h3 class="drawer-title">个人中心</h3>
+                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+                </div>
+                <div class="right-column">
+                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                    <h4>{{ box.title }}</h4>
+                    <p>{{ box.content }}</p>
+                  </div>
+                </div>
+              </div>
+              
             </div>
           </transition>
         </el-drawer>
@@ -184,11 +211,11 @@ export default {
     return {
       // 导航项
       navItems: [
-        { name: "竞赛中心", path: "comp" },
-        { name: "资源中心", path: "course" },
-        { name: "灵验知道", path: "lingyan" },
-        { name: "社区", path: "community" },
-        { name: "个人中心", path: "me" },
+        { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
+        { name: "资源中心", path: "course", drawerContent: "这里是资源中心的详细介绍..." },
+        { name: "灵验知道", path: "lingyan", drawerContent: "这里是灵验知道的详细介绍..." },
+        { name: "社区", path: "community", drawerContent: "这里是社区的详细介绍..." },
+        { name: "个人中心", path: "me", drawerContent: "这里是个人中心的详细介绍..." },
       ],
       activeDrawer: null,
       popularCompetitions: [],
@@ -233,9 +260,10 @@ export default {
     },
 
     navigate(item) {
-      if (item.path) {
-        this.$router.push({ path: `/home/${item.path}` });
-      }
+      // 根据点击的导航项推送正确的路由
+      console.log(item); // 查看点击时传递的 item 对象
+      const path = `/home/${item}`;
+      this.$router.push({ path: path });
       this.activeDrawer = null; // 关闭抽屉
     },
     fetchPopularCompetitions() {
