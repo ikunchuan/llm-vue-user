@@ -26,7 +26,7 @@ import CompDetail from "../componentsCompetition/CompDetail.vue";
 import Course from "../componentsResources/Course.vue";
 import CourseDetail from "../componentsResources/CourseDetail.vue";
 import Lingyan from "../components/Lingyan.vue";
-import me from "../components/me.vue";
+import Me from "../componentsMe/Me.vue";
 import Community from "../componentsCommunity/Community.vue";
 import CommuDetail from "../componentsCommunity/CommuDetail.vue";
 import CommuSearch from "../componentsCommunity/CommuSearch.vue";
@@ -122,7 +122,7 @@ const routes = [
       },
       {
         path: "me",
-        component: me,
+        component: Me,
       },
     ],
   },

@@ -50,29 +50,27 @@
                 <div class="activity-stats">
                     <div class="activity-item">
                         <span class="activity-text">获得浏览:</span>
-                        <span class="activity-number"></span>
-                        <!-- {{ countPostViews() }} -->
+                        <span class="activity-number">{{ postView }}</span>
                     </div>
                     <div class="activity-item">
                         <span class="activity-text">获得点赞:</span>
-                        <span class="activity-number"></span>
-                        <!-- {{ countPostLikes() }} -->
+                        <span class="activity-number">{{ postLike }}</span>
+
                     </div>
                     <div class="activity-item">
-                        <span class="activity-text">项目被 Fork:</span>
-                        <span class="activity-number">0</span>
+                        <span class="activity-text">获得收藏:</span>
+                        <span class="activity-number">{{ postFavorite }}</span>
                     </div>
                     <div class="activity-item">
                         <span class="activity-text">获得评论:</span>
-                        <span class="activity-number"></span>
-                        <!-- {{ countPostComments() }} -->
+                        <span class="activity-number">{{ postComment }}</span>
                     </div>
                 </div>
 
                 <div>
                     <h4>简介</h4>
                     <p style="font-size:17px;">{{ userInfo.userBio }}</p>
-                    <button class="edit-button">编辑简介</button>
+                    <button class="edit-button" @click="editBio(userInfo.userId)">编辑简介</button>
                 </div>
 
                 <div class="badges">
@@ -93,13 +91,12 @@
             </el-card>
         </el-aside>
 
-        <el-main>
-            <el-card style="width: 99%" class="right">
-
+        <el-main style="width:100%" class="right">
+            <el-card>
                 <el-row justify="center">
                     <el-col :span="2">
                         <el-space :size="5" :spacer="spacer" alignment="center" direction="horizontal">
-                            <a href="#overview" class="nav-item">概览</a>
+                            <a href="#overview" class="nav-item">信息</a>
                         </el-space>
                     </el-col>
                     <el-col :span="2">
@@ -123,13 +120,32 @@
                             <a href="#events" class="nav-item">活动</a></el-space>
                     </el-col>
                 </el-row>
-
-                <h3>侧边框</h3>
-                <p>一些额外的信息</p>
                 <RouterView></RouterView>
             </el-card>
         </el-main>
     </el-container>
+
+    <!-- 编辑简介弹窗 -->
+    <el-dialog v-model="dialogFormVisible" title="简介编辑" width="500">
+        <el-form :model="bioForm">
+            <el-form-item v-show="false">
+                <el-input v-model="bioForm.userId" />
+            </el-form-item>
+
+            <el-form-item label="简介">
+                <el-input v-model="bioForm.userBio" maxlength="50" type="textarea" placeholder="请输入简介"
+                    show-word-limit />
+            </el-form-item>
+        </el-form>
+
+        <template #footer>
+            <div>
+                <el-button @click="closeDialog">取消</el-button>
+                <el-button type="primary" @click="editBio">确定</el-button>
+            </div>
+        </template>
+    </el-dialog>
+
 </template>
 
 <script>
@@ -147,10 +163,31 @@ export default {
             userInfo: {}, //存储用户数据
             followersInfo: [], //用户关注
             fansInfo: [],  //用户粉丝
+            bioForm: {},
+            postView: '',
+            postLike: '',
+            postFavorite: '',
+            postComment: '',
+
         };
     },
 
     methods: {
+
+        openDialog() {
+            this.bioForm = {};
+            this.bioForm = this.userInfo;
+            this.dialogFormVisible = true;
+        },
+
+        editBio(userId) {
+            this.$http.put('/uis/v1/ui', this.bioForm)
+        },
+
+        closeDialog() {
+            this.dialogFormVisible = false;
+        },
+
         countFollowers() {
             return this.followersInfo.length;
         },
@@ -158,18 +195,6 @@ export default {
         countFans() {
             return this.fansInfo.length;
         },
-
-        // countPostViews() {
-        //     return this.postInfo.postView.length;
-        // },
-
-        // countPostLikes() {
-        //     return this.postInfo.postLike.length;
-        // },
-
-        // countPostComments() {
-        //     return this.postInfo.postComment.length;
-        // },
     },
     mounted() {
         const userId = localStorage.getItem('userid');
@@ -208,7 +233,41 @@ export default {
                 this.loading = false;
             })
 
+        this.$http.get(`/v1/posts/post/allview/${userId}`)
+            .then(response => {
+                console.log('postview data:', response.data);
+                this.postView = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            })
 
+        this.$http.get(`/v1/posts/post/alllike/${userId}`)
+            .then(response => {
+                console.log('postlike data:', response.data);
+                this.postLike = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            })
+
+        this.$http.get(`/v1/posts/post/allfavorite/${userId}`)
+            .then(response => {
+                console.log('postfavorite data:', response.data);
+                this.postFavorite = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Errorfetching user data:', error);
+            })
+
+        this.$http.get(`/v1/posts/post/allcomment/${userId}`)
+            .then(response => {
+                console.log('postcomment data:', response.data);
+                this.postComment = response.data;
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            })
     },
     components: {
 
@@ -219,13 +278,14 @@ export default {
 <style scoped>
 .profile {
     width: 90%;
-    margin-left: 1%;
     display: flex;
     justify-self: start;
 }
 
 .right {
-    height: auto;
+    height: 100vh;
+    padding: 0;
+    margin-left: 1%;
 }
 
 .profile-container {

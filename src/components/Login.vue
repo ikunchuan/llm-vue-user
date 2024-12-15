@@ -23,15 +23,27 @@
                     </el-text>
                 </div>
 
-                <el-form :model="loginForm" :rules="rules" label-width="0">
+                <el-form :model="loginForm" :rules="rules" label-width="0" size="large" @keydown.enter="handleLogin">
+                    <!-- @keydown.enter="handleLogin 监听回车 -->
                     <el-tabs v-model="activeTab">
                         <el-tab-pane label="账号密码登录" name="password">
                             <el-form-item prop="userName">
-                                <el-input v-model="loginForm.userName" placeholder="请输入用户名" clearable />
+                                <el-input v-model="loginForm.userName" placeholder="请输入用户名" clearable>
+                                    <template #prefix>
+                                        <el-icon>
+                                            <User color="#409efc" />
+                                        </el-icon></template>
+                                </el-input>
                             </el-form-item>
                             <el-form-item prop="userPassword">
                                 <el-input v-model="loginForm.userPassword" type="password" placeholder="请输入密码"
-                                    show-password />
+                                    show-password>
+                                    <template #prefix>
+                                        <el-icon>
+                                            <Lock color="#409efc" />
+                                        </el-icon>
+                                    </template>
+                                </el-input>
                             </el-form-item>
                             <el-checkbox v-model="loginForm.rememberMe" style="margin-bottom: 20px;"
                                 @click="handleCheckBoxVal">记住我</el-checkbox>
@@ -75,6 +87,8 @@
 </template>
 
 <script>
+import { User, Lock } from '@element-plus/icons-vue';
+
 export default {
     data() {
         return {
@@ -122,6 +136,10 @@ export default {
         goToPP() {
             this.$router.push('/pp');
         },
+    },
+    components: {
+        User,
+        Lock,
     },
 };
 </script>
