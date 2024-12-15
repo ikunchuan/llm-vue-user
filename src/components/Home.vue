@@ -172,8 +172,6 @@
 </template>
 
 <script>
-import { Pointer } from '@element-plus/icons-vue';
-
 
 export default {
   name: "Home",
@@ -238,6 +236,7 @@ export default {
 </script>
 
 <style scoped>
+/* 控制主内容区域的高度，使其填充整个窗口，并留出顶部导航栏的高度 */
 .main-content {
   margin-top: 20px;
   margin-top: 17px;

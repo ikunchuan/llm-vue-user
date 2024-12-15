@@ -1,40 +1,39 @@
-// import { createRouter, createWebHashHistory } from "vue-router";
-// import Comp from "../componentsCompetition/Comp.vue";
-
-// const routes = [
-//     { path: "/", redirect: "/Comp" }, // 默认重定向到主页面
-//         {
-//             path: "/Comp",
-//             name: "Comp",
-//             component: Comp, // 主页面
-//         },
-
-//     ];
-
-// const router = createRouter({
-//     history: createWebHashHistory(),
-//     routes,
-// });
-
-// export default router;
-
 import { createRouter, createWebHashHistory } from "vue-router";
+//=================主页================//
+import HomePage from "../components/HomePage.vue";
+//主页-导航
 import Home from "../components/Home.vue";
+//主页-登录注册
 import Login from "../components/Login.vue";
+import Register from "../components/Register.vue";
+
+//==============竞赛==================//
 import Comp from "../componentsCompetition/Comp.vue";
 import CompDetail from "../componentsCompetition/CompDetail.vue";
+
+//================资源================//
+//资源-课程
 import Course from "../componentsResources/Course.vue";
 import CourseDetail from "../componentsResources/CourseDetail.vue";
-import Lingyan from "../components/Lingyan.vue";
-import Me from "../componentsMe/Me.vue";
+//资源-题库与答题
+import Question from "../componentsResources/Quesion.vue";
+import AnswerDetail from "../componentsResources/AnswerDetail.vue";
+
+//================社区================//
 import Community from "../componentsCommunity/Community.vue";
 import CommuDetail from "../componentsCommunity/CommuDetail.vue";
 import CommuSearch from "../componentsCommunity/CommuSearch.vue";
+//社区-帖子
 import PostDetail from "../componentsCommunity/PostDetail.vue";
 import PostCreat from "../componentsCommunity/PostCreat.vue";
-import Question from "../componentsResources/Quesion.vue";
-import AnswerDetail from "../componentsResources/AnswerDetail.vue";
-import HomePage from "../components/HomePage.vue";
+
+//=================灵验================//
+import Lingyan from "../componentsLingYan/Lingyan.vue";
+//灵验-对话
+// import LingyanDialog from "../componentsLingYan/LingyanDialog.vue";
+
+//=======我的======//
+import Me from "../componentsMe/Me.vue";
 
 const routes = [
   { path: "/", redirect: "/homepage" },
@@ -44,15 +43,15 @@ const routes = [
     component: Login,
   },
   {
+    path: "/register",
+    name: "Register",
+    component: Register,
+  },
+  {
     path: "/home",
     name: "Home",
     component: Home,
     children: [
-      // {
-      //   path: "",
-      //   name: "HomeDefault",
-      //   component: Comp // 默认显示的内容
-      // },
       {
         path: "/homepage",
         name: "HomePage",
@@ -68,7 +67,6 @@ const routes = [
         name: "CompDetail",
         component: CompDetail,
       },
-
       {
         path: "course",
         name: "Course",
@@ -76,8 +74,8 @@ const routes = [
       },
       {
         path: "coursedetail/:courseId",
-        component: CourseDetail,
         name: "CourseDetail",
+        component: CourseDetail,
       },
 
       {
@@ -87,8 +85,8 @@ const routes = [
       },
       {
         path: "answerdetail/:answerId",
-        component: AnswerDetail,
         name: "AnswerDetail",
+        component: AnswerDetail,
       },
 
       {
@@ -98,6 +96,7 @@ const routes = [
       },
       {
         path: "community",
+        name: "Community",
         component: Community,
       },
       {
@@ -122,6 +121,7 @@ const routes = [
       },
       {
         path: "me",
+        name: "Me",
         component: Me,
       },
     ],
