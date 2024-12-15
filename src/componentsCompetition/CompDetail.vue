@@ -38,14 +38,25 @@
             </el-steps>
           </div>
           
-          <p>竞赛名称：{{ competitionDetail.competitionName }}</p>
+          <!-- 竞赛名称 -->
+          <div class="info-item">竞赛名称：<span class="info-content">{{ competitionDetail.competitionName }}</span></div>
           
-          <p>竞赛描述：{{ competitionDetail.competitionDescription }}</p>
-          <p>竞赛主办方：{{ competitionDetail.competitionOrganizer }}</p>
+          <!-- 竞赛描述 -->
+          <div class="info-item">竞赛描述：<span class="info-content">{{ competitionDetail.competitionDescription }}</span></div>
           
-          <p>截止日期：{{ competitionDetail.registrationDeadline }}</p>
-          <p id="schedule">竞赛日程安排：{{ competitionDetail.competitionSchedule }}</p>
-          <p id="details">竞赛详情：{{ competitionDetail.detail }}</p>
+          <!-- 竞赛主办方 -->
+          <div class="info-item">竞赛主办方：<span class="info-content">{{ competitionDetail.competitionOrganizer }}</span></div>
+          
+          <!-- 截止日期 -->
+          <div class="info-item">截止日期：<span class="info-content">{{ competitionDetail.registrationDeadline }}</span></div>
+          
+          <!-- 竞赛日程安排 -->
+          <div class="info-item" id="schedule">竞赛日程安排：<span class="info-content">{{ competitionDetail.competitionSchedule }}</span></div>
+          
+          <!-- 竞赛详情 -->
+          <div class="info-item" id="details">
+            <div v-html="competitionDetail.detail"></div>
+          </div>
         </div>
       </section>
     </div>
@@ -83,8 +94,24 @@ export default {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-    }
+    },
 
+    toggleFavorite() {
+      // 你的收藏逻辑代码
+    },
+    // 时间格式化方法
+    formatDate(date) {
+      if (!date) return '-';
+      const d = new Date(date);
+      return d.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    }
   }
 };
 </script>
@@ -190,14 +217,16 @@ body {
   border-radius: 5px;
   padding: 15px;
 }
-.anchor-nav a {
-  display: block;
+
+/* 信息项样式 */
+.info-item {
   margin-bottom: 10px;
-  color: #42b983; /* Element UI 主题色 */
-  text-decoration: none;
-  cursor: pointer; /* 显示为可点击状态 */
+  font-size: 16px; /* 调整字体大小 */
+  color: #333; /* 调整字体颜色 */
 }
-.anchor-nav a:hover {
-  text-decoration: underline;
+
+.info-content {
+  font-size: 14px; /* 调整内容字体大小 */
+  color: #666; /* 调整内容字体颜色 */
 }
 </style>
