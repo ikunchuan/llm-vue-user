@@ -37,12 +37,7 @@ import AnswerDetail from "../componentsResources/AnswerDetail.vue";
 import HomePage from "../components/HomePage.vue";
 
 const routes = [
-  { path: "/", redirect: "/home" },
-  {
-    path: "/homepage",
-    name: "homepage",
-    component: HomePage,
-  },
+  { path: "/", redirect: "/homepage" },
   {
     path: "/login",
     name: "Login",
@@ -58,6 +53,11 @@ const routes = [
       //   name: "HomeDefault",
       //   component: Comp // 默认显示的内容
       // },
+      {
+        path: "/homepage",
+        name: "HomePage",
+        component: HomePage,
+      },
       {
         path: "comp",
         name: "Comp",

@@ -114,7 +114,7 @@ export default {
                     console.log('信息', response.data);
                     localStorage.setItem('userid', response.data.data.userid);
                     localStorage.setItem('username', response.data.data.username);
-                    this.$router.push('/home');
+                    this.$router.push('/homepage');
                 } else {
                     this.$message.error('登录失败！请检查用户名和密码');
                 }
