@@ -66,7 +66,7 @@
                             <h3>推荐关注</h3>
                             <el-button @click="goToCommuSearch()">全部社区</el-button>
                             <div v-for="(community, index) in popularCommunities" :key="index"
-                                @click="navigateToCommuDetail(community)">
+                                @click="navigateToCommuDetail(community)" style="cursor: pointer;">
                                 <el-avatar :src="community.avatar" size="small" class="me-2" />
                                 {{ community.communityName }}
                             </div>
@@ -180,10 +180,8 @@ export default {
 
         // 点击进入社区详情页面
         navigateToCommuDetail(community) {
-            // 使用索引从 communityIds 中获取对应的 communityId
-            // const communityId = this.communityIds[index];
+
             console.log('点击的社区ID:', community.communityId);  // 确保社区ID能够正确获取
-            // 跳转到社区详情页并传递 communityId
             this.$router.push({
                 name: 'CommuDetail',
                 params: {
