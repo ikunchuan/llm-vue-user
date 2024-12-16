@@ -3,19 +3,23 @@
     <!-- 社区头部 -->
     <div class="community-header">
       <div class="header-content">
-        <!-- 显示社区名称 -->
-        <h2>{{ communityName }}</h2>
+        <!-- 左侧社区信息 -->
+        <div class="header-info">
+          <h2 class="community-name">{{ communityName }}</h2>
+          <el-text size="large" class="community-description">
+            描述：{{ communityInfo.communityDescription }}
+          </el-text>
+          <p />
+          <el-text size="large" class="community-created">
+            创建人：{{ communityInfo.createdBy }} | 创建时间：{{ communityInfo.createdTime }}
+          </el-text>
+        </div>
+        <!-- 右侧按钮 -->
         <div class="header-buttons">
           <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
           <el-button type="success" size="small">+关注</el-button>
         </div>
       </div>
-      <el-text size="large">描述：{{ communityInfo.communityDescription }}</el-text>
-      <p />
-      <el-text size="large">创建人：{{ communityInfo.createdBy }}</el-text>
-      <p />
-      <el-text size="large">创建时间：{{ communityInfo.createdTime }}</el-text>
-      <p />
     </div>
 
     <!-- 主体区域 -->
@@ -23,39 +27,32 @@
       <el-row :gutter="20">
         <!-- 左侧帖子区域 -->
         <el-col :span="18">
-          <!-- 论坛分类 Tabs -->
           <el-tabs v-model="activeTab">
+            <!-- 帖子 Tab -->
             <el-tab-pane label="帖子" name="all">
-              <!-- 搜索和发帖 -->
-              <div class="search-and-post">
-                <!-- 搜索框，用于搜索帖子 -->
+              <!-- 搜索框 -->
+              <div class="search-bar">
                 <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search"
                   class="search-input" />
               </div>
 
               <!-- 帖子列表 -->
               <div class="post-list">
-                <div v-for="(post, index) in filteredPostsList" :key="index" class="post-item">
+                <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-item">
                   <div class="post-header">
-                    <span class="post-title">{{ post.postTitle }}</span>
+                    <h3 class="post-title">{{ post.postTitle }}</h3>
                   </div>
                   <div class="post-content">{{ post.postContent }}</div>
-                  <!-- <div class="post-info">
-                <span>点赞: {{ post.likes }}</span> ·
-                <span>评论: {{ post.comments }}</span> ·
-                <span>收藏: {{ post.favorites }}</span>
-                </div> -->
-                </div>
+                </el-card>
               </div>
             </el-tab-pane>
-            <el-tab-pane label="社区成员" name="other">
-              <el-table :data="communityUsers" border style="width: 100%" stripe v-if="communityUsers.length">
-                <!-- < el - table - column label =" 头像" width="120">
-                <template slot-scope="scope">
-                  <el-avatar :src="scope.row.avatar" size="large" />
-                </template> -->
-                <el-table-column prop="userName" label="用户名" />
-                <el-table-column prop="postCount" label="发帖数量" />
+
+            <!-- 社区成员 Tab -->
+            <el-tab-pane label="社区成员" name="members">
+              <el-table :data="communityUsers" border style="width: 100%" stripe class="member-table"
+                v-if="communityUsers.length">
+                <el-table-column prop="userName" label="用户名" align="center" />
+                <el-table-column prop="postCount" label="发帖数量" align="center" />
               </el-table>
               <div v-else class="empty-state">暂无社区成员</div>
             </el-tab-pane>
@@ -65,14 +62,13 @@
         <!-- 右侧积分排行 -->
         <el-col :span="6">
           <el-card class="ranking-card" shadow="hover">
-            <h3>积分排行</h3>
+            <h3 class="ranking-title">积分排行</h3>
             <div class="ranking-list">
-              <!-- 遍历积分排行列表 -->
               <div class="ranking-item" v-for="(user, index) in rankings" :key="index">
-                <span class="ranking">{{ index + 1 }}</span>
+                <span class="ranking-number">{{ index + 1 }}</span>
                 <el-avatar :src="user.avatar" size="small" />
-                <span class="username">{{ user.name }}</span>
-                <span class="score">{{ user.score }}</span>
+                <span class="ranking-username">{{ user.name }}</span>
+                <span class="ranking-score">{{ user.score }}</span>
               </div>
             </div>
           </el-card>
@@ -81,6 +77,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import axios from 'axios';
@@ -183,19 +180,20 @@ export default {
 </script>
 
 <style scoped>
+/* 整体页面布局 */
 .commu-detail-page {
   margin: 0 auto;
   max-width: 1200px;
   padding: 20px;
-  background-color: #f4f6f8;
+  background-color: #fafafa;
 }
 
 /* 社区头部 */
 .community-header {
-  background-color: #1e88e5;
+  background-color: #7c73e6;
   color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   margin-bottom: 20px;
 }
 
@@ -205,14 +203,28 @@ export default {
   align-items: center;
 }
 
-/* 搜索和发帖 */
-.search-and-post {
-  display: flex;
-  align-items: center;
+.header-info h2 {
+  font-size: 24px;
+  margin: 0 0 10px 0;
+}
+
+.community-description,
+.community-created {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #c4c1e0;
+}
+
+/* 搜索框 */
+.search-bar {
+  margin-bottom: 20px;
 }
 
 .search-input {
-  width: 70%;
+  width: 100%;
+  border-radius: 20px;
+  background-color: #ffe9e3;
+  border: none;
 }
 
 /* 帖子列表 */
@@ -221,37 +233,38 @@ export default {
 }
 
 .post-item {
-  background: white;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.post-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background-color: #ffffff;
 }
 
 .post-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
+  margin: 0 0 10px;
 }
 
-.post-info {
-  font-size: 12px;
-  color: #888;
+.post-content {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 社区成员表格 */
+.member-table {
+  background-color: #fff;
+  border-radius: 10px;
 }
 
 /* 积分排行 */
 .ranking-card {
-  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 10px;
 }
 
-.ranking-list {
-  margin-top: 10px;
+.ranking-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
 }
 
 .ranking-item {
@@ -259,25 +272,23 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.ranking-item:last-child {
-  border-bottom: none;
-}
-
-.ranking {
+.ranking-number {
+  font-size: 16px;
   font-weight: bold;
-  color: #1e88e5;
+  color: #7c73e6;
 }
 
-.username {
+.ranking-username {
   flex: 1;
   margin-left: 10px;
 }
 
-.score {
+.ranking-score {
   font-weight: bold;
   color: #333;
 }
+
 </style>
