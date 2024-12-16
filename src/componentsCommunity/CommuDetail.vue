@@ -4,15 +4,18 @@
     <div class="community-header">
       <div class="header-content">
         <!-- 显示社区名称 -->
-        <h2>{{ communityName }}的社区</h2>
-        <p>
-          <!--这里要查询，显示一下社区的category作为标签，还有社区的创建人-->
-        </p>
+        <h2>{{ communityName }}</h2>
         <div class="header-buttons">
           <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
           <el-button type="success" size="small">+关注</el-button>
         </div>
       </div>
+      <el-text size="large">描述：{{ communityInfo.communityDescription }}</el-text>
+      <p />
+      <el-text size="large">创建人：{{ communityInfo.createdBy }}</el-text>
+      <p />
+      <el-text size="large">创建时间：{{ communityInfo.createdTime }}</el-text>
+      <p />
     </div>
 
     <!-- 主体区域 -->
@@ -22,31 +25,41 @@
         <el-col :span="18">
           <!-- 论坛分类 Tabs -->
           <el-tabs v-model="activeTab">
-            <el-tab-pane label="帖子" name="all"></el-tab-pane>
-            <el-tab-pane label="社区成员" name="other"></el-tab-pane>
-          </el-tabs>
-
-          <!-- 搜索和发帖 -->
-          <div class="search-and-post">
-            <!-- 搜索框，用于搜索帖子 -->
-            <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search" class="search-input" />
-          </div>
-
-          <!-- 帖子列表 -->
-          <div class="post-list">
-            <div v-for="(post, index) in filteredPostsList" :key="index" class="post-item">
-              <div class="post-header">
-                <el-tag type="info">{{ post.tag }}</el-tag>
-                <span class="post-title">{{ post.postTitle }}</span>
+            <el-tab-pane label="帖子" name="all">
+              <!-- 搜索和发帖 -->
+              <div class="search-and-post">
+                <!-- 搜索框，用于搜索帖子 -->
+                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search"
+                  class="search-input" />
               </div>
-              <div class="post-content">{{ post.postContent }}</div>
-              <!-- <div class="post-info">
+
+              <!-- 帖子列表 -->
+              <div class="post-list">
+                <div v-for="(post, index) in filteredPostsList" :key="index" class="post-item">
+                  <div class="post-header">
+                    <span class="post-title">{{ post.postTitle }}</span>
+                  </div>
+                  <div class="post-content">{{ post.postContent }}</div>
+                  <!-- <div class="post-info">
                 <span>点赞: {{ post.likes }}</span> ·
                 <span>评论: {{ post.comments }}</span> ·
                 <span>收藏: {{ post.favorites }}</span>
-              </div> -->
-            </div>
-          </div>
+                </div> -->
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane label="社区成员" name="other">
+              <el-table :data="communityUsers" border style="width: 100%" stripe v-if="communityUsers.length">
+                <!-- < el - table - column label =" 头像" width="120">
+                <template slot-scope="scope">
+                  <el-avatar :src="scope.row.avatar" size="large" />
+                </template> -->
+                <el-table-column prop="userName" label="用户名" />
+                <el-table-column prop="postCount" label="发帖数量" />
+              </el-table>
+              <div v-else class="empty-state">暂无社区成员</div>
+            </el-tab-pane>
+          </el-tabs>
         </el-col>
 
         <!-- 右侧积分排行 -->
@@ -71,18 +84,24 @@
 
 <script>
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
+
 
 export default {
   name: "CommuDetail",
   created() {
-    // 组件创建时获取帖子信息
+    // 组件创建时获取社区信息,帖子信息,用户信息
+    this.fetchCommunityInfo();
     this.fetchPosts();
+    this.fetchCommunityUsers();
   },
   data() {
     return {
       // 社区ID和名称从路由参数中获取
       communityId: this.$route.params.communityId,
       communityName: this.$route.params.communityName,
+      communityInfo: {}, // 存储社区信息
+      communityUsers: {},  // 用于存储社区成员信息
       activeTab: "all",
       searchQuery: "", // 搜索关键词
       posts: [], // 帖子列表
@@ -102,10 +121,24 @@ export default {
   },
 
   methods: {
+    //获取社区信息
+    fetchCommunityInfo() {
+      // 获取从路由传递过来的社区ID
+      console.log("测试获取到的社区ID：", this.communityId);
+      axios.get(`/v1/cmns/cmn/${this.communityId}`)
+        .then(response => {
+          console.log("获取到的社区数据：", response.data);
+          // 设置获取到的社区信息
+          this.communityInfo = response.data;
+        })
+        .catch(error => {
+          console.error("获取社区信息失败：", error);
+        });
+    },
     // 获取帖子信息的方法
     fetchPosts() {
       if (this.communityName) {
-// 请求后端获取特定社区的帖子
+        // 请求后端获取特定社区的帖子
         axios.post(`v1/posts/search`, {
           communityName: this.communityName,
           query: this.searchQuery, // 搜索关键词
@@ -120,12 +153,31 @@ export default {
           });
       }
     },
+    fetchCommunityUsers() {
+      // this.$http.get(`/ucmns/v1/ucmn/user/${this.communityId}`)
+      this.$http.get(`/v1/cmns/cmnpostuser/${this.communityId}`)
+
+        .then((response) => {
+          console.log("获取到的用户数据：", response.data);
+          if (response.data && response.data.length) {
+            this.communityUsers = response.data;
+          } else {
+            ElMessage.warning('该社区暂无用户数据');
+          }
+        })
+        .catch((error) => {
+          console.error("获取用户列表失败:", error);
+          ElMessage.error('获取用户数据失败，请稍后重试');
+        });
+    },
+
     goToPostCreat() {
       // 跳转到帖子详情页
       this.$router.push({
         name: 'PostCreat',
       });
-    }
+    },
+
   }
 };
 </script>
