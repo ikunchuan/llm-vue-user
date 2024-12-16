@@ -204,6 +204,10 @@ body {
 
 /* 内容区样式 */
 .content-area {
+  position: relative;
+  /* 为绝对定位的子元素提供定位上下文 */
+  padding-right: 320px;
+  /* 为固定位置的右侧内容留出空间 */
   display: flex;
   gap: 50px;
 }
@@ -232,19 +236,20 @@ body {
 }
 
 .content-right {
-  flex: 1;
-  /* 右侧区域占比较小 */
+  position: fixed;
+  /* 固定定位 */
+  top: 680px;
+  /* 根据需要调整顶部距离 */
+  right: 20px;
+  /* 根据需要调整右侧距离 */
+  width: 260px;
+  /* 固定宽度 */
   background-color: #FFFFFF;
-  /* 白色背景 */
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.content-right h2 {
-  font-size: 18px;
-  margin-bottom: 15px;
-}
 
 /* 底部区域样式 */
 .footer {
