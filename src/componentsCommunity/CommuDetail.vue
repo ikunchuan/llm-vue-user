@@ -6,13 +6,8 @@
         <!-- 左侧社区信息 -->
         <div class="header-info">
           <h2 class="community-name">{{ communityName }}</h2>
-          <el-text size="large" class="community-description">
-            描述：{{ communityInfo.communityDescription }}
-          </el-text>
-          <p />
-          <el-text size="large" class="community-created">
-            创建人：{{ communityInfo.createdBy }} | 创建时间：{{ communityInfo.createdTime }}
-          </el-text>
+          <p class="community-description">描述：{{ communityInfo.communityDescription }}</p>
+          <p class="community-created">创建人：{{ communityInfo.createdBy }} | 创建时间：{{ communityInfo.createdTime }}</p>
         </div>
         <!-- 右侧按钮 -->
         <div class="header-buttons">
@@ -32,36 +27,27 @@
             <el-tab-pane label="帖子" name="all">
               <!-- 搜索框 -->
               <div class="search-bar">
-                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search"
-                  class="search-input" />
+                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search" class="search-input" />
               </div>
 
               <!-- 帖子列表 -->
-              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
-                @click="navigateToPostDetail(post.postId)">
+              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card" @click="navigateToPostDetail(post.postId)">
                 <div class="post-content">
                   <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
                   <h3 class="post-title">{{ post.postTitle }}</h3>
                   <p class="post-summary">{{ post.postContent }}</p>
-                  <!-- 帖子互动信息
-                  <div class="post-info">
-                    <span><i class="el-icon-thumb" /> {{ post.likes || 0 }}</span>
-                    <span><i class="el-icon-chat-line-round" /> {{ post.comments || 0 }}</span>
-                    <span><i class="el-icon-star-off" /> {{ post.favorites || 0 }}</span>
-                  </div> -->
                 </div>
               </el-card>
-
-
             </el-tab-pane>
 
             <!-- 社区成员 Tab -->
             <el-tab-pane label="社区成员" name="members">
-              <el-table :data="communityUsers" border style="width: 100%" stripe class="member-table"
-                v-if="communityUsers.length">
-                <el-table-column prop="userName" label="用户名" align="center" />
-                <el-table-column prop="postCount" label="发帖数量" align="center" />
-              </el-table>
+              <div class="community-members" v-if="communityUsers.length">
+                <div class="member-item" v-for="(user, index) in communityUsers" :key="index">
+                  <el-avatar :src="user.avatarUrl" size="medium" />
+                  <span class="member-name">{{ user.userName }}</span>
+                </div>
+              </div>
               <div v-else class="empty-state">暂无社区成员</div>
             </el-tab-pane>
           </el-tabs>
@@ -74,7 +60,7 @@
             <div class="ranking-list">
               <div class="ranking-item" v-for="(user, index) in rankings" :key="index">
                 <span class="ranking-number">{{ index + 1 }}</span>
-                <el-avatar :src="user.avatar" size="small" />
+                <el-avatar :src="user.avatarUrl" size="small" />
                 <span class="ranking-username">{{ user.name }}</span>
                 <span class="ranking-score">{{ user.score }}</span>
               </div>
@@ -242,7 +228,6 @@ export default {
 }
 
 /* 帖子列表 */
-/* 帖子卡片样式 */
 .post-card {
   background-color: #ffffff;
   border-radius: 12px;
@@ -278,37 +263,27 @@ export default {
   color: #666;
   line-height: 1.6;
   overflow: hidden;
-    /* 隐藏溢出的内容 */
-    text-overflow: ellipsis;
-    /* 显示省略号 */
-    white-space: nowrap;
-    /* 防止文本自动换行 */
-    max-height: 4.8em;
-    /* 设置最大高度，根据行高调整 */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-height: 4.8em;
 }
-
-.post-info {
+/* 社区成员展示 */
+.community-members {
   display: flex;
-  gap: 15px;
-  color: #999;
-  font-size: 13px;
-  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* 从左侧开始排列 */
 }
 
-.post-info span {
+.member-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  margin: 10px; /* 每个成员项之间的间隔 */
+  width: calc(33.33% - 20px); /* 每个成员占据大约33.33%的宽度，留出间隔 */
 }
 
-.post-info i {
-  color: #5a67d8;
-}
-
-/* 社区成员表格 */
-.member-table {
-  background-color: #fff;
-  border-radius: 10px;
+.member-name {
+  margin-left: 10px;
+  font-size: 16px;
 }
 
 /* 积分排行 */
@@ -346,5 +321,6 @@ export default {
   font-weight: bold;
   color: #333;
 }
+
 
 </style>
