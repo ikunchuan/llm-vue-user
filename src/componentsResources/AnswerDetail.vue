@@ -32,7 +32,7 @@
           <p>{{ selectedQuestion.questionText }}</p>
           <el-input v-model="answer" placeholder="请输入答案"></el-input>
           <div class="actions">
-            <el-button type="primary" @click="startPractice">开始答题</el-button>
+
             <el-button type="success" @click="submitAnswer">提交答案</el-button>
             <span class="timer">计时：{{ timer }} 秒</span>
           </div>
@@ -44,6 +44,7 @@
 
 <script>
 import { ref, reactive, onMounted } from 'vue';
+import { ElMessageBox } from 'element-plus'; // 引入 MessageBox 组件
 
 export default {
 
@@ -54,7 +55,8 @@ export default {
       loading: true, // 加载状态
       error: null, // 错误信息
       currentQuestion: 1, // 当前选中的题目ID，默认是第一个
-      selectedQuestion: {} // 当前选中的题目详情
+      selectedQuestion: {},// 当前选中的题目详情
+      answer: '',
     };
   },
 
@@ -63,6 +65,28 @@ export default {
 
   },
   methods: {
+    //答案比对
+
+    submitAnswer() {
+      // 比较用户输入的答案和正确答案
+      if (this.answer === this.selectedQuestion.correctAnswer) {
+        // 如果答案正确，显示成功消息
+        ElMessageBox.alert('回答正确！', '成功', {
+          confirmButtonText: '确定',
+          type: 'success'
+        });
+      } else {
+        // 如果答案错误，显示错误消息
+        ElMessageBox.alert('回答错误！', '错误', {
+          confirmButtonText: '确定',
+          type: 'error'
+        });
+      }
+      // 可以根据需要重置答案输入框
+      this.answer = '';
+    },
+
+    //查询题目数据
     fetchAnswerDetail() {
       const categoryId = this.$route.params.answerId;
       this.$http.get(`http://localhost:10086/qst/v1/cate/${categoryId}`)
