@@ -56,22 +56,23 @@
                     <br />
 
                     <div class="sidebar">
-                        <el-card shadow="hover" class="mb-3">
-                            <!-- <div v-for="community in popularCommunities" :key="community.id"
-                                class="d-flex align-items-center mb-2" @click="navigateToCommuDetail(community)">
-                                <el-avatar :src="community.avatar" size="small" class="me-2" />
-                                {{ community.communityName }}
-                            </div> -->
-
-                            <h3>推荐关注</h3>
-                            <el-button @click="goToCommuSearch()">全部社区</el-button>
-                            <div v-for="(community, index) in popularCommunities" :key="index"
-                                @click="navigateToCommuDetail(community)" style="cursor: pointer;">
-                                <el-avatar :src="community.avatar" size="small" class="me-2" />
-                                {{ community.communityName }}
+                        <el-card shadow="hover" class="recommend-card">
+                            <div class="recommend-header">
+                                <h3>推荐关注</h3>
+                                <el-button type="primary" size="small" @click="goToCommuSearch"
+                                    class="all-communities-btn">全部社区</el-button>
+                            </div>
+                            <div class="recommend-item" v-for="(community, index) in popularCommunities" :key="index"
+                                @click="navigateToCommuDetail(community)">
+                                <el-avatar :src="community.avatar" size="medium" class="recommend-avatar" />
+                                <div class="recommend-info">
+                                    <p class="recommend-name">{{ community.communityName }}</p>
+                                    <p class="recommend-desc">活跃用户: {{ community.activeUsers || '未知' }}</p>
+                                </div>
                             </div>
                         </el-card>
                     </div>
+
                 </el-col>
             </el-row>
         </el-main>
@@ -365,5 +366,59 @@ export default {
 .pagination {
     display: flex;
     justify-content: center;
+}
+
+/* 推荐社区的样式 */
+.recommend-card {
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.recommend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.all-communities-btn {
+    font-size: 12px;
+}
+
+.recommend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.recommend-item:hover {
+    background-color: #f4f6f8;
+    transform: translateY(-3px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recommend-avatar {
+    margin-right: 10px;
+}
+
+.recommend-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.recommend-name {
+    font-weight: bold;
+    margin: 0;
+}
+
+.recommend-desc {
+    color: #888;
+    margin: 0;
+    font-size: 12px;
 }
 </style>
