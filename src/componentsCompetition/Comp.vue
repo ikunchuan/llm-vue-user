@@ -263,7 +263,7 @@ export default {
   /* 限制页面的最大宽度 */
   margin: 0 auto;
   /* 居中对齐 */
-  padding: 20px;
+  padding: 5px;
   /* 增加内边距，避免贴边 */
   background-color: #f4f6f8;
   /* 设置背景颜色 */
@@ -277,9 +277,9 @@ export default {
 .recommend-section {
   display: flex;
   gap: 20px;
-  margin: 80px auto 20px;
+  margin: 20px auto 20px;
   /* 顶部添加距离，避免遮挡 */
-  padding: 20px;
+  padding: 10px;
   max-width: 1200px;
   /* 限制推荐板块宽度 */
   background-color: #ffffff;
