@@ -442,9 +442,17 @@ export default {
 }
 
 .post-summary {
-    font-size: 14px;
+font-size: 14px;
     color: #666;
     line-height: 1.6;
+    overflow: hidden;
+    /* 隐藏溢出的内容 */
+    text-overflow: ellipsis;
+    /* 显示省略号 */
+    white-space: nowrap;
+    /* 防止文本自动换行 */
+    max-height: 4.8em;
+    /* 设置最大高度，根据行高调整 */
 }
 
 .post-info {
