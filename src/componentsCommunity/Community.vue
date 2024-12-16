@@ -24,18 +24,28 @@
 
                     <!-- 内容列表 -->
                     <div class="content-list">
-                        <el-card v-for="(item, index) in filteredContentItems" :key="index" shadow="hover" class="mb-3"
-                            @click="navigateToPostDetail(item)">
-                            <div>
-                                <!-- 使用 communityName 作为分类 -->
-                                <el-tag type="info" class="mb-2">{{ item.communityName }}</el-tag>
-                                <!-- 使用 postTitle 作为标题 -->
-                                <h3>{{ item.postTitle }}</h3>
-                                <!-- 使用 postContent 作为摘要 -->
-                                <p class="text-muted">{{ item.postContent }}</p>
+                        <el-card v-for="(item, index) in filteredContentItems" :key="index" shadow="hover"
+                            class="post-card" @click="navigateToPostDetail(item)">
+                            <div class="post-content">
+                                <!-- 左侧标签 -->
+                                <el-tag type="success" class="post-tag">{{ item.communityName }}</el-tag>
+
+                                <!-- 帖子标题 -->
+                                <h3 class="post-title">{{ item.postTitle }}</h3>
+
+                                <!-- 帖子摘要 -->
+                                <p class="post-summary">{{ item.postContent }}</p>
+
+                                <!-- 帖子互动信息 -->
+                                <!-- <div class="post-info">
+                                    <span><i class="el-icon-thumb" /> {{ item.likes || 0 }}</span>
+                                    <span><i class="el-icon-chat-line-round" /> {{ item.comments || 0 }}</span>
+                                    <span><i class="el-icon-star-off" /> {{ item.favorites || 0 }}</span>
+                                </div> -->
                             </div>
                         </el-card>
                     </div>
+
 
                     <!-- 分页区域 -->
                     <div class="pagination mt-3">
@@ -47,12 +57,17 @@
                 <!-- 右侧推荐栏 -->
                 <el-col :span="6">
                     <!-- 功能分类区域 -->
+
+                    <!-- 创建社区板块 -->
                     <div class="function-buttocardns">
-                        <el-card shadow="hover" class="mb-3" @click="openAddDialog">
-                            <h3>创建社区</h3>
+                        <el-card shadow="hover" class="create-community-card" @click="openAddDialog">
+                            <div class="create-community-content">
+                                <i class="el-icon-plus create-icon"></i>
+                                <h3>创建社区</h3>
+                                <p>点击这里，开启你的社区之旅！</p>
+                            </div>
                         </el-card>
                     </div>
-
                     <br />
 
                     <div class="sidebar">
@@ -78,31 +93,37 @@
         </el-main>
     </el-container>
 
+    <!-- 创建社区表单 -->
+    <!-- 创建社区表单 -->
+    <el-dialog v-model="dialogFormVisible" title="创建社区" class="create-community-dialog">
+        <div class="form-container">
+            <el-form :model="form" ref="form" label-position="top" class="modern-form">
+                <el-form-item label="社区名称">
+                    <el-input v-model="form.communityName" placeholder="请输入社区名称" clearable />
+                </el-form-item>
 
-    <el-dialog v-model="dialogFormVisible" :title="title">
-        <el-form :model="form" ref="form">
-            <el-form-item label="社区名称" :label-width="formLabelWidth">
-                <el-input v-model="form.communityName" autocomplete="off" />
-            </el-form-item>
+                <el-form-item label="社区描述">
+                    <el-input v-model="form.communityDescription" type="textarea" placeholder="简要描述社区内容" autosize />
+                </el-form-item>
 
-            <el-form-item label="社区描述" :label-width="formLabelWidth">
-                <el-input v-model="form.communityDescription" type="textarea" autocomplete="off" autosize="true" />
-            </el-form-item>
+                <el-form-item label="所属类别">
+                    <el-select v-model="form.categoryId" placeholder="请选择社区类别" clearable>
+                        <el-option v-for="cat in filteredCatIdAndName" :key="cat.categoryId" :label="cat.categoryName"
+                            :value="cat.categoryId" />
+                    </el-select>
+                </el-form-item>
+            </el-form>
 
-            <el-form-item label="所属类别" :label-width="formLabelWidth">
-                <el-select v-model="form.categoryId" placeholder="-- 请选择类别 --">
-                    <el-option v-for="cat in filteredCatIdAndName" :key="cat.categoryId" :label="cat.categoryName"
-                        :value="cat.categoryId" />
-                </el-select>
-            </el-form-item>
-
-        </el-form>
-
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="createCommunity">创建</el-button>
-        </span>
+            <!-- 底部按钮区域 -->
+            <div class="form-footer">
+                <el-button @click="dialogFormVisible = false" class="btn-cancel">取消</el-button>
+                <el-button type="primary" @click="createCommunity" class="btn-submit">创建社区</el-button>
+            </div>
+        </div>
     </el-dialog>
+
+
+
 </template>
 
 <script>
@@ -344,34 +365,107 @@ export default {
 </script>
 
 <style scoped>
+/* 页面整体布局 */
 .main-page {
     margin: 0 auto;
     max-width: 1200px;
     padding: 20px;
     background-color: #f4f6f8;
+    /* 背景色 */
+    margin-top: 20px;
+    /* 添加顶部外边距，防止内容紧贴导航栏 */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    /* 轻微阴影增强层次感 */
 }
 
+/* 搜索与分类筛选区域 */
 .search-filter {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 }
 
-.content-list .el-card {
-    padding: 10px;
+/* 搜索框 */
+.search-input {
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
-.text-muted {
-    color: #888;
+.search-input:hover,
+.search-input:focus {
+    border-color: #5a67d8;
+    box-shadow: 0 0 6px rgba(90, 103, 216, 0.4);
 }
 
-.pagination {
+/* 内容卡片样式 */
+.post-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.post-tag {
+    font-size: 12px;
+    color: #ffffff;
+    background-color: #5a67d8;
+    padding: 3px 8px;
+    border-radius: 5px;
+}
+
+.post-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 10px 0;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.post-title:hover {
+    color: #5a67d8;
+}
+
+.post-summary {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.post-info {
     display: flex;
-    justify-content: center;
+    gap: 15px;
+    color: #999;
+    font-size: 13px;
+    margin-top: 10px;
 }
 
-/* 推荐社区的样式 */
+.post-info span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.post-info i {
+    color: #5a67d8;
+}
+
+/* 侧边栏推荐社区 */
 .recommend-card {
+    background-color: #ffffff;
+    border-radius: 12px;
     padding: 15px;
-    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .recommend-header {
@@ -381,44 +475,167 @@ export default {
     margin-bottom: 15px;
 }
 
-.all-communities-btn {
-    font-size: 12px;
-}
-
 .recommend-item {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-    padding: 10px;
+    padding: 8px;
     border-radius: 6px;
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .recommend-item:hover {
-    background-color: #f4f6f8;
-    transform: translateY(-3px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f0f4ff;
 }
 
 .recommend-avatar {
     margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.recommend-item:hover .recommend-avatar {
+    transform: scale(1.1);
 }
 
 .recommend-info {
     display: flex;
     flex-direction: column;
-    font-size: 14px;
 }
 
 .recommend-name {
+    font-size: 14px;
     font-weight: bold;
-    margin: 0;
+    color: #333;
 }
 
 .recommend-desc {
-    color: #888;
-    margin: 0;
     font-size: 12px;
+    color: #888;
 }
+
+/* 创建社区板块 */
+.create-community-card {
+    border-radius: 12px;
+    text-align: center;
+    padding: 30px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #f9fafb;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.create-community-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    background-color: #f0f4ff;
+}
+
+.create-community-content h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 10px 0 5px;
+}
+
+.create-community-content p {
+    font-size: 14px;
+    color: #666;
+}
+
+.create-icon {
+    font-size: 30px;
+    color: #5a67d8;
+}
+
+/* 创建社区表单整体样式 */
+.create-community-dialog {
+    width: 600px;
+}
+
+.form-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modern-form .el-form-item {
+    margin-bottom: 20px;
+}
+
+/* 输入框样式 */
+.el-input,
+.el-textarea,
+.el-select {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.el-input:focus,
+.el-textarea:focus,
+.el-select:hover {
+    border-color: #5a67d8;
+    box-shadow: 0 0 5px rgba(90, 103, 216, 0.3);
+}
+
+.el-form-item__label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* 底部按钮区域 */
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-cancel {
+    border-radius: 20px;
+    color: #333;
+    background-color: #f4f4f4;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #e0e0e0;
+}
+
+.btn-submit {
+    border-radius: 20px;
+    background-color: #5a67d8;
+    border-color: #5a67d8;
+    color: #fff;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #434190;
+    border-color: #434190;
+}
+
+/* 按钮统一样式
+.el-button {
+    border-radius: 20px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.el-button--primary {
+    background-color: #5a67d8;
+    border-color: #5a67d8;
+    color: #ffffff;
+}
+
+.el-button--primary:hover {
+    background-color: #434190;
+    border-color: #434190;
+} */
+
 </style>

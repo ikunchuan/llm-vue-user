@@ -35,9 +35,9 @@
     </div>
 
     <!-- 内容区 -->
-    <div class="content-area" v-if="!loadingChapter && showChapterContent">
+    <div class="content-area">
       <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
-      <section class="content-left">
+      <section class="content-left" v-if="!loadingChapter && showChapterContent">
         <h2>章节内容</h2>
         <section class="cards-section">
           <div class="card" v-for="(card, index) in chapterDetail" :key="index">
@@ -145,7 +145,7 @@ body {
 .course-info {
   display: flex;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 220px;
 }
 
 .course-info .video {
@@ -205,7 +205,7 @@ body {
 /* 内容区样式 */
 .content-area {
   display: flex;
-  gap: 20px;
+  gap: 50px;
 }
 
 .content-left {
