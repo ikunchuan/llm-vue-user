@@ -23,6 +23,7 @@
         <p>课程价格:{{ courseDetail.coursePrice }}</p>
 
       </div>
+      <button @click="onAnswerDetailClick">题目推荐</button>
     </section>
 
 
@@ -75,10 +76,15 @@ export default {
       error: null,      // 错误信息
       showChapterContent: false, // 控制章节内容的显示状态
       loadingChapter: false,     // 控制章节内容的加载状态
+      courseToCategoryMapping: {
+        '1': '13', // 假设课程ID 1 对应 题目类别ID 13
+        '2': '14', // 假设课程ID 2 对应 题目类别ID 14
+        // 添加更多映射
+      },
     };
   },
   created() {
-    this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
+    this.fetchCourseDetail(); // 在组件创建时获取课程详情
 
   },
   mounted() {
@@ -87,7 +93,21 @@ export default {
 
   },
   methods: {
-    fetchCompetitionDetail() {
+    //跳转题目详情
+    onAnswerDetailClick() {
+      const courseId = this.$route.params.courseId;
+      const categoryId = this.courseToCategoryMapping[courseId];
+
+      if (categoryId) {
+        this.$router.push({ path: `/home/answerdetail/${categoryId}` });
+      } else {
+        // 如果没有找到对应的categoryId，可以给出提示或者跳转到默认页面
+        this.$message.error('没有找到对应的题目推荐');
+      }
+    },
+
+    // 获取课程详情数据
+    fetchCourseDetail() {
       const courseId = this.$route.params.courseId; // 从路由参数中获取 
       this.$http.get(`http://localhost:10086/crs/v1/${courseId}`)
         .then(response => {
@@ -138,7 +158,18 @@ body {
 
 /* 主内容区样式 */
 .main {
+  max-width: 1200px;
+  /* 限制页面的最大宽度 */
+  margin: 0 auto;
+  /* 居中对齐 */
   padding: 20px;
+  /* 增加内边距，避免贴边 */
+  background-color: #f4f6f8;
+  /* 设置背景颜色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 可选：添加阴影效果 */
+  border-radius: 10px;
+  /* 可选：添加圆角效果 */
 }
 
 /* 视频和课程信息区域样式 */
@@ -238,9 +269,9 @@ body {
 .content-right {
   position: fixed;
   /* 固定定位 */
-  top: 680px;
+  top: 710px;
   /* 根据需要调整顶部距离 */
-  right: 20px;
+  right: 320px;
   /* 根据需要调整右侧距离 */
   width: 260px;
   /* 固定宽度 */
