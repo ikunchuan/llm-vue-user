@@ -442,7 +442,7 @@ export default {
 }
 
 .post-summary {
-font-size: 14px;
+    font-size: 14px;
     color: #666;
     line-height: 1.6;
     overflow: hidden;
