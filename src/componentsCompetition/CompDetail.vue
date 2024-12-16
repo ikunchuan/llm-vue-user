@@ -90,6 +90,7 @@ export default {
     this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
   },
   methods: {
+
     //跳转课程详情页
     goToCourseDetail() {
       const compId = this.$route.params.compId;
@@ -119,8 +120,34 @@ export default {
       }
     },
 
+
     toggleFavorite() {
-      // 你的收藏逻辑代码
+      const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
+      const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
+
+      if (!userId) {
+        this.$message.error('请先登录');
+        return;
+      }
+
+      this.$http.post(`http://localhost:10086/comp/v1/favorite`, {
+        userId: userId,
+        competitionId: compId
+      })
+        .then(response => {
+          this.$message.success('收藏成功');
+          // 可以在这里处理收藏成功后的逻辑，比如更新UI等
+        })
+        .catch(error => {
+          this.$message.error('收藏失败: ' + error.message);
+          // 可以在这里处理收藏失败的逻辑
+        });
+    },
+
+    // 假设你有一个获取当前用户ID的方法
+    getCurrentUserId() {
+      console.log('localStorage.userId:', localStorage.userId);
+      return localStorage.userId;
     },
     // 时间格式化方法
     formatDate(date) {
