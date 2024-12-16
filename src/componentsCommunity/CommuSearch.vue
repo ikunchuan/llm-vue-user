@@ -20,15 +20,17 @@
                     @click="navigateToCommuDetail(community)">
                     <el-card class="community-card" shadow="hover">
                         <div class="card-content">
-                            <h3>{{ community.communityName }}</h3>
-                            <el-button v-if="joinButtonVisible[community.communityId] && !community.joined"
-                                type="primary" @click="joinCommunity(community.communityId, community)"
-                                :disabled="community.joined">
-                                {{ community.joined ? '已加入' : '加入' }}
-                            </el-button>
-                            <el-button v-if="community.joined" type="default" disabled>
-                                已加入
-                            </el-button>
+                            <div class="icon-container">
+                                <img :src="communityIcons[community.communityName]" alt="Community Icon" class="community-icon" :style="{ width: iconSize + 'px', height: iconSize + 'px' }">
+                            </div>
+                            <div class="text-container">
+                                <h3>{{ community.communityName }}</h3>
+                                <el-button v-if="joinButtonVisible[community.communityId] && !community.joined"
+                                    type="primary" @click="joinCommunity(community.communityId, community)"
+                                    :disabled="community.joined">
+                                    {{ community.joined ? '已加入' : '加入' }}
+                                </el-button>
+                            </div>
                         </div>
                     </el-card>
                 </el-col>
@@ -58,6 +60,30 @@ export default {
             filteredCommunities: [], // 过滤后的社区列表
             debounceTimer: null,
             joinButtonVisible: {}, // 存储每个社区的按钮显示状态
+            resourceBoxes: [], // 确保这里定义了 resourceBoxes
+            communityIcons: {
+            "创新设计官方社区1": "/src/assets/img/17.png",
+            "创业实践官方社区1": "/src/assets/img/18.png",
+            "科技研发官方社区1": "/src/assets/img/19.png",
+            "程序设计官方社区1": "/src/assets/img/20.png",
+            "网络安全官方社区1": "/src/assets/img/21.png",
+            "人工智能与大数据官方社区1": "/src/assets/img/22.png",
+            "数据挖掘与分析1": "/src/assets/img/23.png",
+            "数学知识": "/src/assets/img/24.png",
+            "数学建模": "/src/assets/img/25.png",
+            "财务会计": "/src/assets/img/26.png",
+            "企业运营与管理": "/src/assets/img/27.png",
+            "供应链与物流": "/src/assets/img/28.png",
+            "商业案例分析": "/src/assets/img/29.png",
+            "金融数据分析": "/src/assets/img/30.png",
+            "社会调研分析": "/src/assets/img/31.png",
+            "语言表达": "/src/assets/img/32.png",
+            "英语应用": "/src/assets/img/33.png",
+            "跨文化交流": "/src/assets/img/34.png",
+            "imagetest": "/src/assets/img/35.png",
+            // 添加其他社区的图标路径
+        },
+        iconSize: 30, // 图标大小，可以根据需要调整
         };
     },
     methods: {
@@ -140,16 +166,33 @@ export default {
 }
 
 /* 卡片样式 */
+
 .community-card {
     padding: 20px;
-    text-align: center;
     display: flex;
-    justify-content: center;
-    flex-direction: column;
-    height: 80px;
-    /* 卡片高度 */
+    align-items: flex-start; /* 确保内容从顶部开始 */
+    flex-direction: row; /* 水平布局 */
     transition: transform 0.3s ease;
-    /* 添加卡片悬停动画 */
+}
+
+.icon-container {
+    margin-right: 20px; /* 图片和文本之间的间距 */
+}
+
+.community-icon {
+    width: 40px; /* 图标大小 */
+    height: 40px;
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column; /* 文本和按钮垂直排列 */
+    justify-content: center; /* 垂直居中对齐 */
+}
+
+.text-container h3 {
+    font-size: 16px;
+    margin: 0;
 }
 
 .community-card:hover {
