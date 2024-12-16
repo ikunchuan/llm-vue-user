@@ -35,9 +35,9 @@
     </div>
 
     <!-- 内容区 -->
-    <div class="content-area" v-if="!loadingChapter && showChapterContent">
+    <div class="content-area">
       <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
-      <section class="content-left">
+      <section class="content-left" v-if="!loadingChapter && showChapterContent">
         <h2>章节内容</h2>
         <section class="cards-section">
           <div class="card" v-for="(card, index) in chapterDetail" :key="index">
@@ -145,7 +145,7 @@ body {
 .course-info {
   display: flex;
   gap: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 220px;
 }
 
 .course-info .video {
@@ -204,8 +204,12 @@ body {
 
 /* 内容区样式 */
 .content-area {
+  position: relative;
+  /* 为绝对定位的子元素提供定位上下文 */
+  padding-right: 320px;
+  /* 为固定位置的右侧内容留出空间 */
   display: flex;
-  gap: 20px;
+  gap: 50px;
 }
 
 .content-left {
@@ -232,19 +236,20 @@ body {
 }
 
 .content-right {
-  flex: 1;
-  /* 右侧区域占比较小 */
+  position: fixed;
+  /* 固定定位 */
+  top: 680px;
+  /* 根据需要调整顶部距离 */
+  right: 20px;
+  /* 根据需要调整右侧距离 */
+  width: 260px;
+  /* 固定宽度 */
   background-color: #FFFFFF;
-  /* 白色背景 */
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.content-right h2 {
-  font-size: 18px;
-  margin-bottom: 15px;
-}
 
 /* 底部区域样式 */
 .footer {
