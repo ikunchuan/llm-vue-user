@@ -94,29 +94,35 @@
     </el-container>
 
     <!-- 创建社区表单 -->
-    <el-dialog v-model="dialogFormVisible" title="创建社区">
-        <el-form :model="form" ref="form" class="community-form">
-            <el-form-item label="社区名称" :label-width="formLabelWidth">
-                <el-input v-model="form.communityName" placeholder="输入社区名称" clearable />
-            </el-form-item>
+    <!-- 创建社区表单 -->
+    <el-dialog v-model="dialogFormVisible" title="创建社区" class="create-community-dialog">
+        <div class="form-container">
+            <el-form :model="form" ref="form" label-position="top" class="modern-form">
+                <el-form-item label="社区名称">
+                    <el-input v-model="form.communityName" placeholder="请输入社区名称" clearable />
+                </el-form-item>
 
-            <el-form-item label="社区描述" :label-width="formLabelWidth">
-                <el-input v-model="form.communityDescription" type="textarea" placeholder="输入社区描述" autosize />
-            </el-form-item>
+                <el-form-item label="社区描述">
+                    <el-input v-model="form.communityDescription" type="textarea" placeholder="简要描述社区内容" autosize />
+                </el-form-item>
 
-            <el-form-item label="所属类别" :label-width="formLabelWidth">
-                <el-select v-model="form.categoryId" placeholder="请选择所属类别">
-                    <el-option v-for="cat in filteredCatIdAndName" :key="cat.categoryId" :label="cat.categoryName"
-                        :value="cat.categoryId" />
-                </el-select>
-            </el-form-item>
-        </el-form>
+                <el-form-item label="所属类别">
+                    <el-select v-model="form.categoryId" placeholder="请选择社区类别" clearable>
+                        <el-option v-for="cat in filteredCatIdAndName" :key="cat.categoryId" :label="cat.categoryName"
+                            :value="cat.categoryId" />
+                    </el-select>
+                </el-form-item>
+            </el-form>
 
-        <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="createCommunity">创建</el-button>
-        </span>
+            <!-- 底部按钮区域 -->
+            <div class="form-footer">
+                <el-button @click="dialogFormVisible = false" class="btn-cancel">取消</el-button>
+                <el-button type="primary" @click="createCommunity" class="btn-submit">创建社区</el-button>
+            </div>
+        </div>
     </el-dialog>
+
+
 
 </template>
 
@@ -541,42 +547,80 @@ export default {
     color: #5a67d8;
 }
 
-/* 创建社区表单 */
-.community-form {
-    padding: 10px;
+/* 创建社区表单整体样式 */
+.create-community-dialog {
+    width: 600px;
 }
 
-.community-form .el-form-item {
+.form-container {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modern-form .el-form-item {
     margin-bottom: 20px;
 }
 
-.el-form-item .el-input,
+/* 输入框样式 */
+.el-input,
+.el-textarea,
 .el-select {
     border-radius: 8px;
+    border: 1px solid #ddd;
     transition: all 0.3s ease;
 }
 
-.el-form-item .el-input:focus,
+.el-input:focus,
+.el-textarea:focus,
 .el-select:hover {
     border-color: #5a67d8;
+    box-shadow: 0 0 5px rgba(90, 103, 216, 0.3);
 }
 
-.dialog-footer .el-button {
+.el-form-item__label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* 底部按钮区域 */
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-cancel {
     border-radius: 20px;
+    color: #333;
+    background-color: #f4f4f4;
+    border: none;
     transition: all 0.3s ease;
 }
 
-.dialog-footer .el-button--primary {
+.btn-cancel:hover {
+    background-color: #e0e0e0;
+}
+
+.btn-submit {
+    border-radius: 20px;
     background-color: #5a67d8;
     border-color: #5a67d8;
     color: #fff;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
-.dialog-footer .el-button--primary:hover {
+.btn-submit:hover {
     background-color: #434190;
+    border-color: #434190;
 }
 
-/* 按钮统一样式 */
+/* 按钮统一样式
 .el-button {
     border-radius: 20px;
     font-weight: bold;
@@ -592,6 +636,6 @@ export default {
 .el-button--primary:hover {
     background-color: #434190;
     border-color: #434190;
-}
+} */
 
 </style>

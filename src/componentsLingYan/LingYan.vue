@@ -1,173 +1,240 @@
 <template>
-  <div class="layout-container">
-    <!-- 侧边栏 -->
-    <div class="sidebar">
-      <h2>询问记录</h2>
-      <ul>
-        <li v-for="record in records" :key="record.id" @click="selectRecord(record)">
-          {{ record.text }}
-        </li>
-      </ul>
-    </div>
+  <el-container class="openai-app">
 
-    <!-- 主内容区域 -->
-    <div class="main-content">
-      <!-- 顶部描述区 -->
-      <div class="top-description">
-        <h1>灵验领航</h1>
-        <p>有什么可以帮忙的？</p>
-      </div>
+    <el-aside v-if="isSidebarVisible" class="sidebar">
+      <!-- 左侧功能菜单 -->
+      <el-menu default-active="1">
+        <el-menu-item index="1" @click="navigate('history')">
+          <i></i>
+          <span>对话历史</span>
+        </el-menu-item>
+        <el-menu-item index="2" @click="navigate('settings')">
+          <i></i>
+          <span>系统设置</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
 
-      <!-- 聊天内容显示区 -->
-      <div class="chat-content">
-        <div v-for="(message, index) in messages" :key="index" class="message-item">
-          <div :class="['message', message.isUser ? 'user-message' : 'ai-message']">
-            <span>{{ message.text }}</span>
+    <el-container>
+      <el-header class="header">
+        <div class="header-left">
+          <div class="logo">OpenAI</div>
+          <div class="menu">
+            <el-button type="text" @click="toggleSidebar">功能菜单</el-button>
           </div>
         </div>
-      </div>
+        <div class="header-right">
+          <el-dropdown>
+            <!-- <span class="el-dropdown-link">
+              用户中心<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click="navigate('profile')">个人资料</el-dropdown-item>
+              <el-dropdown-item @click="navigate('settings')">设置</el-dropdown-item>
+              <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu> -->
+          </el-dropdown>
+        </div>
+      </el-header>
 
-      <!-- 输入框 -->
-      <div class="input-container">
-        <input
-          v-model="inputText"
-          @keyup.enter="sendMessage"
-          type="text"
-          placeholder="给'灵验领航'发送消息"
-          class="input-text"
-        />
-      </div>
-    </div>
-  </div>
+      <!-- 中间对话区域 -->
+      <el-main class="chat-container">
+        <div class="messages">
+          <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]"></div>
+          <div class="chat_content">{{ fullMessage }}</div>
+        </div>
+
+      </el-main>
+      <el-footer>
+        <!-- 底部对话框 -->
+        <div class="input-area">
+          <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendMessage" class="input-box">
+            <template #append>
+              <el-button type="primary" icon="el-icon-s-promotion" :disabled="!inputMessage.trim()"
+                @click="sendMessage">
+                发送
+              </el-button>
+            </template>
+          </el-input>
+        </div>
+      </el-footer>
+    </el-container>
+  </el-container>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      messages: [
-        { text: "欢迎使用灵验知道！请问您有什么问题？", isUser: false },
-      ],
-      inputText: "",
-      records: [
-        { id: 1, text: "个人主页布局修改" },
-        { id: 2, text: "表单验证问题排查" },
-        // 更多记录...
-      ],
+      isSidebarVisible: true, // 控制侧边栏显示
+      inputMessage: "", // 用户输入
+      fullMessage: "", //存储整个文本
+      eventSource: null,
+      // messages: [
+      //   { role: "assistant", content: "你好！我是 AI 助手。" },
+      //   { role: "user", content: "请问天气如何？" },
+      // ], // 对话内容
     };
   },
   methods: {
-    sendMessage() {
-      if (this.inputText.trim() !== "") {
-        this.messages.push({ text: this.inputText, isUser: true });
-        this.inputText = "";
-
-        // 模拟 AI 回复
-        setTimeout(() => {
-          this.messages.push({
-            text: "这是一个模拟回复。灵验知道正在努力改进！",
-            isUser: false,
-          });
-        }, 1000);
-      }
+    toggleSidebar() {
+      this.isSidebarVisible = !this.isSidebarVisible;
     },
-    selectRecord(record) {
-      // 选中记录时的处理逻辑
-      console.log("Selected record:", record);
+
+    sendMessage() {
+      if (this.eventSource) {
+        this.eventSource.close();
+      }
+      this.eventSource = new EventSource(`http://localhost:10086/chat/stream?message=${encodeURIComponent(this.userInput)}`);
+
+      this.eventSource.onmessage = (event) => {
+        this.fullMessage += event.data;  // 不断将新的数据添加到fullMessage中
+      };
+
+      this.eventSource.onerror = () => {
+        console.error('Error occurred');
+        this.eventSource.close();
+      };
     },
   },
+
+  beforeUnmount() {
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+  },
+
+  // 模拟回复的方法
+  // sendMessage() {
+  //   if (!this.inputMessage.trim()) return;
+
+  //   // 用户消息
+  //   this.messages.push({ role: "user", content: this.inputMessage });
+
+  //   // 清空输入框
+  //   this.inputMessage = "";
+
+  //   // 模拟 AI 回复
+  //   setTimeout(() => {
+  //     this.messages.push({
+  //       role: "assistant",
+  //       content: "模拟的 AI 回复：" + this.getRandomResponse(),
+  //     });
+  //     this.scrollToBottom();
+  //   }, 1000);
+
+  // getRandomResponse() {
+  //   const responses = [
+  //     "我不太确定。",
+  //     "这个问题很有意思！",
+  //     "需要更详细的信息。",
+  //     "好的，我会帮您处理。",
+  //   ];
+  //   return responses[Math.floor(Math.random() * responses.length)];
+  // },
+
+  // scrollToBottom() {
+  //   this.$nextTick(() => {
+  //     const container = this.$el.querySelector(".messages");
+  //     container.scrollTop = container.scrollHeight;
+  //   });
+  // },
+
+  // navigate(route) {
+  //   console.log(`导航到: ${route}`);
+  // },
+
+  // logout() {
+  //   console.log("退出登录");
+  // },
 };
+
 </script>
 
 <style scoped>
-.layout-container {
-  display: flex;
-  height: 100vh;
+/* 限制文本容器的最大宽度，文本会自动换行 */
+.messages-container {
+  max-width: 600px;
+  /* 设置容器的最大宽度 */
+  word-wrap: break-word;
+  /* 确保文本在需要时换行 */
+  white-space: pre-wrap;
+  /* 保留文本的换行符 */
+  margin-top: 20px;
+}
+
+.openai-app {
+  height: calc(100vh - 77px);
+  overflow: hidden;
+}
+
+.header {
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+}
+
+.header-left .logo {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.layout {
+  flex: 1;
 }
 
 .sidebar {
-  width: 250px; /* 侧边栏宽度 */
-  background-color: #f4f4f4;
+  width: 250px;
+  background: #f4f4f4;
   padding: 20px;
-  overflow-y: auto; /* 垂直滚动条 */
+  border-right: 1px solid #ddd;
 }
 
-.sidebar h2 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar li {
-  padding: 10px 0;
-  cursor: pointer;
-}
-
-.sidebar li:hover {
-  background-color: #ddd;
-}
-
-.main-content {
-  flex-grow: 1;
+.chat-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0px 20px 15px 25px;
-}
-
-.top-description {
-  background-color: #f8f8f8;
   padding: 20px;
-  text-align: center;
+  background: #fff;
 }
 
-.chat-content {
+.messages {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
-  background-color: #fff;
-}
-
-.message-item {
-  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .message {
-  display: inline-block;
-  padding: 10px;
-  border-radius: 5px;
-  max-width: 80%;
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 10px;
+  word-break: break-word;
 }
 
-.user-message {
-  background-color: #e0e0e0;
-  text-align: right;
+.message.user {
+  align-self: flex-end;
+  background-color: #409eff;
+  color: white;
 }
 
-.ai-message {
+.message.assistant {
+  align-self: flex-start;
   background-color: #f0f0f0;
-  text-align: left;
+  color: #333;
 }
 
-.input-container {
+.input-area {
+  display: flex;
   padding: 10px;
-  background-color: #e0e0e0;
+  background: #f4f4f8;
 }
 
-.input-text {
-  width: 100%; /* 默认宽度为100% */
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* 当屏幕宽度大于768px时，输入框宽度为80% */
-@media (min-width: 768px) {
-  .input-text {
-    width: 90%;
-  }
+.input-box {
+  width: 100%;
 }
 </style>

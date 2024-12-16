@@ -70,7 +70,7 @@
                 <div>
                     <h4>简介</h4>
                     <p style="font-size:17px;">{{ userInfo.userBio }}</p>
-                    <button class="edit-button" @click="editBio(userInfo.userId)">编辑简介</button>
+                    <button class="edit-button" @click="openDialog">编辑简介</button>
                 </div>
 
                 <div class="badges">
@@ -159,16 +159,19 @@ export default {
             name: 'ProfilePage',
             spacer: h(ElDivider, { direction: 'vertical' }),
             // avatarUrl: this.userInfo.userProfilePicture,
-            loading: true,
+
             userInfo: {}, //存储用户数据
             followersInfo: [], //用户关注
             fansInfo: [],  //用户粉丝
             bioForm: {},
+
             postView: '',
             postLike: '',
             postFavorite: '',
             postComment: '',
 
+            loading: true,
+            dialogFormVisible: false,
         };
     },
 
@@ -185,19 +188,27 @@ export default {
         },
 
         closeDialog() {
-            this.dialogFormVisible = false;
+            return this.dialogFormVisible = false;
         },
 
         countFollowers() {
-            return this.followersInfo.length;
+            if (localStorage.userId && localStorage.userName) {
+                return this.followersInfo.length;
+            } else {
+                return 0;
+            }
         },
 
         countFans() {
-            return this.fansInfo.length;
+            if (localStorage.userId && localStorage.userName) {
+                return this.fansInfo.length;
+            } else {
+                return 0;
+            }
         },
     },
     mounted() {
-        const userId = localStorage.getItem('userid');
+        const userId = localStorage.userId;
         this.$http.get(`/uis/v1/ui/${userId}`)
             .then(response => {
                 console.log('User data:', response.data);
