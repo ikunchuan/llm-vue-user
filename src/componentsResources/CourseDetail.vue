@@ -78,7 +78,7 @@ export default {
     };
   },
   created() {
-    this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
+    this.fetchCourseDetail(); // 在组件创建时获取课程详情
 
   },
   mounted() {
@@ -87,7 +87,7 @@ export default {
 
   },
   methods: {
-    fetchCompetitionDetail() {
+    fetchCourseDetail() {
       const courseId = this.$route.params.courseId; // 从路由参数中获取 
       this.$http.get(`http://localhost:10086/crs/v1/${courseId}`)
         .then(response => {
