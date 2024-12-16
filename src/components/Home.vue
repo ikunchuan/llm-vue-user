@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container style="height: 100%;">
     <el-header ref="header" class="navbar">
       <div class="navbar-container">
         <!-- 左侧 LOGO -->
@@ -132,7 +132,6 @@ export default {
       activeDrawer: null,
       isDrawerVisible: false,
       isContentVisible: false,
-
     };
   },
 
@@ -147,8 +146,8 @@ export default {
     },
 
     getUserName() {
-      if (localStorage.getItem('userName')) {
-        this.userName = localStorage.getItem('userName');
+      if (sessionStorage.getItem('userName')) {
+        this.userName = sessionStorage.getItem('userName');
         return this.userName;
       } else {
         return this.userName;
