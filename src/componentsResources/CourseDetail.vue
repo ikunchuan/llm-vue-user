@@ -23,6 +23,7 @@
         <p>课程价格:{{ courseDetail.coursePrice }}</p>
 
       </div>
+      <button @click="onAnswerDetailClick">题目推荐</button>
     </section>
 
 
@@ -75,6 +76,11 @@ export default {
       error: null,      // 错误信息
       showChapterContent: false, // 控制章节内容的显示状态
       loadingChapter: false,     // 控制章节内容的加载状态
+      courseToCategoryMapping: {
+        '1': '13', // 假设课程ID 1 对应 题目类别ID 13
+        '2': '14', // 假设课程ID 2 对应 题目类别ID 14
+        // 添加更多映射
+      },
     };
   },
   created() {
@@ -87,6 +93,20 @@ export default {
 
   },
   methods: {
+    //跳转题目详情
+    onAnswerDetailClick() {
+      const courseId = this.$route.params.courseId;
+      const categoryId = this.courseToCategoryMapping[courseId];
+
+      if (categoryId) {
+        this.$router.push({ path: `/home/answerdetail/${categoryId}` });
+      } else {
+        // 如果没有找到对应的categoryId，可以给出提示或者跳转到默认页面
+        this.$message.error('没有找到对应的题目推荐');
+      }
+    },
+
+    // 获取课程详情数据
     fetchCourseDetail() {
       const courseId = this.$route.params.courseId; // 从路由参数中获取 
       this.$http.get(`http://localhost:10086/crs/v1/${courseId}`)
