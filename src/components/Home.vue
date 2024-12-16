@@ -223,7 +223,7 @@ export default {
 <style scoped>
 /* 控制主内容区域的高度，使其填充整个窗口，并留出顶部导航栏的高度 */
 .main-content {
-  margin-top: 17px;
+  margin-top: 77px;
   padding: 0;
   overflow-y: auto;
   height: calc(100vh - 77px);
@@ -475,8 +475,6 @@ export default {
   margin-bottom: 20px;
   /* 与下边的间隔 */
 }
-
-
 
 /* 图片区域的容器样式 */
 .image-section {
