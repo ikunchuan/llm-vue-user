@@ -66,7 +66,6 @@ export default {
   },
   methods: {
     //答案比对
-
     submitAnswer() {
       // 比较用户输入的答案和正确答案
       if (this.answer === this.selectedQuestion.correctAnswer) {
