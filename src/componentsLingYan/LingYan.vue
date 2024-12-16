@@ -39,12 +39,23 @@
 
       <!-- 中间对话区域 -->
       <el-main class="chat-container">
-        <div class="messages">
-          <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]"></div>
-          <div class="chat_content">{{ fullMessage }}</div>
+        <div><!-- 用户和助手消息展示 -->
+          <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]">
+            <img :src="message.role.avatar" alt="user" class="avatar" />
+            <div class="bubble">{{ message.content }}</div>
+          </div>
         </div>
 
+        <!-- AI 正在输入的加载动画 -->
+        <div v-if="isTyping" class="message_ai">
+          <el-icon class="typing-icon" icon="el-icon-loading"></el-icon>
+          <img src="https://via.placeholder.com/32" alt="AI" class="avatar" />
+          <div class="bubble typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
       </el-main>
+
       <el-footer>
         <!-- 底部对话框 -->
         <div class="input-area">
@@ -63,106 +74,100 @@
 </template>
 
 <script>
+import { Loading } from '@element-plus/icons-vue';
+
 export default {
   data() {
     return {
       isSidebarVisible: true, // 控制侧边栏显示
       inputMessage: "", // 用户输入
-      fullMessage: "", //存储整个文本
-      eventSource: null,
-      // messages: [
-      //   { role: "assistant", content: "你好！我是 AI 助手。" },
-      //   { role: "user", content: "请问天气如何？" },
-      // ], // 对话内容
+      messages: [], //存储整个用户的对话文本//AI的对话文本
+      eventSource: null, //保存ES对象
+      isTyping: false,// 是否显示“AI 正在输入”
     };
   },
+
   methods: {
     toggleSidebar() {
       this.isSidebarVisible = !this.isSidebarVisible;
     },
 
     sendMessage() {
+      console.log(this.messages); // 打印 this，确保 messages 存在
+      if (!this.inputMessage.trim()) return;
+
+      // 将用户消息添加到 messages 中
+      this.messages.push({
+        role: "user",
+        content: this.inputMessage,
+        avatar: "https://via.placeholder.com/32", // 设置头像链接
+      });
+
+
+      // 向服务器发送消息
       if (this.eventSource) {
         this.eventSource.close();
       }
-      this.eventSource = new EventSource(`http://localhost:10086/chat/stream?message=${encodeURIComponent(this.userInput)}`);
+
+      const url = `http://localhost:10086/chat/stream?message=${encodeURIComponent(this.inputMessage)}`
+      this.eventSource = new EventSource(url);
+
+      // 设置“AI 正在输入”状态
+      this.isTyping = true;
+
+      // 接收服务器消息流
+      let aiMessage = { role: "ai", content: "", avatar: "https://via.placeholder.com/32" };
+      this.messages.push(aiMessage); // 预留一条消息，动态更新内容
 
       this.eventSource.onmessage = (event) => {
-        this.fullMessage += event.data;  // 不断将新的数据添加到fullMessage中
+        aiMessage.content += event.data.replace(/\n/g, "<br />") // 更新 AI 消息内容
       };
 
       this.eventSource.onerror = () => {
-        console.error('Error occurred');
+        console.error('连接出错');
         this.eventSource.close();
+        this.isTyping = false; // 移除“AI 正在输入”
       };
+
+      this.eventSource.onopen = () => {
+        console.log("连接已打开");
+      };
+
+      // 监听连接关闭（服务器端主动结束 SSE 流时）
+      this.eventSource.addEventListener("end", () => {
+        this.isTyping = false; // 移除“AI 正在输入”
+        this.eventSource.close();
+      });
+
+      // 清空输入框
+      this.inputMessage = "";
+
     },
+
+    // // 格式化响应数据
+    // formatMessage(message) {
+    //   const formattedMessage = message.replace(/([a-zA-Z]+)/g, "$1 ").replace(/([。！？])/g, "$1\n");
+    //   return formattedMessage;
+    // },
   },
 
-  beforeUnmount() {
+  beforeUnmount() { // 组件销毁时关闭 SSE 连接
     if (this.eventSource) {
       this.eventSource.close();
     }
   },
 
-  // 模拟回复的方法
-  // sendMessage() {
-  //   if (!this.inputMessage.trim()) return;
-
-  //   // 用户消息
-  //   this.messages.push({ role: "user", content: this.inputMessage });
-
-  //   // 清空输入框
-  //   this.inputMessage = "";
-
-  //   // 模拟 AI 回复
-  //   setTimeout(() => {
-  //     this.messages.push({
-  //       role: "assistant",
-  //       content: "模拟的 AI 回复：" + this.getRandomResponse(),
-  //     });
-  //     this.scrollToBottom();
-  //   }, 1000);
-
-  // getRandomResponse() {
-  //   const responses = [
-  //     "我不太确定。",
-  //     "这个问题很有意思！",
-  //     "需要更详细的信息。",
-  //     "好的，我会帮您处理。",
-  //   ];
-  //   return responses[Math.floor(Math.random() * responses.length)];
-  // },
-
-  // scrollToBottom() {
-  //   this.$nextTick(() => {
-  //     const container = this.$el.querySelector(".messages");
-  //     container.scrollTop = container.scrollHeight;
-  //   });
-  // },
-
-  // navigate(route) {
-  //   console.log(`导航到: ${route}`);
-  // },
-
-  // logout() {
-  //   console.log("退出登录");
-  // },
+  scrollToBottom() {
+    this.$nextTick(() => {
+      const container = this.$el.querySelector(".messages");
+      container.scrollTop = container.scrollHeight;
+    });
+  },
+  components: { Loading },
 };
-
 </script>
 
 <style scoped>
-/* 限制文本容器的最大宽度，文本会自动换行 */
-.messages-container {
-  max-width: 600px;
-  /* 设置容器的最大宽度 */
-  word-wrap: break-word;
-  /* 确保文本在需要时换行 */
-  white-space: pre-wrap;
-  /* 保留文本的换行符 */
-  margin-top: 20px;
-}
-
 .openai-app {
   height: calc(100vh - 77px);
   overflow: hidden;
@@ -181,10 +186,6 @@ export default {
   font-weight: bold;
 }
 
-.layout {
-  flex: 1;
-}
-
 .sidebar {
   width: 250px;
   background: #f4f4f4;
@@ -193,48 +194,80 @@ export default {
 }
 
 .chat-container {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background: #fff;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
   padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  background: #fff;
 }
 
 .message {
   max-width: 70%;
   padding: 10px 15px;
   border-radius: 10px;
-  word-break: break-word;
+  display: flex;
+  align-items: center;
 }
 
-.message.user {
-  align-self: flex-end;
+.message.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.message .bubble {
+  padding: 10px;
+  border-radius: 10px;
+  background: #f0f0f0;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.message.user .bubble {
   background-color: #409eff;
   color: white;
 }
 
-.message.assistant {
-  align-self: flex-start;
-  background-color: #f0f0f0;
-  color: #333;
-}
-
 .input-area {
   display: flex;
-  padding: 10px;
-  background: #f4f4f8;
+  gap: 10px;
 }
 
 .input-box {
   width: 100%;
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 5px;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  background-color: #ccc;
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
 }
 </style>

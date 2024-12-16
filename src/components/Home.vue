@@ -198,6 +198,7 @@ export default {
       this.$router.push({ path: path });
       this.activeDrawer = null; // 关闭抽屉
     },
+
     fetchPopularCompetitions() {
       const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
       axios
@@ -214,13 +215,16 @@ export default {
           console.error('获取推荐竞赛失败:', error.response ? error.response.data : error.message);
         });
     },
+
     goToCompetitionDetail(competitionId) {
       this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
     },
+
     goToCompetitionDetail(competitionId) {
       this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
     },
   },
+
   mounted() {
     console.log(this.navItems); // 查看 navItems 数组的内容
 
