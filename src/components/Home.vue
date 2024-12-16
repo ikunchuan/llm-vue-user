@@ -1,204 +1,165 @@
 <template>
-  <div class="common-layout">
-    <el-container>
-      <el-header>
-        <header class="navbar">
-          <div class="navbar-container">
-            <!-- 左侧 LOGO -->
-            <div class="logo" @click="goToIndex">LOGO</div>
+  <el-container>
+    <el-header class="navbar">
+      <div class="navbar-container">
+        <!-- 左侧 LOGO -->
+        <div class="logo" @click="goToIndex">LOGO</div>
 
-            <nav class="nav-menu">
-              <div class="nav-item" v-for="item in navItems" :key="item.name" @mouseenter="toggleDrawer(item)"
-                @mouseleave="toggleDrawer(item)" @click="navigate(item.path)">
-                {{ item.name }}
+        <nav class="nav-menu">
+          <div class="nav-item" v-for="item in navItems" :key="item.name" @mouseenter="toggleDrawer(item)"
+            @mouseleave="toggleDrawer(item)" @click="navigate(item.path)">
+            {{ item.name }}
+          </div>
+        </nav>
+
+        <!-- 右侧用户信息 -->
+        <div class="user-info">
+          <img :src="userAvatarUrl" alt="user" class="user-avatar" />
+          <!-- https://via.placeholder.com/32 -->
+          <span class="username">{{ getUserName() }}</span>
+        </div>
+      </div>
+
+      <el-drawer v-model="isDrawerVisible" :title="activeDrawer?.name || ''" :show-close="false" size="40%"
+        direction="ttb" class="drawer" @close="toggleDrawer(null)" @mouseleave="toggleDrawer(null)" append-to-body>
+        <transition name="fade">
+          <div v-if="isDrawerVisible && activeDrawer">
+            <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">竞赛中心</h3>
+                <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px;">
               </div>
-            </nav>
+              <div class="right-column">
+                <h1>最新动态</h1>
+                <div class="image-section">
+                  <!-- 其他可能的 v-for 使用 -->
+                  <div v-for="(comp, index) in popularCompetitions" :key="index">
+                    <img :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl"
+                      @click="goToCompetitionDetail(comp.competitionId)" />
+                  </div>
 
-            <!-- 右侧用户信息 -->
-            <div class="user-info">
-              <img src="https://via.placeholder.com/32" alt="User" class="user-avatar" />
-              <span class="username">张三</span>
+                </div>
+                <div class="text-container">
+                  <p>这里是图片下方的文字描述。</p>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="activeDrawer?.name === '资源中心'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">资源中心</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">灵验知道</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="activeDrawer?.name === '社区'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">社区</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="activeDrawer?.name === '个人中心'" class="resource-center">
+              <div class="left-column">
+                <h3 class="drawer-title">个人中心</h3>
+                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
+                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
+              </div>
+              <div class="right-column">
+                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
+                  <h4>{{ box.title }}</h4>
+                  <p>{{ box.content }}</p>
+                </div>
+              </div>
             </div>
           </div>
-        </header>
+        </transition>
+      </el-drawer>
 
-        <!-- 抽屉内容 -->
-        <!-- <el-drawer :show-close="false" v-if="activeDrawer" @mouseenter="keepDrawerOpen"
-          @mouseleave="toggleDrawer(null)"> -->
-        <!-- <div v-if="activeDrawer" class="drawer" @mouseenter="keepDrawerOpen" @mouseleave="toggleDrawer(null)"> -->
-        <!-- <div class="drawer-content">
-              <div v-if="activeDrawer.name === '竞赛中心'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">竞赛中心</h3>
-                  <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 100px; height: 100px;">
-                </div>
-                <div class="right-column"> -->
-        <!-- 大标题 -->
-        <!-- <h1>最新动态</h1> -->
+    </el-header>
 
-        <!-- 图片区域 -->
-        <!-- <div class="image-section">
-                    <img src="../assets/img/1.png" alt="图片1描述">
-                    <img src="../assets/img/1.png" alt="图片2描述">
-                    <img src="../assets/img/1.png" alt="图片3描述">
-                  </div> -->
-
-        <!-- 底部文字区域 -->
-        <!-- <div class="text-container">
-                    <p>这里是图片下方的文字描述。</p>
-                  </div>
-                </div>
-              </div>
-              <div v-if="activeDrawer.name === '资源中心'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">资源中心</h3>
-                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-                </div>
-                <div class="right-column">
-                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                    <h4>{{ box.title }}</h4>
-                    <p>{{ box.content }}</p>
-                  </div>
-                </div>
-              </div>
-              <div v-if="activeDrawer.name === '灵验知道'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">灵验知道</h3>
-                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-                </div>
-                <div class="right-column">
-                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                    <h4>{{ box.title }}</h4>
-                    <p>{{ box.content }}</p>
-                  </div>
-                </div>
-              </div>
-              <div v-if="activeDrawer.name === '社区'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">社区</h3>
-                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-                </div>
-                <div class="right-column">
-                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                    <h4>{{ box.title }}</h4>
-                    <p>{{ box.content }}</p>
-                  </div>
-                </div>
-              </div>
-              <div v-if="activeDrawer.name === '个人中心'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">个人中心</h3>
-                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-                </div>
-                <div class="right-column">
-                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                    <h4>{{ box.title }}</h4>
-                    <p>{{ box.content }}</p>
-                  </div>
-                </div>
-              </div>
-              <div class="button-container">
-                <button class="close-btn" @click="toggleDrawer(null)">关闭</button>
-              </div>
-            </div>
-          </transition> -->
-        <!-- </div> -->
-        <!-- </el-drawer>  -->
-
-        <el-drawer v-model="isDrawerVisible" :title="activeDrawer?.name || ''" :show-close="false" size="40%"
-          direction="ttb" class="drawer" @close="toggleDrawer(null)" @mouseleave="toggleDrawer(null)">
-          <transition name="fade">
-            <div v-if="isDrawerVisible && activeDrawer">
-              <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">竞赛中心</h3>
-                  <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px;">
-                </div>
-                <div class="right-column">
-                  <h1>最新动态</h1>
-                  <div class="image-section">
-                    <img src="../assets/img/1.png" alt="图片1描述">
-                    <img src="../assets/img/1.png" alt="图片2描述">
-                    <img src="../assets/img/1.png" alt="图片3描述">
-                  </div>
-                  <div class="text-container">
-                    <p>这里是图片下方的文字描述。</p>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="activeDrawer?.name === '资源中心'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">资源中心</h3>
-                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-                </div>
-                <div class="right-column">
-                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                    <h4>{{ box.title }}</h4>
-                    <p>{{ box.content }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
-                <div class="left-column">
-                  <h3 class="drawer-title">灵验知道</h3>
-                  <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                  <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-                </div>
-                <div class="right-column">
-                  <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                    <h4>{{ box.title }}</h4>
-                    <p>{{ box.content }}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </el-drawer>
-
-      </el-header>
-
-      <el-main class="main-content">
-        <router-view></router-view>
-      </el-main>
-    </el-container>
-  </div>
+    <el-main class="main-content">
+      <router-view></router-view>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
+import axios from 'axios';
 
 export default {
-  name: "Home",
   data() {
     return {
-      // 导航项
-      navItems: [
+      navItems: [  // 导航项
         { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
         { name: "资源中心", path: "course", drawerContent: "这里是资源中心的详细介绍..." },
         { name: "灵验知道", path: "lingyan", drawerContent: "这里是灵验知道的详细介绍..." },
         { name: "社区", path: "community", drawerContent: "这里是社区的详细介绍..." },
         { name: "个人中心", path: "me", drawerContent: "这里是个人中心的详细介绍..." },
       ],
+      popularCompetitions: [],
+      userAvatarUrl: "https://via.placeholder.com/32", //默认头像
+      userName: "user",  //默认用户名
       activeDrawer: null,
       isDrawerVisible: false,
       isContentVisible: false,
 
     };
   },
+
   methods: {
+
+    getUserName() {
+      if (localStorage.getItem('userName')) {
+        this.userName = localStorage.getItem('userName');
+        return this.userName;
+      } else {
+        return this.userName;
+      }
+    },
+
+    handleLogOut() {
+      this.userName = "user";
+      this.$router.push('/login');
+    },
 
     goToIndex() {
       this.$router.push({ path: '/homepage' });
     },
+
     toggleDrawer(item) {
       if (item) {
         this.activeDrawer = item;// 打开抽屉
+        if (!item) {
+          this.popularCompetitions = [];
+        }
+        this.fetchPopularCompetitions();
         this.isDrawerVisible = true;
       } else {
         // 等待内容淡出动画完成再关闭抽屉
@@ -225,11 +186,35 @@ export default {
       const path = `/home/${item}`;
       this.$router.push({ path: path });
       this.activeDrawer = null; // 关闭抽屉
-    }
+    },
+    fetchPopularCompetitions() {
+      const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
+      axios
+        .post('comp/v1/search', competitionSearch)
+        .then(response => {
+          if (response.data && response.data.list) {
+            // 截取前三条数据
+            this.popularCompetitions = response.data.list.slice(0, 3);
+          } else {
+            console.error('后端返回的数据格式不正确:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('获取推荐竞赛失败:', error.response ? error.response.data : error.message);
+        });
+    },
+    goToCompetitionDetail(competitionId) {
+      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+    },
+    goToCompetitionDetail(competitionId) {
+      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+    },
+
+
   },
   mounted() {
     console.log(this.navItems); // 查看 navItems 数组的内容
-  }
+  },
 
 
 };
@@ -238,9 +223,8 @@ export default {
 <style scoped>
 /* 控制主内容区域的高度，使其填充整个窗口，并留出顶部导航栏的高度 */
 .main-content {
-  margin-top: 20px;
-  margin-top: 17px;
-  padding: 20px;
+  margin-top: 77px;
+  padding: 0;
   overflow-y: auto;
   height: calc(100vh - 77px);
 }
@@ -262,14 +246,14 @@ export default {
 
 /* 顶部导航栏整体样式 */
 .navbar {
-  width: 100%;
-  height: auto;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 3000;
+  width: 100%;
+  height: auto;
+  z-index: 10000;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 导航栏内部容器 */
@@ -329,12 +313,13 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 40vh;
+  margin-top: 77px;
   /* 高度为页面高度的五分之二 */
+  height: calc(40vh - 77px);
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 999;
   /* 保证抽屉在内容之上，但在导航栏之下 */
+  z-index: 999;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -345,8 +330,9 @@ export default {
   max-width: 1000px;
   width: 100%;
   text-align: center;
-  margin-top: 40px;
   /* 调整这个值来改变与抽屉顶部的距离 */
+  margin-top: 40px;
+
 }
 
 /* 当抽屉打开时，设置transform为0，显示抽屉 */
@@ -384,8 +370,9 @@ export default {
 }
 
 .drawer-links a:hover {
-  color: #4c51bf;
   /* 鼠标悬停时改变链接颜色 */
+  color: #4c51bf;
+
 }
 
 /* 关闭按钮 */
@@ -393,22 +380,23 @@ export default {
 .drawer-content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   /* 使内容在垂直方向上均匀分布 */
-  align-items: flex-start;
+  justify-content: space-between;
   /* 使内容在水平方向上靠左对齐 */
+  align-items: flex-start;
   max-width: 1000px;
   width: 100%;
   margin-top: 40px;
 }
 
 .button-container {
-  margin-top: auto;
   /* 将容器推到底部 */
-  margin-left: auto;
+  margin-top: auto;
   /* 自动左边距，使容器内容靠右 */
-  width: fit-content;
+  margin-left: auto;
   /* 根据内容自动调整宽度 */
+  width: fit-content;
+
 }
 
 .close-btn {
@@ -488,8 +476,6 @@ export default {
   /* 与下边的间隔 */
 }
 
-
-
 /* 图片区域的容器样式 */
 .image-section {
   display: flex;
@@ -508,7 +494,7 @@ export default {
 
 /* 图片样式 */
 .image-section img {
-  width: 120px;
+  width: 240px;
   /* 图片宽度 */
   height: 120px;
   /* 图片高度 */
@@ -541,63 +527,6 @@ export default {
   text-align: center;
   font-size: 1.2em;
   /* 使字体更大 */
-  transition: color 0.3s ease;
-}
-
-/* 图片区域的容器样式 */
-
-
-
-
-.custom-drawer {
-  background: #fff;
-  padding: 20px;
-}
-
-.resource-center {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-}
-
-.left-column {
-  width: 20%;
-  text-align: center;
-  padding: 10px 0;
-}
-
-.right-column {
-  width: 70%;
-  display: block;
-  padding: 20px;
-}
-
-.drawer-title {
-  font-size: 2em;
-  color: #333;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
-
-.image-section {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 20px 0;
-}
-
-.image-section img {
-  width: 120px;
-  height: 120px;
-  object-fit: cover;
-}
-
-.resource-link {
-  cursor: pointer;
-  color: #5a67d8;
-  margin-bottom: 10px;
-  font-size: 1.2em;
-  text-align: center;
   transition: color 0.3s ease;
 }
 </style>

@@ -5,11 +5,12 @@
             <div class="logo">
                 灵验领航
             </div>
-            <div class="slogan">在同一个地方，构思、设计、协作，让竞赛更加清晰明了</div>
-            <ul class="features">
-                <li></li>
-                <li>实时在线</li>
-                <li></li>
+            <div class="slogan">在同一个地方构思、设计、协作，让竞赛更加清晰明了</div>
+            <ul class="features" v-for="item in slogan" :key="item.name">
+                <li><el-row><el-col span="2"><el-icon size=35>
+                                <CircleCheckFilled style="margin-right: 8px;" />
+                            </el-icon></el-col><el-col span="2">{{ item.name }}</el-col></el-row>
+                </li>
             </ul>
         </div>
 
@@ -87,11 +88,17 @@
 </template>
 
 <script>
-import { User, Lock } from '@element-plus/icons-vue';
+import { User, Lock, CircleCheckFilled } from '@element-plus/icons-vue';
 
 export default {
     data() {
         return {
+            slogan: [
+                { name: "AI 协助" },
+                { name: "实时在线" },
+                { name: "最适资源" },
+            ],
+
             activeTab: "password",
             loginForm: {
                 userName: "",
@@ -112,8 +119,8 @@ export default {
                 if (response.data.code === 200) {
                     this.$message.success('登录成功！');
                     console.log('信息', response.data);
-                    localStorage.setItem('userid', response.data.data.userid);
-                    localStorage.setItem('username', response.data.data.username);
+                    localStorage.setItem('userId', response.data.data.userid);
+                    localStorage.setItem('userName', response.data.data.username);
                     this.$router.push('/homepage');
                 } else {
                     this.$message.error('登录失败！请检查用户名和密码');
@@ -140,6 +147,7 @@ export default {
     components: {
         User,
         Lock,
+        CircleCheckFilled,
     },
 };
 </script>
@@ -185,13 +193,14 @@ export default {
 .left-panel .features {
     list-style: none;
     padding: 0;
+    margin: 5px 0;
     font-size: 1rem;
     text-shadow: 0 0 5px #888;
 }
 
-.left-panel .features li {
+/* .left-panel .features li {
     margin: 10px 0;
-}
+} */
 
 .right-panel {
     flex: 1;
