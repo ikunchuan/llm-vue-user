@@ -52,6 +52,9 @@ const routes = [
     name: "Home",
     component: Home,
     children: [
+      {path: "",
+      redirect: "/home/comp", 
+    },// 默认重定向到comp页面
       {
         path: "/homepage",
         name: "HomePage",
