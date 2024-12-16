@@ -37,14 +37,22 @@
               </div>
 
               <!-- 帖子列表 -->
-              <div class="post-list">
-                <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-item">
-                  <div class="post-header">
-                    <h3 class="post-title">{{ post.postTitle }}</h3>
-                  </div>
-                  <div class="post-content">{{ post.postContent }}</div>
-                </el-card>
-              </div>
+              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
+                @click="navigateToPostDetail(post.postId)">
+                <div class="post-content">
+                  <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
+                  <h3 class="post-title">{{ post.postTitle }}</h3>
+                  <p class="post-summary">{{ post.postContent }}</p>
+                  <!-- 帖子互动信息
+                  <div class="post-info">
+                    <span><i class="el-icon-thumb" /> {{ post.likes || 0 }}</span>
+                    <span><i class="el-icon-chat-line-round" /> {{ post.comments || 0 }}</span>
+                    <span><i class="el-icon-star-off" /> {{ post.favorites || 0 }}</span>
+                  </div> -->
+                </div>
+              </el-card>
+
+
             </el-tab-pane>
 
             <!-- 社区成员 Tab -->
@@ -167,12 +175,18 @@ export default {
           ElMessage.error('获取用户数据失败，请稍后重试');
         });
     },
-
-    goToPostCreat() {
-      // 跳转到帖子详情页
-      this.$router.push({
-        name: 'PostCreat',
-      });
+    //跳转到帖子详情页
+    navigateToPostDetail(postId) {
+      console.log('跳转到帖子详情页面:', postId);
+      // 检查帖子对象是否有id属性
+      if (postId) {
+        this.$router.push({
+          name: 'PostDetail',
+          params: { postId: postId }
+        });
+      } else {
+        console.error('帖子ID不存在');
+      }
     },
 
   }
@@ -228,25 +242,59 @@ export default {
 }
 
 /* 帖子列表 */
-.post-list {
-  margin-top: 20px;
+/* 帖子卡片样式 */
+.post-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
 }
 
-.post-item {
-  margin-bottom: 20px;
-  border-radius: 10px;
-  background-color: #ffffff;
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.post-tag {
+  font-size: 12px;
+  color: #ffffff;
+  background-color: #5a67d8;
+  padding: 3px 8px;
+  border-radius: 5px;
+  margin-bottom: 10px;
 }
 
 .post-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 10px 0;
+  color: #333;
 }
 
-.post-content {
+.post-summary {
   font-size: 14px;
   color: #666;
+  line-height: 1.6;
+}
+
+.post-info {
+  display: flex;
+  gap: 15px;
+  color: #999;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.post-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.post-info i {
+  color: #5a67d8;
 }
 
 /* 社区成员表格 */

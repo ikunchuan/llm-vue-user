@@ -115,7 +115,7 @@ const routes = [
         component: PostCreat,
       },
       {
-        path: "postdetail",
+        path: "postdetail/:postId",
         name: "PostDetail",
         component: PostDetail,
       },
