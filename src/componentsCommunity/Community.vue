@@ -94,7 +94,6 @@
     </el-container>
 
     <!-- 创建社区表单 -->
-    <!-- 创建社区表单 -->
     <el-dialog v-model="dialogFormVisible" title="创建社区" class="create-community-dialog">
         <div class="form-container">
             <el-form :model="form" ref="form" label-position="top" class="modern-form">
@@ -135,11 +134,6 @@ export default {
 
     data() {
         return {
-            // 功能分类按钮
-            buttons: {
-                text: "创社区", icon: "el-icon-share"
-
-            },
 
             // 搜索与分类,默认展示最热帖子
             activeTab: "hot",
@@ -209,6 +203,17 @@ export default {
                 params: {
                     communityId: community.communityId,
                     communityName: community.communityName
+                }
+            });
+        },
+        // 点击进入帖子详情页面
+        navigateToPostDetail(item) {
+
+            console.log('点击的帖子ID:', item.postId);  // 确保社区ID能够正确获取
+            this.$router.push({
+                name: 'PostDetail',
+                params: {
+                    postId: item.postId,
                 }
             });
         },
@@ -440,6 +445,14 @@ export default {
     font-size: 14px;
     color: #666;
     line-height: 1.6;
+    overflow: hidden;
+    /* 隐藏溢出的内容 */
+    text-overflow: ellipsis;
+    /* 显示省略号 */
+    white-space: nowrap;
+    /* 防止文本自动换行 */
+    max-height: 4.8em;
+    /* 设置最大高度，根据行高调整 */
 }
 
 .post-info {

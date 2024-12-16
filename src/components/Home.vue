@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header class="navbar">
+    <el-header ref="header" class="navbar">
       <div class="navbar-container">
         <!-- 左侧 LOGO -->
         <div class="logo" @click="goToIndex">LOGO</div>
@@ -22,6 +22,7 @@
 
       <el-drawer v-model="isDrawerVisible" :title="activeDrawer?.name || ''" :show-close="false" size="40%"
         direction="ttb" class="drawer" @close="toggleDrawer(null)" @mouseleave="toggleDrawer(null)" append-to-body>
+        <!-- append-to-body 是让组件回到body中，让z-index生效-->
         <transition name="fade">
           <div v-if="isDrawerVisible && activeDrawer">
             <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
@@ -104,7 +105,8 @@
 
     </el-header>
 
-    <el-main class="main-content">
+    <el-main class="main-content"
+      :style="{ marginTop: headerHeight + 'px', height: `calc(100vh - ${headerHeight}px)` }">
       <router-view></router-view>
     </el-main>
   </el-container>
@@ -116,6 +118,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      headerHeight: 0, // 保存 el-header 高度
       navItems: [  // 导航项
         { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
         { name: "资源中心", path: "course", drawerContent: "这里是资源中心的详细介绍..." },
@@ -134,6 +137,14 @@ export default {
   },
 
   methods: {
+    updateHeaderHeight() {
+      // 获取 el-header 的高度
+      const header = this.$refs.header;
+      if (header) {
+        this.headerHeight = header.offsetHeight; // 更新高度
+        console.log("Updated headerHeight:", this.headerHeight);
+      }
+    },
 
     getUserName() {
       if (localStorage.getItem('userName')) {
@@ -187,6 +198,7 @@ export default {
       this.$router.push({ path: path });
       this.activeDrawer = null; // 关闭抽屉
     },
+
     fetchPopularCompetitions() {
       const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
       axios
@@ -203,17 +215,28 @@ export default {
           console.error('获取推荐竞赛失败:', error.response ? error.response.data : error.message);
         });
     },
-    goToCompetitionDetail(competitionId) {
-      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
-    },
+
     goToCompetitionDetail(competitionId) {
       this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
     },
 
-
+    goToCompetitionDetail(competitionId) {
+      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+    },
   },
+
   mounted() {
     console.log(this.navItems); // 查看 navItems 数组的内容
+
+    this.$nextTick(() => {// 初次加载时计算高度
+      this.updateHeaderHeight();
+    });
+
+    window.addEventListener('resize', this.updateHeaderHeight);// 窗口变化时重新计算
+  },
+
+  beforeDestroy() {
+    window.removeEventListener("resize", this.updateHeaderHeight); // 组件销毁时清除事件监听
   },
 
 
@@ -223,10 +246,8 @@ export default {
 <style scoped>
 /* 控制主内容区域的高度，使其填充整个窗口，并留出顶部导航栏的高度 */
 .main-content {
-  margin-top: 77px;
   padding: 0;
   overflow-y: auto;
-  height: calc(100vh - 77px);
 }
 
 .fade-enter-active,
@@ -246,11 +267,11 @@ export default {
 
 /* 顶部导航栏整体样式 */
 .navbar {
-  position: fixed;
+  /* position: fixed; */
   top: 0;
   left: 0;
   width: 100%;
-  height: auto;
+  /* height: auto; */
   z-index: 10000;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -263,7 +284,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding: 0 20px;
 }
 
 /* LOGO 样式 */
