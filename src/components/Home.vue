@@ -13,7 +13,7 @@
         </nav>
 
         <!-- 右侧用户信息 -->
-        <div class="user-info">
+        <div class="user-info" @click="goToLogin">
           <img :src="userAvatarUrl" alt="user" class="user-avatar" />
           <!-- https://via.placeholder.com/32 -->
           <span class="username">{{ getUserName() }}</span>
@@ -128,7 +128,7 @@ export default {
       ],
       popularCompetitions: [],
       userAvatarUrl: "https://via.placeholder.com/32", //默认头像
-      userName: "user",  //默认用户名
+      userName: sessionStorage.getItem('userName') || "user",  // 从 sessionStorage 获取用户名
       activeDrawer: null,
       isDrawerVisible: false,
       isContentVisible: false,
@@ -146,12 +146,7 @@ export default {
     },
 
     getUserName() {
-      if (sessionStorage.getItem('userName')) {
-        this.userName = sessionStorage.getItem('userName');
-        return this.userName;
-      } else {
-        return this.userName;
-      }
+      return this.userName === 'user' ? 'user' : this.userName;
     },
 
     handleLogOut() {
@@ -161,6 +156,17 @@ export default {
 
     goToIndex() {
       this.$router.push({ path: '/homepage' });
+    },
+
+    goToLogin() {
+      // 判断用户是否登录
+      if (this.userName === 'user') {
+        // 如果用户未登录，跳转到登录页面
+        this.$router.push('/login');
+      } else {
+        // 如果用户已登录，跳转到个人中心页面
+        this.$router.push('/home/me');
+      }
     },
 
     toggleDrawer(item) {
@@ -222,6 +228,7 @@ export default {
     goToCompetitionDetail(competitionId) {
       this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
     },
+
   },
 
   mounted() {
