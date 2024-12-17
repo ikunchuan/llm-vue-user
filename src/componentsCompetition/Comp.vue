@@ -15,7 +15,7 @@
       <!-- 右侧推荐卡片 -->
       <div class="recommend-cards">
         <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
-          <el-image style="width: 200px; height: 150px; border-radius: 8px"
+          <el-image style="width: 250px; height: 170px; border-radius: 8px"
             :src="'http://localhost:10086/images/upload/' + card" fit="cover" class="card-image"></el-image>
         </div>
       </div>
@@ -44,7 +44,6 @@
       </div>
     </section>
 
-
     <!-- 图标分类 -->
     <section class="icon-section">
       <div class="icon-item">
@@ -57,7 +56,6 @@
         </div>
       </div>
     </section>
-
 
     <!-- 展示卡片 -->
     <section class="cards-section">
@@ -72,7 +70,6 @@
     </section>
   </div>
 </template>
-
 
 <script>
 import axios from 'axios';
@@ -292,21 +289,22 @@ export default {
   padding: 20px;
   /* background-color: #f9f9f9; */
   background-color: #FFFFFF;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 16px rgba(223, 190, 190, 0.1);
   border-radius: 15px;
+  flex-wrap: wrap;
 }
 
 /* 左侧推荐导航样式 */
 .recommend-sidebar {
-  width: 200px;
+  width: 250px;
   background-color: #F4F6F8;
   border-radius: 8px;
-  padding: 10px 0;
+  padding: 30px 0;
 }
 
 .recommend-sidebar-item {
-  padding: 15px 20px;
-  font-size: 16px;
+  padding: 20px 20px;
+  font-size: 18px;
   color: #333333;
   cursor: pointer;
   text-align: center;
@@ -333,8 +331,9 @@ export default {
 .recommend-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 30px;
   justify-content: space-evenly;
+  padding: 40px;
   justify-content: center;
   /* 均匀分布卡片 */
   flex: 1;
@@ -342,12 +341,12 @@ export default {
 
 /* 单个推荐卡片样式 */
 .recommend-card {
-  flex: 0 1 calc(33.33% - 20px); /* 三列布局 */
+ 
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 220px;
-  height: 170px;
+  width: 250px;
+  height: 180px;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -360,8 +359,8 @@ export default {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 .card-image {
-  width: 100%;
-  height: 200px; /* 调整图片高度 */
+  width: 250px;
+  height: 170px; /* 调整图片高度 */
   object-fit: cover;
   border-radius: 8px;
   transition: transform 0.3s ease;
