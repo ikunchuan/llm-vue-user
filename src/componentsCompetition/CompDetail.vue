@@ -122,30 +122,27 @@ export default {
     },
 
     //收藏竞赛
-    toggleFavorite() {
-      const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
-      const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
+toggleFavorite() {
+  const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
+  const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
 
-      if (!userId) {
-        this.$message.error('请先登录');
-        return;
+  if (!userId) {
+    this.$message.error('请先登录');
+    return;
+  }
+  this.$http.post(`http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`)
+    .then(response => {
+      // 假设后端返回 表示收藏成功
+      if (response.data == 1) {
+        ElMessage({ message: '收藏成功！', type: "success" });
+      } else {
+        ElMessage({ message: '收藏失败！', type: "error" });
       }
-      this.$http.post(`http://localhost:10086/comp/v1/favorite`, {
-        userId: userId,
-        competitionId: compId
-      })
-        .then(response => {
-          // 假设后端返回 表示收藏成功
-          if (response.data == 1) {
-            ElMessage({ message: '收藏成功！', type: "success" });
-          } else {
-            ElMessage({ message: '收藏失败！', type: "error" });
-          }
-        }
-        ).catch((err) => {
-          ElMessage({ message: '请求失败，请重试', type: "error" });
-        });
-    },
+    })
+    .catch((err) => {
+      ElMessage({ message: '请求失败，请重试', type: "error" });
+    });
+},
 
     //
 
