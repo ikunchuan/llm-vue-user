@@ -90,6 +90,7 @@ export default {
                     console.log('信息', response.data);
                     sessionStorage.setItem('userId', response.data.data.userid);
                     sessionStorage.setItem('userName', response.data.data.username);
+                    sessionStorage.setItem('satoken', response.data.data.token);
                     this.$router.push('/homepage');
                 } else {
                     this.$message.error('登录失败！请检查用户名和密码');
