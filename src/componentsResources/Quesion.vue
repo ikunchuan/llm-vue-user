@@ -1,41 +1,28 @@
 <template>
   <div class="main-layout">
 
+    <div class="block text-center">
+    <span class="demonstration">热门题目排行推荐</span>
+    <el-carousel height="300px" motion-blur>
+      <el-carousel-item v-for="item in 4" :key="item">
+        <h3 class="small justify-center" text="2xl">{{ item }}</h3>
+      </el-carousel-item>
+    </el-carousel>
+  </div>
 
-
-    <!-- 筛选条件 -->
-    <section class="filters-section">
-      <!-- 位置搜索框 -->
+<!-- 筛选条件 -->
+<section class="filters-section">
+      <!-- 竞赛名称搜索框 -->
       <div class="filter-item">
-        <input type="text" placeholder="1" />
-      </div>
-      <!-- 日期选择器 -->
-      <div class="filter-item">
-        <input type="date" />
-      </div>
-      <!-- 人数输入框 -->
-      <div class="filter-item">
-        <input type="number" placeholder="1" />
+        <el-input placeholder="请输入相应题库名称" v-model="searchName" class="search-input"></el-input>
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <button>1</button>
+        <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
       </div>
     </section>
 
 
-    <!-- 图标分类 -->
-    <section class="icon-section">
-      <div class="icon-item">
-        <div class="icon-container">
-          <img src="../assets/img/1.png" alt="Logo" class="logo" />
-          <img src="../assets/img/2.png" alt="Image 2" class="logo" />
-          <img src="../assets/img/3.png" alt="Image 3" class="logo" />
-          <img src="../assets/img/4.png" alt="Image 4" class="logo" />
-          <img src="../assets/img/5.png" alt="Image 5" class="logo" />
-        </div>
-      </div>
-    </section>
 
     <!-- 展示卡片 -->
     <section class="cards-section">
@@ -75,29 +62,7 @@ export default {
 
         // 添加更多卡片数据
       ],
-      // 一级导航项
-      navItems: [
-        {
-          name: "关于我们",
-          submenu: [
-            { name: "公司简介", link: "#" },
-            { name: "团队文化", link: "#" },
-            { name: "公司历史", link: "#" }
-          ]
-        },
-        {
-          name: "服务",
-          submenu: [
-            { name: "电话支持", link: "#" },
-            { name: "在线客服", link: "#" },
-            { name: "邮件联系", link: "#" }
-          ]
-        },
-        {
-          name: "社区",
-          submenu: [] // 社区没有二级菜单
-        }
-      ],
+    
       activeDrawer: null, // 当前激活的抽屉
     };
   },
@@ -130,6 +95,27 @@ export default {
 
 
 <style scoped>
+
+.demonstration {
+  color: var(--el-text-color-secondary);
+}
+
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
+  text-align: center;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
+
 /* 外部容器，控制整体布局的宽度和居中 */
 .main-layout {
   max-width: 1200px;
@@ -148,9 +134,10 @@ export default {
 
 
 
-
 /* 筛选条件样式 */
 .filters-section {
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
   display: flex;
   gap: 10px;
   margin: 20px auto;
@@ -159,52 +146,28 @@ export default {
   /* 调整宽度 */
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  border-radius: 30px;
   /* 添加圆角 */
 }
-
-/* 图标分类样式 */
-.icon-section {
-  display: flex;
-  /* 使用 Flexbox 布局 */
-  justify-content: center;
-  /* 水平居中 */
-  align-items: center;
-  /* 垂直居中 */
-  margin: 20px auto;
-  max-width: 960px;
-  /* 限制宽度 */
-  padding: 20px;
-  /* 内边距 */
-  background-color: #ffffff;
-  /* 背景色 */
-  border-radius: 10px;
-  /* 圆角 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  /* 阴影效果 */
+/* 搜索输入框和日期选择器样式 */
+.search-input {
+  width: 200px; /* 根据需要调整宽度 */
 }
 
-.icon-container {
-  display: flex;
-  /* 使用 flexbox 让图片并排 */
-  justify-content: center;
-  /* 居中对齐 */
-  align-items: center;
-  /* 垂直居中 */
-  margin: 0 auto;
-  /* 让整个容器居中 */
-  gap: 110px;
-  /* 设置图片之间的间距 */
+/* 搜索按钮样式 */
+.search-button {
+  background-color: #5A67D8; /* 按钮背景色 */
+  color: white; /* 按钮文字颜色 */
+  border: none;
+  padding: 10px 20px; /* 按钮内边距 */
+  border-radius: 5px; /* 按钮圆角 */
+  cursor: pointer;
 }
 
-.logo {
-  width: 30px;
-  /* 设置图片宽度 */
-  height: auto;
-  /* 保持图片宽高比 */
-  transition: transform 0.2s;
-  /* 添加动画效果（可选） */
+.search-button:hover {
+  background-color: #4A54C0; /* 按钮悬停背景色 */
 }
+
 
 /* 展示卡片样式 */
 .cards-section {
