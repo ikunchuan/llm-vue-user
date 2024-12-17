@@ -12,8 +12,10 @@
         <!-- 右侧按钮 -->
         <div class="header-buttons">
       <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
-      <el-button type="success" size="small">+关注</el-button>
-        </div>
+      <el-button type="success" size="small" @click="joinCommunity">
+        {{ isMember ? "已加入" : "+加入" }}
+      </el-button>        
+    </div>
       </div>
     </div>
 
@@ -99,6 +101,7 @@ export default {
       rankings: [ // 积分排行列表
         // ...用户数据
       ],
+      isMember: false, // 用户是否已加入社区
     };
   },
   computed: {
@@ -114,18 +117,30 @@ export default {
   methods: {
     //获取社区信息
     fetchCommunityInfo() {
-      // 获取从路由传递过来的社区ID
-      console.log("测试获取到的社区ID：", this.communityId);
-      axios.get(`/v1/cmns/cmn/${this.communityId}`)
+  // 获取从路由传递过来的社区ID
+  console.log("测试获取到的社区ID：", this.communityId);
+  axios.get(`/v1/cmns/cmn/${this.communityId}`)
+    .then(response => {
+      console.log("获取到的社区数据：", response.data);
+      // 设置获取到的社区信息
+      this.communityInfo = response.data;
+      // 检查用户是否已经加入社区
+      this.checkMemberStatus();
+    })
+    .catch(error => {
+      console.error("获取社区信息失败：", error);
+    });
+},
+    checkMemberStatus() {
+      // 假设后端提供了一个接口来检查用户是否已经加入社区
+      axios.get(`/ucmns/v1/ucmn/check/${this.communityId}`)
         .then(response => {
-          console.log("获取到的社区数据：", response.data);
-          // 设置获取到的社区信息
-          this.communityInfo = response.data;
+          this.isMember = response.data.isMember;
         })
         .catch(error => {
-          console.error("获取社区信息失败：", error);
+          console.error("检查成员状态失败：", error);
         });
-    },
+      },
     // 获取帖子信息的方法
     fetchPosts() {
       if (this.communityName) {
@@ -173,6 +188,34 @@ export default {
       } else {
         console.error('帖子ID不存在');
       }
+    },
+    // 加入社区
+    joinCommunity() {
+      // 从sessionStorage中获取用户ID
+      const userId = sessionStorage.getItem('userId');
+      if (!userId) {
+        this.$message.error('用户未登录或用户ID不存在');
+        return;
+      }
+
+      // 调用后端接口发送加入社区请求
+      axios.post('/ucmns/v1/ucmn', {
+        userId: userId,
+        communityId: this.communityId
+      })
+      .then(response => {
+        // 根据后端的响应来处理
+        if (response.data === 1) { // 假设后端返回1表示加入成功
+          this.$message.success('加入社区成功');
+          this.isMember = true; // 更新社区成员状态
+        } else {
+          this.$message.error('加入社区失败');
+        }
+      })
+      .catch(error => {
+        console.error('加入社区失败:', error);
+        this.$message.error('加入社区失败');
+      });
     },
     goToPostCreat() {
       this.$router.push({ name: 'PostCreat' ,

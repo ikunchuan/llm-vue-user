@@ -232,6 +232,43 @@ export default {
           this.$message.error('加入社区失败');
         });
     },
+    // 关注作者
+followAuthor() {
+  // 从sessionStorage中获取用户ID
+  const userId = sessionStorage.getItem('userId');
+  if (!userId) {
+    this.$message.error('用户未登录或用户ID不存在');
+    return;
+  }
+
+  // 获取发布者的ID，假设发布者的ID存储在post对象的authorId字段中
+  const authorId = this.post.authorId; // 确保您的post对象中有一个authorId字段
+
+  if (!authorId) {
+    this.$message.error('作者ID不存在');
+    return;
+  }
+
+  // 调用后端接口发送关注作者请求
+  axios.post('/uis/v1/user/follow', {
+    userId: userId,
+    followeeUserId: authorId
+  })
+  .then(response => {
+    // 根据后端的响应来处理
+    if (response.data === 1) { // 假设后端返回1表示关注成功
+      this.$message.success('关注作者成功');
+      // 这里可以更新作者的粉丝数量或相关UI
+    } else {
+      this.$message.error('关注作者失败');
+    }
+  })
+  .catch(error => {
+    console.error('关注作者失败:', error);
+    this.$message.error('关注作者失败');
+  });
+},
+
     addComment() {
       // 从sessionStorage中获取用户ID
       const userId = sessionStorage.getItem('userId');
