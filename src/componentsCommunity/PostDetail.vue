@@ -82,7 +82,7 @@
           </el-card>
 
           <!-- 社区信息模块 -->
-          <el-card class="community-info-card" shadow="hover">
+          <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
             <h4 class="community-name">{{ community.communityName }}</h4>
             <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
             <div class="community-stats">
@@ -281,7 +281,19 @@ export default {
       ).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(
         d.getMinutes()
       ).padStart(2, "0")}`;
-    }
+    },
+    // 点击进入社区详情页面
+    navigateToCommuDetail(community) {
+
+      console.log('点击的社区ID:', community.communityId);  // 确保社区ID能够正确获取
+      this.$router.push({
+        name: 'CommuDetail',
+        params: {
+          communityId: community.communityId,
+          communityName: community.communityName
+        }
+      });
+    },
   }
 }
 
