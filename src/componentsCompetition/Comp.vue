@@ -7,8 +7,8 @@
 
       <!-- 左侧推荐导航 -->
       <div class="recommend-sidebar">
-        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
-          @click="selectSidebarItem(item)">
+        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"  :class="{ active: index === currentIndex }"
+          @click="selectSidebarItem(item)" >
           {{ item.name }}
         </div>
       </div>
@@ -16,7 +16,7 @@
       <div class="recommend-cards">
         <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
           <el-image style="width: 200px; height: 150px; border-radius: 8px"
-            :src="'http://localhost:10086/images/upload/' + card" fit="cover"></el-image>
+            :src="'http://localhost:10086/images/upload/' + card" fit="cover" class="card-image"></el-image>
         </div>
       </div>
 
@@ -100,40 +100,23 @@ export default {
       // 展示卡片的内容
       cards: [],
       filteredCards: [],
+      currentIndex: 0, // 当前激活的导航索引
 
       //条件查询数据
       searchName: '',
       searchStartDate: '',
       searchEndDate: '',
 
-      // 一级导航项
-      navItems: [
-        {
-          name: "关于我们",
-          submenu: [
-            { name: "公司简介", link: "#" },
-            { name: "团队文化", link: "#" },
-            { name: "公司历史", link: "#" }
-          ]
-        },
-        {
-          name: "服务",
-          submenu: [
-            { name: "电话支持", link: "#" },
-            { name: "在线客服", link: "#" },
-            { name: "邮件联系", link: "#" }
-          ]
-        },
-        {
-          name: "社区",
-          submenu: [] // 社区没有二级菜单
-        }
-      ],
       activeDrawer: null, // 当前激活的抽屉
       cards: [],//存储后端查询后返回数据
     };
   },
   methods: {
+    autoSlideSidebar() {
+  this.currentIndex = (this.currentIndex + 1) % this.sidebarItems.length;
+  console.log('Current Index:', this.currentIndex); // 调试输出
+  this.$forceUpdate(); // 强制视图更新
+},
 
     fetchRecommendItems(type) {
       const payload = { popular: 1, type: type };
@@ -275,6 +258,11 @@ export default {
         this.fetchRecommendItems(item.type);
       }
     });
+    this.slideInterval = setInterval(this.autoSlideSidebar, 3000);// 每3秒自动切换导航栏索引
+
+  },
+  beforeDestroy() {
+    clearInterval(this.slideInterval);
   },
 };
 </script>
@@ -302,23 +290,59 @@ export default {
   gap: 20px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  /* background-color: #f9f9f9; */
+  background-color: #FFFFFF;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
 }
 
-/* 推荐卡片容器 */
+/* 左侧推荐导航样式 */
+.recommend-sidebar {
+  width: 200px;
+  background-color: #F4F6F8;
+  border-radius: 8px;
+  padding: 10px 0;
+}
+
+.recommend-sidebar-item {
+  padding: 15px 20px;
+  font-size: 16px;
+  color: #333333;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.recommend-sidebar-item:hover {
+  background-color: #E0E6F8;
+  border-left: 5px solid #5A67D8;
+  color: #5A67D8;
+  font-weight: bold;
+}
+
+.recommend-sidebar-item.active {
+  
+  background-color: #E0E6F8;
+  color: #5A67D8;
+  font-weight: bold;
+  border-left: 5px solid #5A67D8;
+}
+
+
+/* 右侧推荐卡片容器 */
 .recommend-cards {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: space-evenly;
+  justify-content: center;
   /* 均匀分布卡片 */
-  flex: 3;
+  flex: 1;
 }
 
 /* 单个推荐卡片样式 */
 .recommend-card {
+  flex: 0 1 calc(33.33% - 20px); /* 三列布局 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -333,7 +357,23 @@ export default {
 
 .recommend-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+.card-image {
+  width: 100%;
+  height: 200px; /* 调整图片高度 */
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.recommend-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+
+
+
 /* 筛选条件样式 */
 .filters-section {
   display: flex;
