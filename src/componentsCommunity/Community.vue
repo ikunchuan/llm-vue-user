@@ -37,11 +37,11 @@
                                 <p class="post-summary">{{ item.postContent }}</p>
 
                                 <!-- 帖子互动信息 -->
-                                <!-- <div class="post-info">
-                                    <span><i class="el-icon-thumb" /> {{ item.likes || 0 }}</span>
-                                    <span><i class="el-icon-chat-line-round" /> {{ item.comments || 0 }}</span>
-                                    <span><i class="el-icon-star-off" /> {{ item.favorites || 0 }}</span>
-                                </div> -->
+                                <div class="post-info">
+                                    <span><i class="el-icon-thumb" /> 👍{{ item.likeCount || 0 }}</span>
+                                    <span><i class="el-icon-star-off" /> 🌟{{ item.favoriteCount || 0 }}</span>
+                                    <span><i class="el-icon-chat-line-round" /> ▭{{ item.commentCount || 0 }}</span>
+                                </div>
                             </div>
                         </el-card>
                     </div>
@@ -165,6 +165,9 @@ export default {
     created() {
         this.fetchHotPosts(); // 在组件创建时获取最热帖子
         this.fetchPopularCommunities(); // 获取推荐社区
+        this.contentItems.forEach(item => {
+            this.getPostCounts(item.postId); // 为每个帖子获取统计信息
+        });
     },
     computed: {
         // 根据搜索关键字过滤帖子
@@ -246,6 +249,11 @@ export default {
                 .then(response => {
                     console.log('最热帖子数据:', response.data); // 打印数据到控制台
                     this.contentItems = response.data;
+
+                    // 在这里调用 getPostCounts
+                    this.contentItems.forEach(item => {
+                        this.getPostCounts(item.postId);
+                    });
                 })
                 .catch(error => {
                     console.error('获取最热帖子失败:', error);
@@ -285,6 +293,36 @@ export default {
                     console.error('搜索帖子失败:', error);
                 });
         },
+
+        // 获取帖子的点赞数、评论数和收藏数
+        getPostCounts(postId) {
+            console.log('获取帖子统计信息...');
+            axios.get(`v1/posts/post/allcount/${postId}`)
+                .then(response => {
+                    console.log('帖子统计信息:', response.data);
+                    const postDTO = response.data;
+                    this.updatePostCounts(postDTO); // 传递整个 postDTO 对象
+                })
+                .catch(error => {
+                    console.error('获取帖子统计信息失败:', error);
+                    ElMessage.error('获取帖子统计信息失败');
+                });
+        },
+
+        // 更新帖子统计信息的方法
+        updatePostCounts(postDTO) {
+            const index = this.contentItems.findIndex(item => item.postId === postDTO.postId);
+            if (index !== -1) {
+                this.contentItems[index] = {
+                    ...this.contentItems[index],
+                    likeCount: postDTO.likeCount,
+                    commentCount: postDTO.commentCount,
+                    favoriteCount: postDTO.favoriteCount
+                };
+            }
+        },
+
+
         // 打开添加社区的对话框
         openAddDialog() {
             console.log('打开社区对话框');

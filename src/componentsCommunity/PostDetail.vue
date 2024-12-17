@@ -10,9 +10,9 @@
             <h2 class="post-title">{{ post.postTitle }}</h2>
             <!-- 点赞、收藏、浏览量 -->
             <div class="post-stats">
-              <span><i class="el-icon-thumb"></i> {{ post.likes || 0 }} 点赞</span>
-              <span><i class="el-icon-star-on"></i> {{ post.favorites || 0 }} 收藏</span>
-              <span><i class="el-icon-view"></i> {{ post.views || 0 }} 浏览</span>
+              <span><i class="el-icon-thumb"></i> {{ post.likeCount || 0 }} 点赞</span>
+              <span><i class="el-icon-star-on"></i> {{ post.favoriteCount || 0 }} 收藏</span>
+              <span><i class="el-icon-view"></i> {{ post.commentCount || 0 }} 评论</span>
               <span>作者: {{ post.authorName }}</span>
               <span>社区: {{ post.communityName }}</span>
               <span>发布时间: {{ formatDate(post.createdTime) }}</span>
@@ -82,7 +82,7 @@
           </el-card>
 
           <!-- 社区信息模块 -->
-          <el-card class="community-info-card" shadow="hover">
+          <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
             <h4 class="community-name">{{ community.communityName }}</h4>
             <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
             <div class="community-stats">
@@ -106,7 +106,17 @@ export default {
   name: "PostDetail",
   data() {
     return {
-      post: {},
+      post: {
+        postId: "",
+        postTitle: "",
+        postContent: "",
+        likeCount: 0,
+        favoriteCount: 0,
+        commentCount: 0,
+        authorName: "",
+        communityName: "",
+        createdTime: "",
+      },
       author: {},
       community: {},
       isMember: false, // 是否已加入社区
@@ -149,11 +159,31 @@ export default {
           this.post = response.data;
           this.fetchAuthorDetails(this.post.userId);
           this.fetchCommunityDetails(this.post.communityId);
+          this.getPostCounts(postId); // 获取帖子统计信息
         })
         .catch((error) => {
           console.error("获取帖子详情失败:", error);
         });
     },
+    // 获取帖子的点赞数、评论数和收藏数
+    getPostCounts(postId) {
+      axios.get(`v1/posts/post/allcount/${postId}`)
+        .then(response => {
+          console.log('帖子统计信息:', response.data);
+          if (response.data.length !== 0) {
+            this.post.likeCount = response.data.likeCount;
+            this.post.commentCount = response.data.commentCount;
+            this.post.favoriteCount = response.data.favoriteCount;
+          } else {
+            console.error('获取帖子统计信息失败:', response.data.message);
+          }
+        })
+        .catch(error => {
+          console.error('获取帖子统计信息失败:', error);
+        });
+    },
+
+
     fetchAuthorDetails(userId) {
       axios.get(`/uis/v1/ui/${userId}`)
         .then((response) => {
@@ -244,7 +274,6 @@ export default {
       this.displayedComments = this.comments.length; // 显示所有评论
     },
 
-
     formatDate(date) {
       const d = new Date(date);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -253,8 +282,21 @@ export default {
         d.getMinutes()
       ).padStart(2, "0")}`;
     },
-  },
-};
+    // 点击进入社区详情页面
+    navigateToCommuDetail(community) {
+
+      console.log('点击的社区ID:', community.communityId);  // 确保社区ID能够正确获取
+      this.$router.push({
+        name: 'CommuDetail',
+        params: {
+          communityId: community.communityId,
+          communityName: community.communityName
+        }
+      });
+    },
+  }
+}
+
 </script>
 
 <style scoped>
