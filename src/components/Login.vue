@@ -71,6 +71,15 @@ export default {
             },
         };
     },
+
+    created() {
+        // 尝试从 sessionStorage 中获取用户名并回显到输入框
+        const storedUserName = sessionStorage.getItem('userName');
+        if (storedUserName) {
+            this.loginForm.userName = storedUserName;
+        }
+    },
+
     methods: {
         // 异步处理登录
         async handleLogin() {
@@ -81,7 +90,7 @@ export default {
                     console.log('信息', response.data);
                     sessionStorage.setItem('userId', response.data.data.userid);
                     sessionStorage.setItem('userName', response.data.data.username);
-                    this.$router.push('/home');
+                    this.$router.push('/homepage');
                 } else {
                     this.$message.error('登录失败！请检查用户名和密码');
                 }

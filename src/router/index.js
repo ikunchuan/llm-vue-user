@@ -42,7 +42,7 @@ const routes = [
     component: () => import("../components/LoginPage.vue"), // 登录页面主体
     children: [
       {
-        path: "/login",
+        path: "",
         name: "Login",
         component: Login,
       },

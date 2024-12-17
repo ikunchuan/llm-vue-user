@@ -69,6 +69,7 @@
 
 <script>
 import { User, Lock, CircleCheckFilled } from '@element-plus/icons-vue';
+import { nextTick } from 'vue';
 
 export default {
     data() {
@@ -90,7 +91,13 @@ export default {
             },
         };
     },
+
     methods: {
+        // 跳转到登录页面
+        goToLogin() {
+            this.$router.push('/login');
+        },
+
         // 注册处理函数
         async handleRegister() {
             if (this.registerForm.userPassword !== this.registerForm.againPassword) {
@@ -100,27 +107,28 @@ export default {
                 }
                 return this.$message.error('两次密码不一致');
             }
+
             if (!this.rememberMe) {
                 return this.$message.warning('请勾选同意协议');
             }
+
             const response = await this.$http.post('/uis/v1/register', this.registerForm);
 
             if (response.data.code === 200) {
                 this.$message.success('注册成功');
-                sessionStorage.setItem('userId', response.data.data.userid);
-                sessionStorage.setItem('userName', response.data.data.username);
+                sessionStorage.setItem('userName', this.registerForm.userName);
                 // 注册成功后把账号跳转到登录页面
-                this.$router.push('/login');
+                // 在下一次 DOM 更新后执行跳转
+                nextTick(() => {
+                    this.$router.push('/login');
+                    console.log("跳转到登录页面"); // 注册成功后，确认是否跳转
+                });
             } else if (response.data.code === 401) {
                 this.$message.warning('用户名已存在');
             } else {
                 this.$message.error('注册失败');
             }
-        },
 
-        // 跳转到登录页面
-        goToLogin() {
-            this.$router.push('/login');
         },
 
         resstForm() {
