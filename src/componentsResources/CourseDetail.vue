@@ -1,51 +1,52 @@
 <template>
-  <!-- 根模板，包含整个页面的结构 -->
-  <div>
-    <!-- 顶部导航栏 -->
-  </div>
-
-  <!-- 主内容区域 -->
-  <div class="main">
-    <!-- 视频和课程信息区域 -->
-    <section class="course-info">
-      <!-- 视频占位区 -->
-      <div class="video">
+  <div class="course-detail-container">
+    <!-- Video and Course Introduction -->
+    <div class="top-section">
+      <!-- Video Section -->
+      <div class="video-container">
+        <!-- <video controls :src="bvid" class="video-player"></video> -->
         <BilibiliPlayer bvid="BV1Eb411u7Fw" />
       </div>
-
-      <!-- 课程详细信息 -->
-      <div class="details">
-        <h1>{{ courseDetail.courseName }}</h1>
-        <p>课程介绍:{{ courseDetail.courseDescription }}</p>
-        <p>预计学习时长:{{ courseDetail.courseDuration }}</p>
-        <p>课程等级:{{ courseDetail.courseDifficultyLevel }}</p>
-        <p>用户评分:{{ courseDetail.courseRating }}</p>
-        <p>课程价格:{{ courseDetail.coursePrice }}</p>
-
+      <!-- Course Info -->
+      <div class="course-info">
+        <h2>{{ courseDetail.courseName }}</h2>
+        <p>{{ courseDetail.courseDescription }}</p>
+        <div class="course-buttons">
+          <el-button type="primary" @click="handleCollect">收藏课程</el-button>
+          <el-button @click="onAnswerDetailClick">题目推荐</el-button>
+        </div>
+        <div class="course-meta">
+          <p>用户评分:{{ courseDetail.courseRating }}</p>
+          <p>课程等级: {{ courseDetail.courseDifficultyLevel }}</p>
+          <p>预计学习时长: {{ courseDetail.courseDuration }}</p>
+          <p>课程价格: {{ courseDetail.coursePrice }}</p>
+        </div>
       </div>
-      <button @click="onAnswerDetailClick">题目推荐</button>
-    </section>
-
-
-    <!-- 标签切换区域 -->
-    <div class="tabs">
-      <!-- 标签按钮 -->
-      <div class="tab active">介绍</div>
-      <div class="tab" @click="onTabClick('chapter')">目录</div>
-      <div class="tab">评价</div>
     </div>
 
-    <!-- 内容区 -->
+    <!-- Course Content Tabs -->
+    <div class="bottom-section">
+      <el-tabs v-model="activeTab">
+        <el-tab-pane label="介绍" name="intro">
+          <!-- <p>{{ course.fullDescription }}</p> -->
+        </el-tab-pane>
+        <el-tab-pane  label="目录" >
+          
+          <span> {{ chapterDetail.chapterName }}</span>
+        </el-tab-pane>
+
+        <el-tab-pane label="评价" name="reviews">
+          <!-- <div v-for="(review, index) in course.reviews" :key="index">
+            <p>{{ review.comment }}</p> -->
+            <span>评分: {{ courseDetail.courseRating }}</span>
+          <!-- </div> -->
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
     <div class="content-area">
       <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
-      <section class="content-left" v-if="!loadingChapter && showChapterContent">
-        <h2>章节内容</h2>
-        <section class="cards-section">
-          <div class="card" v-for="(card, index) in chapterDetail" :key="index">
-            <div class="card-title">{{ card.chapterName }}</div>
-          </div>
-        </section>
-      </section>
+     
 
       <!-- 右侧推荐课程区 -->
       <aside class="content-right">
@@ -53,6 +54,9 @@
         <p>展示与本课程相关的推荐课程。</p>
       </aside>
     </div>
+
+
+    
   </div>
 </template>
 
@@ -65,12 +69,8 @@ export default {
   },
   data() {
     return {
-      bvid: null,
-      videoList: [
-        // { bvid: "BV1Eb411u7Fw" },
-        // { bvid: "BV1A54y1s7SM" },
-      ],
-      courseDetail: {}, // 存储竞赛详情数据
+      activeTab: 'intro',
+      courseDetail: {}, // 存储课程详情数据
       chapterDetail: [],//存储章节详情数据
       loading: true,        // 加载状态
       error: null,      // 错误信息
@@ -80,12 +80,12 @@ export default {
         '1': '13', // 假设课程ID 1 对应 题目类别ID 13
         '2': '14', // 假设课程ID 2 对应 题目类别ID 14
         // 添加更多映射
-      },
+        }
     };
   },
   created() {
     this.fetchCourseDetail(); // 在组件创建时获取课程详情
-
+this.fetchChapter();
   },
   mounted() {
     const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
@@ -93,8 +93,14 @@ export default {
 
   },
   methods: {
-    //跳转题目详情
-    onAnswerDetailClick() {
+    handleCollect() {
+      this.$message.success('课程已收藏');
+    },
+    handleRecommend() {
+      this.$message.info('推荐的题目已展示');
+    },
+     //跳转题目详情
+     onAnswerDetailClick() {
       const courseId = this.$route.params.courseId;
       const categoryId = this.courseToCategoryMapping[courseId];
 
@@ -144,153 +150,69 @@ export default {
 
   }
 
-};
+  };
+  
+
 </script>
 
 <style scoped>
-/* 全局背景色 */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #F4F6F8;
-  /* 浅灰背景 */
-}
+.course-detail-container {
+max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background-color: #f4f6f8;
 
-/* 主内容区样式 */
-.main {
+
   max-width: 1200px;
   /* 限制页面的最大宽度 */
   margin: 0 auto;
   /* 居中对齐 */
-  padding: 20px;
-  /* 增加内边距，避免贴边 */
-  background-color: #f4f6f8;
-  /* 设置背景颜色 */
+  
+ 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   /* 可选：添加阴影效果 */
   border-radius: 10px;
   /* 可选：添加圆角效果 */
 }
 
-/* 视频和课程信息区域样式 */
-.course-info {
+.top-section {
   display: flex;
   gap: 20px;
-  margin-bottom: 220px;
 }
 
-.course-info .video {
-  width: 50%;
-  /* 视频区域宽度占50% */
-  height: 300px;
-  background-color: #E0E0E0;
-  /* 灰色占位背景 */
-  border-radius: 5px;
-}
-
-.course-info .details {
+.video-container {
   flex: 1;
-  /* 自适应宽度 */
-  background-color: #FFFFFF;
-  /* 白色背景 */
+}
+
+.video-player {
+  width: 100%;
+  height: 300px;
+  border-radius: 8px;
+  background-color: black;
+}
+
+.course-info {
+  flex: 1;
   padding: 20px;
-  border-radius: 5px;
+  background: #ffffff;
+  border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* 阴影效果 */
 }
 
-.course-info .details h1 {
-  font-size: 22px;
-  margin-bottom: 10px;
+.course-buttons {
+  margin: 10px 0;
 }
 
-.course-info .details p {
-  font-size: 14px;
-  color: #666666;
+.course-meta p {
+  margin: 5px 0;
 }
 
-/* 标签切换区域样式 */
-.tabs {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.tabs div {
-  padding: 10px 20px;
-  background-color: #FFFFFF;
-  /* 白色背景 */
-  border-radius: 5px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* 阴影效果 */
-}
-
-.tabs div.active {
-  background-color: #5A67D8;
-  /* 活跃标签背景色：紫色 */
-  color: #FFFFFF;
-  /* 活跃标签文字颜色：白色 */
-}
-
-/* 内容区样式 */
-.content-area {
-  position: relative;
-  /* 为绝对定位的子元素提供定位上下文 */
-  padding-right: 320px;
-  /* 为固定位置的右侧内容留出空间 */
-  display: flex;
-  gap: 50px;
-}
-
-.content-left {
-  flex: 3;
-  /* 左侧区域占比更大 */
-  background-color: #FFFFFF;
-  /* 白色背景 */
+.bottom-section {
+  background: #ffffff;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.content-left h2 {
-  font-size: 18px;
-  margin-bottom: 15px;
-}
-
-.content-left p {
-  font-size: 14px;
-  color: #666666;
-  /* 字体颜色 */
-  line-height: 1.8;
-  /* 行高 */
-}
-
-.content-right {
-  position: fixed;
-  /* 固定定位 */
-  top: 710px;
-  /* 根据需要调整顶部距离 */
-  right: 320px;
-  /* 根据需要调整右侧距离 */
-  width: 260px;
-  /* 固定宽度 */
-  background-color: #FFFFFF;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-
-/* 底部区域样式 */
-.footer {
-  background-color: #F4F6F8;
-  /* 浅灰背景 */
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
-  color: #666666;
-  /* 字体颜色 */
-  margin-top: 20px;
 }
 </style>
