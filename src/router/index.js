@@ -120,7 +120,7 @@ const routes = [
         component: CommuSearch,
       },
       {
-        path: "postcreat",
+        path: "postcreat/:communityId/:communityName",
         name: "PostCreat",
         component: PostCreat,
       },
