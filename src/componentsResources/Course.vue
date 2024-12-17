@@ -273,6 +273,8 @@ export default {
   padding: 10px;
   border-radius: 10px;
   /* 添加圆角 */
+  
+  
 }
 
 .card img {
@@ -290,6 +292,14 @@ export default {
 .card-info {
   color: #777;
   font-size: 0.9em;
+  /* text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;    */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 限制显示的行数 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+ 
 }
 
 .card-footer {
