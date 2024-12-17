@@ -1,31 +1,76 @@
 <template>
+  <el-container class="openai-app">
 
-  <div class="common-layout">
+    <el-aside v-if="isSidebarVisible" class="sidebar">
+      <!-- 左侧功能菜单 -->
+      <el-menu default-active="1">
+        <el-menu-item index="1" @click="navigate('history')">
+          <i></i>
+          <span>对话历史</span>
+        </el-menu-item>
+        <el-menu-item index="2" @click="navigate('settings')">
+          <i></i>
+          <span>系统设置</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
+
     <el-container>
-      <el-aside width="200px">
-        <el-button  type="primary" round @click="openIframe">开启会话</el-button>
-      </el-aside>
+      <el-header class="header">
+        <div class="header-left">
+          <div class="logo">OpenAI</div>
+          <div class="menu">
+            <el-button type="text" @click="toggleSidebar">功能菜单</el-button>
+          </div>
+        </div>
+        <div class="header-right">
+          <el-dropdown>
+            <!-- <span class="el-dropdown-link">
+              用户中心<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click="navigate('profile')">个人资料</el-dropdown-item>
+              <el-dropdown-item @click="navigate('settings')">设置</el-dropdown-item>
+              <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
+            </el-dropdown-menu> -->
+          </el-dropdown>
+        </div>
+      </el-header>
 
-      <el-container>
-        <el-header class="lingyantitle">
-          灵验领航,伴您一路成长
-        </el-header>
+      <!-- 中间对话区域 -->
+      <el-main class="chat-container">
+        <div><!-- 用户和助手消息展示 -->
+          <div v-for="(message, index) in messages" :key="index" :class="['message', message.role]">
+            <img :src="message.role.avatar" alt="user" class="avatar" />
+            <div class="bubble">{{ message.content }}</div>
+          </div>
+        </div>
 
-        <el-main>
+        <!-- AI 正在输入的加载动画 -->
+        <div v-if="isTyping" class="message_ai">
+          <el-icon class="typing-icon" icon="el-icon-loading"></el-icon>
+          <img src="https://via.placeholder.com/32" alt="AI" class="avatar" />
+          <div class="bubble typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </el-main>
 
-          <iframe src="http://localhost/chatbot/YsfCrau3h9HVXv8e" v-show="iframeVisible"
-           style="width: 100%; height: 95%; min-height: 830px" frameborder="0" allow="microphone">
-          </iframe>
-        
-        </el-main>
-      </el-container>
+      <el-footer>
+        <!-- 底部对话框 -->
+        <div class="input-area">
+          <el-input v-model="inputMessage" placeholder="输入消息..." @keyup.enter="sendMessage" class="input-box">
+            <template #append>
+              <el-button type="primary" icon="el-icon-s-promotion" :disabled="!inputMessage.trim()"
+                @click="sendMessage">
+                发送
+              </el-button>
+            </template>
+          </el-input>
+        </div>
+      </el-footer>
     </el-container>
-
-  </div>
-
-
-
-
+  </el-container>
 </template>
 
 <script>
@@ -36,19 +81,13 @@ export default {
     return {
       isSidebarVisible: true, // 控制侧边栏显示
       inputMessage: "", // 用户输入
-      messages: [{ role: "", content: "", avatar: "" }], //存储整个用户的对话文本//AI的对话文本
+      messages: [], //存储整个用户的对话文本//AI的对话文本
       eventSource: null, //保存ES对象
       isTyping: false,// 是否显示“AI 正在输入”
-      iframeVisible: false,
     };
   },
 
   methods: {
-
-    openIframe() {
-      this.iframeVisible = !this.iframeVisible;
-    },
-
     toggleSidebar() {
       this.isSidebarVisible = !this.isSidebarVisible;
     },
@@ -81,8 +120,7 @@ export default {
       this.messages.push(aiMessage); // 预留一条消息，动态更新内容
 
       this.eventSource.onmessage = (event) => {
-        aiMessage.content += event.data.replace(/\n/g, "<br/>") // 更新 AI 消息内容
-        this.scrollToBottom(); // 每次消息更新后滚动到最底部
+        aiMessage.content += event.data.replace(/\n/g, "<br />") // 更新 AI 消息内容
       };
 
       this.eventSource.onerror = () => {
@@ -106,13 +144,6 @@ export default {
 
     },
 
-    // 自动滚动到最底部
-    scrollToBottom() {
-      this.$nextTick(() => {
-        const chatContainer = this.$el.querySelector('.chat-container');
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-      });
-    },
     // // 格式化响应数据
     // formatMessage(message) {
     //   const formattedMessage = message.replace(/([a-zA-Z]+)/g, "$1 ").replace(/([。！？])/g, "$1\n");
@@ -166,7 +197,6 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  gap: 10px;
   background: #fff;
 }
 
@@ -226,21 +256,6 @@ export default {
 
 .typing-indicator span:nth-child(3) {
   animation-delay: 0.4s;
-}
-
-.lingyantitle {
-  display: flex;
-  justify-content: center;
-  /* 水平居中 */
-  padding: 20px;
-  /* 标题留出空隙 美观 */
-  font-size: 30px;
-}
-
-.sideconversition {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
 }
 
 @keyframes typing {
