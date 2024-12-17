@@ -79,8 +79,8 @@ export default {
                 if (response.data.code === 200) {
                     this.$message.success('登录成功！');
                     console.log('信息', response.data);
-                    localStorage.setItem('userId', response.data.data.userid);
-                    localStorage.setItem('userName', response.data.data.username);
+                    sessionStorage.setItem('userId', response.data.data.userid);
+                    sessionStorage.setItem('userName', response.data.data.username);
                     this.$router.push('/home');
                 } else {
                     this.$message.error('登录失败！请检查用户名和密码');
