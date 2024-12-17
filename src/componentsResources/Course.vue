@@ -33,7 +33,7 @@
     <!-- 展示卡片 -->
     <section class="cards-section">
       <div class="card" v-for="(card, index) in filteredCards" :key="index" @click="goToDetail(card.courseId)">
-        <img :src="'http://localhost:10086/images/upload/' + card.courseImgUrl" alt="Card Image" />
+        <img style="width: 360px; height: 230px":src="'http://localhost:10086/images/upload/' + card.courseImgUrl" alt="Card Image" />
         <div class="card-title">{{ card.courseName }}</div>
         <div class="card-info">{{ card.courseDescription }}</div>
         <div class="card-footer">
@@ -65,28 +65,7 @@ export default {
       searchQuery: '', //存储搜索条件
       filteredCards: [],//用于存储筛选后的卡片
       // 一级导航项
-      navItems: [
-        {
-          name: "关于我们",
-          submenu: [
-            { name: "公司简介", link: "#" },
-            { name: "团队文化", link: "#" },
-            { name: "公司历史", link: "#" }
-          ]
-        },
-        {
-          name: "服务",
-          submenu: [
-            { name: "电话支持", link: "#" },
-            { name: "在线客服", link: "#" },
-            { name: "邮件联系", link: "#" }
-          ]
-        },
-        {
-          name: "社区",
-          submenu: [] // 社区没有二级菜单
-        }
-      ],
+     
       activeDrawer: null, // 当前激活的抽屉
     };
   },
@@ -279,7 +258,6 @@ export default {
 
 .card img {
   max-width: 100%;
-  height: auto;
   border-radius: 8px;
   /* 图片圆角 */
 }
