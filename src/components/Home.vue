@@ -113,7 +113,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
@@ -206,7 +205,7 @@ export default {
 
     fetchPopularCompetitions() {
       const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
-      axios
+      this.$http
         .post('comp/v1/search', competitionSearch)
         .then(response => {
           if (response.data && response.data.list) {
