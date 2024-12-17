@@ -117,9 +117,9 @@ export default {
   methods: {
     //获取社区信息
     fetchCommunityInfo() {
-  // 获取从路由传递过来的社区ID
-  console.log("测试获取到的社区ID：", this.communityId);
-  axios.get(`/v1/cmns/cmn/${this.communityId}`)
+      // 获取从路由传递过来的社区ID
+      console.log("测试获取到的社区ID：", this.communityId);
+      axios.get(`/v1/cmns/cmn/${this.communityId}`)
     .then(response => {
       console.log("获取到的社区数据：", response.data);
       // 设置获取到的社区信息
@@ -220,7 +220,8 @@ export default {
     goToPostCreat() {
       this.$router.push({ name: 'PostCreat' ,
         params:{
-          communityId : this.communityId,
+          communityId: this.communityId,
+          communityName: this.communityName,
           userId : sessionStorage.getItem("userId")
         }
       });

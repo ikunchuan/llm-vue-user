@@ -46,7 +46,7 @@ const routes = [
     component: () => import("../components/LoginPage.vue"), // 登录页面主体
     children: [
       {
-        path: "",
+        path: "", //默认加载login组件
         name: "Login",
         component: Login,
       },
@@ -120,7 +120,7 @@ const routes = [
         component: CommuSearch,
       },
       {
-        path: "postcreat",
+        path: "postcreat/:communityId/:communityName",
         name: "PostCreat",
         component: PostCreat,
       },
@@ -135,7 +135,7 @@ const routes = [
         component: Me,
         children: [
           {
-            path: "",
+            path: "", //默认加载创作中心组件
             name: "UserPostCenter",
             component: UserPostCenter,
           },

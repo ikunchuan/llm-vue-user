@@ -95,7 +95,8 @@
             <el-main class="right">
                 <el-card>
                     <el-row justify="space-evenly" style="text-align: center;">
-                        <el-col :span="4" v-for="(item, index) in items" :key="index">
+                        <el-col :span="4" v-for="(item, index) in items" :key="index" @click="goTo(item.path)"
+                            class="pointer">
                             <div class="nav-item">{{ item.name }}</div>
                         </el-col>
                     </el-row>
@@ -150,7 +151,7 @@
         <template #footer>
             <div>
                 <el-button @click="closeDialog">取消</el-button>
-                <el-button type="primary" @click="editBio">确定</el-button>
+                <el-button type="primary" @click="editProfile">确定</el-button>
             </div>
         </template>
     </el-dialog>
@@ -184,15 +185,28 @@ export default {
             dialogFormVisible: false,
 
             items: [
-                { name: '创作中心' },
-                { name: '我的收藏' },
-                { name: '灵验领航' },
-                { name: '浏览记录' },
+                { name: '创作中心', path: '' },
+                { name: '我的收藏', path: 'myfavorite' },
+                { name: '灵验领航', path: 'lingyanlinghang' },
+                { name: '浏览记录', path: 'browsinghistory' },
             ],
         };
     },
 
     methods: {
+        goTo(itemPath) {
+            this.$router.push('/home/me/' + itemPath);
+        },
+
+        userAvatar() {
+            if (this.userInfo.userAvatar === null) {
+                console.log(this.avatarUrl)
+                return this.avatarUrl;
+            } else {
+                console.log(this.avatarUrl)
+                return this.userInfo.userAvatar;
+            }
+        },
 
         openDialog() {
             this.form = {};
