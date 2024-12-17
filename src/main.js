@@ -1,24 +1,21 @@
-import { createApp } from 'vue'
+import { createApp } from "vue";
 
-
-import App from './App.vue'
+import App from "./App.vue";
 
 //ElementPlus UI
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
 
 //路由
-import router from './router/index.js'
+import router from "./router/index.js";
 
 //引入axios
-import axios from 'axios'
+import axios from "axios";
 
+// import "./style.css";
+// import "./assets/tailwind.css";
 
-import './assets/tailwind.css';
-
-
-
-const app = createApp(App)
-app.use(router).use(ElementPlus).mount('#app')
-axios.defaults.baseURL="http://localhost:10086"
-app.config.globalProperties.$http=axios
+const app = createApp(App);
+app.use(router).use(ElementPlus).mount("#app");
+axios.defaults.baseURL = "http://localhost:10086";
+app.config.globalProperties.$http = axios;
