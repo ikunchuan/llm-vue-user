@@ -89,7 +89,7 @@
               <p>帖子数量: <strong>{{ community.postCount || 0 }}</strong></p>
               <p>成员数量: <strong>{{ community.memberCount || 0 }}</strong></p>
             </div>
-            <el-button type="primary" size="small" @click="joinCommunity">
+            <el-button type="primary" size="small" @click="joinCommunity()">
               {{ isMember ? "已加入社区" : "加入社区" }}
             </el-button>
           </el-card>
@@ -141,6 +141,7 @@ export default {
     },
   },
   methods: {
+
     fetchPostDetails() {
       const postId = this.$route.params.postId;
       axios.get(`/v1/posts/post/${postId}`)
@@ -193,6 +194,43 @@ export default {
         this.newComment = this.newComment.substring(0, 100);
         this.$message.warning("评论内容不能超过100字");
       }
+    },
+    // 加入社区
+    joinCommunity() {
+      // 从sessionStorage中获取用户ID
+      const userId = sessionStorage.getItem('userId');
+      if (!userId) {
+        this.$message.error('用户未登录或用户ID不存在');
+        return;
+      }
+
+      // 获取社区ID，这里假设社区ID是从帖子详情中获取的
+      const communityId = this.post.communityId;
+
+      // 检查是否已经加入社区
+      if (this.isMember) {
+        this.$message.info('您已加入该社区');
+        return;
+      }
+
+      // 调用后端接口发送加入社区请求
+      axios.post('/ucmns/v1/ucmn', {
+        userId: userId,
+        communityId: communityId
+      })
+        .then(response => {
+          // 根据后端的响应来处理
+          if (response.data === 1) { // 假设后端返回1表示加入成功
+            this.$message.success('加入社区成功');
+            this.isMember = true; // 更新社区成员状态
+          } else {
+            this.$message.error('加入社区失败');
+          }
+        })
+        .catch(error => {
+          console.error('加入社区失败:', error);
+          this.$message.error('加入社区失败');
+        });
     },
     addComment() {
       // 从sessionStorage中获取用户ID
