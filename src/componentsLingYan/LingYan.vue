@@ -36,7 +36,7 @@ export default {
     return {
       isSidebarVisible: true, // 控制侧边栏显示
       inputMessage: "", // 用户输入
-      messages: [], //存储整个用户的对话文本//AI的对话文本
+      messages: [{ role: "", content: "", avatar: "" }], //存储整个用户的对话文本//AI的对话文本
       eventSource: null, //保存ES对象
       isTyping: false,// 是否显示“AI 正在输入”
       iframeVisible: false,
@@ -81,7 +81,8 @@ export default {
       this.messages.push(aiMessage); // 预留一条消息，动态更新内容
 
       this.eventSource.onmessage = (event) => {
-        aiMessage.content += event.data.replace(/\n/g, "<br />") // 更新 AI 消息内容
+        aiMessage.content += event.data.replace(/\n/g, "<br/>") // 更新 AI 消息内容
+        this.scrollToBottom(); // 每次消息更新后滚动到最底部
       };
 
       this.eventSource.onerror = () => {
@@ -105,6 +106,13 @@ export default {
 
     },
 
+    // 自动滚动到最底部
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const chatContainer = this.$el.querySelector('.chat-container');
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      });
+    },
     // // 格式化响应数据
     // formatMessage(message) {
     //   const formattedMessage = message.replace(/([a-zA-Z]+)/g, "$1 ").replace(/([。！？])/g, "$1\n");
@@ -158,6 +166,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
+  gap: 10px;
   background: #fff;
 }
 

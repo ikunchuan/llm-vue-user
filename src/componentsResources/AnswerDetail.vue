@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="answer-detail">
     <!-- 页面头部 -->
     <el-header class="top-info">
       <el-container>
@@ -134,6 +134,21 @@ export default {
 </script>
 
 <style scoped>
+.answer-detail {
+  max-width: 1200px;
+  /* 限制页面的最大宽度 */
+  margin: 0 auto;
+  /* 居中对齐 */
+  padding: 20px;
+  /* 增加内边距，避免贴边 */
+  background-color: #f4f6f8;
+  /* 设置背景颜色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 可选：添加阴影效果 */
+  border-radius: 10px;
+  /* 可选：添加圆角效果 */
+}
+
 .top-info {
   width: 100%;
   height: auto;

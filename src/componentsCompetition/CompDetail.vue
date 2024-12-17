@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import { ElMessage } from 'element-plus';
 export default {
   name: 'CompDetail',
   data() {
@@ -120,7 +121,7 @@ export default {
       }
     },
 
-
+    //收藏竞赛
     toggleFavorite() {
       const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
       const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
@@ -129,20 +130,24 @@ export default {
         this.$message.error('请先登录');
         return;
       }
-
       this.$http.post(`http://localhost:10086/comp/v1/favorite`, {
         userId: userId,
         competitionId: compId
       })
         .then(response => {
-          this.$message.success('收藏成功');
-          // 可以在这里处理收藏成功后的逻辑，比如更新UI等
-        })
-        .catch(error => {
-          this.$message.error('收藏失败: ' + error.message);
-          // 可以在这里处理收藏失败的逻辑
+          // 假设后端返回 表示收藏成功
+          if (response.data == 1) {
+            ElMessage({ message: '收藏成功！', type: "success" });
+          } else {
+            ElMessage({ message: '收藏失败！', type: "error" });
+          }
+        }
+        ).catch((err) => {
+          ElMessage({ message: '请求失败，请重试', type: "error" });
         });
     },
+
+    //
 
     // 假设你有一个获取当前用户ID的方法
     getCurrentUserId() {
