@@ -192,7 +192,7 @@ export default {
         },
 
         countFollowers() {
-            if (localStorage.userId && localStorage.userName) {
+            if (sessionStorage.userId && sessionStorage.userName) {
                 return this.followersInfo.length;
             } else {
                 return 0;
@@ -200,7 +200,7 @@ export default {
         },
 
         countFans() {
-            if (localStorage.userId && localStorage.userName) {
+            if (sessionStorage.userId && sessionStorage.userName) {
                 return this.fansInfo.length;
             } else {
                 return 0;
@@ -208,7 +208,7 @@ export default {
         },
     },
     mounted() {
-        const userId = localStorage.userId;
+        const userId = sessionStorage.userId;
         this.$http.get(`/uis/v1/ui/${userId}`)
             .then(response => {
                 console.log('User data:', response.data);

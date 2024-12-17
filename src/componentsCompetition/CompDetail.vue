@@ -151,8 +151,8 @@ export default {
 
     // 假设你有一个获取当前用户ID的方法
     getCurrentUserId() {
-      console.log('localStorage.userId:', localStorage.userId);
-      return localStorage.userId;
+      console.log('sessionStorage.userId:', sessionStorage.userId);
+      return sessionStorage.userId;
     },
     // 时间格式化方法
     formatDate(date) {
