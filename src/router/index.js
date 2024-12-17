@@ -34,6 +34,10 @@ import Lingyan from "../componentsLingYan/LingYan.vue";
 
 //=======我的======//
 import Me from "../componentsMe/Me.vue";
+import MyFavorite from "../componentsMe/MyFavorite.vue";
+import UserPostCenter from "../componentsMe/UserPostCenter.vue";
+import BrowsingHistory from "../componentsMe/BrowsingHistory.vue";
+import LingYanLingHang from "../componentsMe/LingYanLingHang.vue";
 
 const routes = [
   { path: "/", redirect: "/homepage" },
@@ -129,6 +133,28 @@ const routes = [
         path: "me",
         name: "Me",
         component: Me,
+        children: [
+          {
+            path: "",
+            name: "UserPostCenter",
+            component: UserPostCenter,
+          },
+          {
+            path: "myfavorite",
+            name: "MyFavorite",
+            component: MyFavorite,
+          },
+          {
+            path: "browsinghistory",
+            name: "BrowsingHistory",
+            component: BrowsingHistory,
+          },
+          {
+            path: "lingyanlinghang",
+            name: "LingYanLingHang",
+            component: LingYanLingHang,
+          },
+        ],
       },
     ],
   },
