@@ -12,7 +12,7 @@
         <h2>{{ courseDetail.courseName }}</h2>
         <p>{{ courseDetail.courseDescription }}</p>
         <div class="course-buttons">
-          <el-button type="primary" @click="handleCollect">收藏课程</el-button>
+          <el-button type="primary" @click="handleCollect" :disabled="isCollected">{{ isCollected ? '已收藏' : '收藏课程' }}</el-button>
           <el-button @click="onAnswerDetailClick">题目推荐</el-button>
         </div>
         <div class="course-meta">
@@ -80,7 +80,11 @@ export default {
         '1': '13', // 假设课程ID 1 对应 题目类别ID 13
         '2': '14', // 假设课程ID 2 对应 题目类别ID 14
         // 添加更多映射
-        }
+      },
+      courseFavorite:{},
+      isCollected : false,
+      // userId:'',
+      // courseId:'',
     };
   },
   created() {
@@ -95,6 +99,25 @@ this.fetchChapter();
   methods: {
     handleCollect() {
       this.$message.success('课程已收藏');
+      const userId = sessionStorage.getItem("userId");
+      const courseId = this.$route.params.courseId;
+      this.courseFavorite = {
+        userId: userId,
+        courseId: courseId
+      };
+      console.log(this.courseFavorite)
+      this.$http.post('crs/v1/favorite', this.courseFavorite)
+      .then(response => {
+        if(response.data == 1){
+          console.log("课程收藏成功")
+          this.isCollected = true; // 收藏成功后设置为已收藏状态
+          this.$message.success('收藏成功');
+        }
+      })
+      .catch(error => {
+        this.$message.error('收藏失败，请重试');
+        console.error('收藏失败:', error);
+      })
     },
     handleRecommend() {
       this.$message.info('推荐的题目已展示');
