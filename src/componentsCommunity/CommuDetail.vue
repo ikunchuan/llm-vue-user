@@ -11,8 +11,8 @@
         </div>
         <!-- 右侧按钮 -->
         <div class="header-buttons">
-          <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
-          <el-button type="success" size="small">+关注</el-button>
+      <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
+      <el-button type="success" size="small">+关注</el-button>
         </div>
       </div>
     </div>
@@ -174,6 +174,16 @@ export default {
         console.error('帖子ID不存在');
       }
     },
+    goToPostCreat() {
+      this.$router.push({ name: 'PostCreat' ,
+        params:{
+          communityId : this.communityId,
+          userId : sessionStorage.getItem("userId")
+        }
+      });
+      console.log(this.communityId,sessionStorage.getItem("userId"));
+      
+    }
 
   }
 };
