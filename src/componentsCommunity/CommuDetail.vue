@@ -11,11 +11,11 @@
         </div>
         <!-- 右侧按钮 -->
         <div class="header-buttons">
-      <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
-      <el-button type="success" size="small" @click="joinCommunity">
-        {{ isMember ? "已加入" : "+加入" }}
-      </el-button>        
-    </div>
+          <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
+          <el-button type="success" size="small" @click="joinCommunity">
+            {{ isMember ? "已加入" : "+加入" }}
+          </el-button>
+        </div>
       </div>
     </div>
 
@@ -29,15 +29,22 @@
             <el-tab-pane label="帖子" name="all">
               <!-- 搜索框 -->
               <div class="search-bar">
-                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search" class="search-input" />
+                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search"
+                  class="search-input" />
               </div>
 
               <!-- 帖子列表 -->
-              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card" @click="navigateToPostDetail(post.postId)">
+              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
+                @click="navigateToPostDetail(post.postId)">
                 <div class="post-content">
                   <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
                   <h3 class="post-title">{{ post.postTitle }}</h3>
                   <p class="post-summary">{{ post.postContent }}</p>
+                </div>
+                <div class="post-info">
+                  <span><i class="el-icon-thumb" /> 👍{{ post.likeCount || 0 }}</span>
+                  <span><i class="el-icon-star-off" /> 🌟{{ post.favoriteCount || 0 }}</span>
+                  <span><i class="el-icon-chat-line-round" /> ▭{{ post.commentCount || 0 }}</span>
                 </div>
               </el-card>
             </el-tab-pane>
@@ -117,20 +124,20 @@ export default {
   methods: {
     //获取社区信息
     fetchCommunityInfo() {
-  // 获取从路由传递过来的社区ID
-  console.log("测试获取到的社区ID：", this.communityId);
-  axios.get(`/v1/cmns/cmn/${this.communityId}`)
-    .then(response => {
-      console.log("获取到的社区数据：", response.data);
-      // 设置获取到的社区信息
-      this.communityInfo = response.data;
-      // 检查用户是否已经加入社区
-      this.checkMemberStatus();
-    })
-    .catch(error => {
-      console.error("获取社区信息失败：", error);
-    });
-},
+      // 获取从路由传递过来的社区ID
+      console.log("测试获取到的社区ID：", this.communityId);
+      axios.get(`/v1/cmns/cmn/${this.communityId}`)
+        .then(response => {
+          console.log("获取到的社区数据：", response.data);
+          // 设置获取到的社区信息
+          this.communityInfo = response.data;
+          // 检查用户是否已经加入社区
+          this.checkMemberStatus();
+        })
+        .catch(error => {
+          console.error("获取社区信息失败：", error);
+        });
+    },
     checkMemberStatus() {
       // 假设后端提供了一个接口来检查用户是否已经加入社区
       axios.get(`/ucmns/v1/ucmn/check/${this.communityId}`)
@@ -140,7 +147,7 @@ export default {
         .catch(error => {
           console.error("检查成员状态失败：", error);
         });
-      },
+    },
     // 获取帖子信息的方法
     fetchPosts() {
       if (this.communityName) {
@@ -153,10 +160,44 @@ export default {
             console.log("获取到的帖子数据：", response.data);
             // 确保后端返回的数据结构中包含 list，并且只包含特定社区的帖子
             this.posts = response.data.list || response.data;
+
+            // 为每个帖子获取统计信息
+            this.posts.forEach(post => {
+              this.getPostCounts(post.postId);
+            });
           })
           .catch(error => {
             console.error("获取帖子失败：", error);
           });
+      }
+    },
+
+    // 获取帖子的点赞数、评论数和收藏数
+    getPostCounts(postId) {
+      axios.get(`v1/posts/post/allcount/${postId}`)
+        .then(response => {
+          console.log('帖子统计信息:', response.data);
+          const postDTO = response.data;
+          this.updatePostCounts(postDTO);
+        })
+        .catch(error => {
+          console.error('获取帖子统计信息失败:', error);
+          ElMessage.error('获取帖子统计信息失败');
+        });
+    },
+
+
+    // 更新帖子统计信息的方法
+    updatePostCounts(postDTO) {
+      console.log("更新帖子统计信息:", postDTO);
+      const index = this.posts.findIndex(item => item.postId === postDTO.postId);
+      if (index !== -1) {
+        this.posts[index] = {
+          ...this.posts[index],
+          likeCount: postDTO.likeCount,
+          commentCount: postDTO.commentCount,
+          favoriteCount: postDTO.favoriteCount
+        };
       }
     },
     fetchCommunityUsers() {
@@ -220,7 +261,8 @@ export default {
     goToPostCreat() {
       this.$router.push({ name: 'PostCreat' ,
         params:{
-          communityId : this.communityId,
+          communityId: this.communityId,
+          communityName: this.communityName,
           userId : sessionStorage.getItem("userId")
         }
       });

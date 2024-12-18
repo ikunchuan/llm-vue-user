@@ -243,6 +243,11 @@ export default {
 
     mounted() {
         const userId = sessionStorage.userId;
+
+        if (!userId) {  //未登录重定向到注册
+            this.$router.push('/login');
+        }
+
         this.$http.get(`/uis/v1/ui/${userId}`)
             .then(response => {
                 console.log('User data:', response.data);

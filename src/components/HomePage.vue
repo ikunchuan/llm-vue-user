@@ -83,7 +83,7 @@
 
     <!-- 右侧图片部分 -->
     <div class="header-right">
-      <img src="../assets/img/1.png" alt="右侧示例图片" class="animated-image" />
+      <img style="width:800px;height: 350px"src="../assets/img/45.png" alt="右侧示例图片" class="animated-image" />
     </div>
     </div>
   
@@ -92,19 +92,19 @@
         <h2>建议</h2>
         <div class="cards">
           <div class="card" @click="goToComp">
-            <img src="../assets/img/1.png" alt="行程图标" />
+            <img src="../assets/img/37.png" alt="行程图标" />
             <h3>竞赛</h3>
             <p>优步伴您合理规划，练习、评估，然后出发。</p>
             <button class="secondary-button">详细信息</button>
           </div>
           <div class="card" @click="goToResource">
-            <img src="../assets/img/1.png" alt="预约图标" />
+            <img src="../assets/img/38.png" alt="预约图标" />
             <h3>特选资源</h3>
             <p>提前规划行程，让自己的学习之路更加轻松。</p>
             <button class="secondary-button">详细信息</button>
           </div>
           <div class="card" @click="goToCommunity">
-            <img src="../assets/img/1.png" alt="食品杂货图标" />
+            <img src="../assets/img/39.png" alt="食品杂货图标" />
             <h3>交流互助</h3>
             <p>社区大佬助力,轻松入门。</p>
             <button class="secondary-button">详细信息</button>
@@ -267,7 +267,7 @@
         </div>
       </div>
       <div class="image-container">
-        <img :src="activeImage" alt="示例图片" />
+        <img style="width:700px;height: 350px":src="activeImage" alt="示例图片" />
       </div>
     </div>
 
@@ -277,7 +277,7 @@
 
     <div class="image-text-section-reverse">
       <div class="image-container">
-        <img :src="activeImage1" alt="示例图片" />
+        <img style="width:600px;height: 350px":src="activeImage1" alt="示例图片" />
       </div>
       <div class="text-container">
         <div class="text-content">
@@ -337,11 +337,11 @@
   </template>
   
   <script>
-  import image1 from "../assets/img/1.png";
-import image2 from "../assets/img/2.png";
-import image3 from "../assets/img/3.png";
-import image4 from "../assets/img/4.png";
-import image5 from "../assets/img/5.png";
+  import image1 from "../assets/img/41.png";
+import image2 from "../assets/img/42.png";
+import image3 from "../assets/img/40.png";
+import image4 from "../assets/img/43.png";
+import image5 from "../assets/img/44.png";
 
 import { ref } from 'vue'
 import { useTransition } from '@vueuse/core'
@@ -669,8 +669,8 @@ source.value = 172000
 }
   
   .card img {
-    max-width: 100px;
-    height: 80px;
+    max-width: 200px;
+    height: 90px;
     margin-bottom: 10px;
     transition: transform 0.3s ease; /* 图片动画 */
   }

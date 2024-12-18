@@ -14,7 +14,25 @@
 
         <!-- 右侧用户信息 -->
         <div class="user-info" @click="goToLogin">
-          <img :src="userAvatarUrl" alt="user" class="user-avatar" />
+          <el-popover :width="55" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, 
+              rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+            <template #reference>
+              <!-- shape：square； border: 1px solid #007bff;-->
+              <img :src="userAvatarUrl" alt="user" class="user-avatar" />
+            </template>
+            <template #default>
+              <div class="rich-conent" style="display: flex; gap: 16px; flex-direction: column">
+                <img :src="userAvatarUrl" alt="user" class="user-avatar" />
+                <div>
+                  <p style="margin: 0; text-align: center;">{{ userName }}</p>
+                </div>
+                <el-divider style="margin: 0;" />
+                <p style="margin: 0; text-align: center; cursor: pointer;" @click="openOutDialog">
+                  退出登录</p>
+              </div>
+            </template>
+          </el-popover>
+
           <!-- https://via.placeholder.com/32 -->
           <span class="username">{{ getUserName() }}</span>
         </div>
@@ -148,8 +166,25 @@ export default {
       return this.userName === 'user' ? 'user' : this.userName;
     },
 
+    openOutDialog() {
+      this.$confirm('确定要退出登录吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 用户点击确定，执行退出登录逻辑
+        this.handleLogOut();
+      }).catch(() => {
+        // 用户点击取消，取消退出登录操作
+        this.$message({
+          type: 'info',
+        })
+      })
+    },
+
     handleLogOut() {
-      this.userName = "user";
+      sessionStorage.removeItem('userId');
+      sessionStorage.removeItem('userName');
       this.$router.push('/login');
     },
 
@@ -458,6 +493,7 @@ export default {
 }
 
 .user-avatar {
+  align-self: center;
   width: 32px;
   height: 32px;
   border-radius: 50%;

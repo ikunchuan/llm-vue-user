@@ -10,9 +10,9 @@
             <h2 class="post-title">{{ post.postTitle }}</h2>
             <!-- 点赞、收藏、浏览量 -->
             <div class="post-stats">
-              <span><i class="el-icon-thumb"></i> {{ post.likes || 0 }} 点赞</span>
-              <span><i class="el-icon-star-on"></i> {{ post.favorites || 0 }} 收藏</span>
-              <span><i class="el-icon-view"></i> {{ post.views || 0 }} 浏览</span>
+              <span><i class="el-icon-thumb"></i> {{ post.likeCount || 0 }} 点赞</span>
+              <span><i class="el-icon-star-on"></i> {{ post.favoriteCount || 0 }} 收藏</span>
+              <span><i class="el-icon-view"></i> {{ post.commentCount || 0 }} 评论</span>
               <span>作者: {{ post.authorName }}</span>
               <span>社区: {{ post.communityName }}</span>
               <span>发布时间: {{ formatDate(post.createdTime) }}</span>
@@ -82,14 +82,14 @@
           </el-card>
 
           <!-- 社区信息模块 -->
-          <el-card class="community-info-card" shadow="hover">
+          <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
             <h4 class="community-name">{{ community.communityName }}</h4>
             <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
             <div class="community-stats">
               <p>帖子数量: <strong>{{ community.postCount || 0 }}</strong></p>
               <p>成员数量: <strong>{{ community.memberCount || 0 }}</strong></p>
             </div>
-            <el-button type="primary" size="small" @click="joinCommunity()">
+            <el-button type="primary" size="small" @click="joinCommunity">
               {{ isMember ? "已加入社区" : "加入社区" }}
             </el-button>
           </el-card>
@@ -106,7 +106,17 @@ export default {
   name: "PostDetail",
   data() {
     return {
-      post: {},
+      post: {
+        postId: "",
+        postTitle: "",
+        postContent: "",
+        likeCount: 0,
+        favoriteCount: 0,
+        commentCount: 0,
+        authorName: "",
+        communityName: "",
+        createdTime: "",
+      },
       author: {},
       community: {},
       isMember: false, // 是否已加入社区
@@ -119,7 +129,6 @@ export default {
     };
   },
   created() {
-
     this.fetchPostDetails();
     this.fetchComments();
   },
@@ -141,19 +150,40 @@ export default {
     },
   },
   methods: {
-
     fetchPostDetails() {
       const postId = this.$route.params.postId;
+      console.log("帖子ID:", postId);
       axios.get(`/v1/posts/post/${postId}`)
         .then((response) => {
+          console.log("帖子详情:", response.data);
           this.post = response.data;
           this.fetchAuthorDetails(this.post.userId);
           this.fetchCommunityDetails(this.post.communityId);
+          this.getPostCounts(postId); // 获取帖子统计信息
         })
         .catch((error) => {
           console.error("获取帖子详情失败:", error);
         });
     },
+    // 获取帖子的点赞数、评论数和收藏数
+    getPostCounts(postId) {
+      axios.get(`v1/posts/post/allcount/${postId}`)
+        .then(response => {
+          console.log('帖子统计信息:', response.data);
+          if (response.data.length !== 0) {
+            this.post.likeCount = response.data.likeCount;
+            this.post.commentCount = response.data.commentCount;
+            this.post.favoriteCount = response.data.favoriteCount;
+          } else {
+            console.error('获取帖子统计信息失败:', response.data.message);
+          }
+        })
+        .catch(error => {
+          console.error('获取帖子统计信息失败:', error);
+        });
+    },
+
+
     fetchAuthorDetails(userId) {
       axios.get(`/uis/v1/ui/${userId}`)
         .then((response) => {
@@ -195,80 +225,6 @@ export default {
         this.$message.warning("评论内容不能超过100字");
       }
     },
-    // 加入社区
-    joinCommunity() {
-      // 从sessionStorage中获取用户ID
-      const userId = sessionStorage.getItem('userId');
-      if (!userId) {
-        this.$message.error('用户未登录或用户ID不存在');
-        return;
-      }
-
-      // 获取社区ID，这里假设社区ID是从帖子详情中获取的
-      const communityId = this.post.communityId;
-
-      // 检查是否已经加入社区
-      if (this.isMember) {
-        this.$message.info('您已加入该社区');
-        return;
-      }
-
-      // 调用后端接口发送加入社区请求
-      axios.post('/ucmns/v1/ucmn', {
-        userId: userId,
-        communityId: communityId
-      })
-        .then(response => {
-          // 根据后端的响应来处理
-          if (response.data === 1) { // 假设后端返回1表示加入成功
-            this.$message.success('加入社区成功');
-            this.isMember = true; // 更新社区成员状态
-          } else {
-            this.$message.error('加入社区失败');
-          }
-        })
-        .catch(error => {
-          console.error('加入社区失败:', error);
-          this.$message.error('加入社区失败');
-        });
-    },
-    // 关注作者
-followAuthor() {
-  // 从sessionStorage中获取用户ID
-  const userId = sessionStorage.getItem('userId');
-  if (!userId) {
-    this.$message.error('用户未登录或用户ID不存在');
-    return;
-  }
-
-  // 获取发布者的ID，假设发布者的ID存储在post对象的authorId字段中
-  const authorId = this.post.authorId; // 确保您的post对象中有一个authorId字段
-
-  if (!authorId) {
-    this.$message.error('作者ID不存在');
-    return;
-  }
-
-  // 调用后端接口发送关注作者请求
-  axios.post('/uis/v1/user/follow', {
-    userId: userId,
-    followeeUserId: authorId
-  })
-  .then(response => {
-    // 根据后端的响应来处理
-    if (response.data === 1) { // 假设后端返回1表示关注成功
-      this.$message.success('关注作者成功');
-      // 这里可以更新作者的粉丝数量或相关UI
-    } else {
-      this.$message.error('关注作者失败');
-    }
-  })
-  .catch(error => {
-    console.error('关注作者失败:', error);
-    this.$message.error('关注作者失败');
-  });
-},
-
     addComment() {
       // 从sessionStorage中获取用户ID
       const userId = sessionStorage.getItem('userId');
@@ -318,7 +274,6 @@ followAuthor() {
       this.displayedComments = this.comments.length; // 显示所有评论
     },
 
-
     formatDate(date) {
       const d = new Date(date);
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -327,8 +282,21 @@ followAuthor() {
         d.getMinutes()
       ).padStart(2, "0")}`;
     },
-  },
-};
+    // 点击进入社区详情页面
+    navigateToCommuDetail(community) {
+
+      console.log('点击的社区ID:', community.communityId);  // 确保社区ID能够正确获取
+      this.$router.push({
+        name: 'CommuDetail',
+        params: {
+          communityId: community.communityId,
+          communityName: community.communityName
+        }
+      });
+    },
+  }
+}
+
 </script>
 
 <style scoped>
