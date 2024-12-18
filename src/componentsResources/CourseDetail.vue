@@ -12,7 +12,8 @@
         <h2>{{ courseDetail.courseName }}</h2>
         <p>{{ courseDetail.courseDescription }}</p>
         <div class="course-buttons">
-          <el-button type="primary" @click="handleCollect" :disabled="isCollected">{{ isCollected ? '已收藏' : '收藏课程' }}</el-button>
+          <el-button type="primary" @click="handleCollect" :disabled="isCollected">{{ isCollected ? '已收藏' : '收藏课程'
+            }}</el-button>
           <el-button @click="onAnswerDetailClick">题目推荐</el-button>
         </div>
         <div class="course-meta">
@@ -30,15 +31,19 @@
         <el-tab-pane label="介绍" name="intro">
           <!-- <p>{{ course.fullDescription }}</p> -->
         </el-tab-pane>
-        <el-tab-pane  label="目录" >
-          
-          <span> {{ chapterDetail.chapterName }}</span>
+        <el-tab-pane label="目录">
+          <div class="card" v-for="(card, index) in chapterDetail" :key="index">
+
+
+            <div class="card-info">{{ card.chapterName }}</div>
+
+          </div>
         </el-tab-pane>
 
         <el-tab-pane label="评价" name="reviews">
           <!-- <div v-for="(review, index) in course.reviews" :key="index">
             <p>{{ review.comment }}</p> -->
-            <span>评分: {{ courseDetail.courseRating }}</span>
+          <span>评分: {{ courseDetail.courseRating }}</span>
           <!-- </div> -->
         </el-tab-pane>
       </el-tabs>
@@ -46,7 +51,7 @@
 
     <div class="content-area">
       <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
-     
+
 
       <!-- 右侧推荐课程区 -->
       <aside class="content-right">
@@ -56,7 +61,7 @@
     </div>
 
 
-    
+
   </div>
 </template>
 
@@ -81,15 +86,15 @@ export default {
         '2': '14', // 假设课程ID 2 对应 题目类别ID 14
         // 添加更多映射
       },
-      courseFavorite:{},
-      isCollected : false,
+      courseFavorite: {},
+      isCollected: false,
       // userId:'',
       // courseId:'',
     };
   },
   created() {
     this.fetchCourseDetail(); // 在组件创建时获取课程详情
-this.fetchChapter();
+    this.fetchChapter();
   },
   mounted() {
     const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
@@ -107,23 +112,23 @@ this.fetchChapter();
       };
       console.log(this.courseFavorite)
       this.$http.post('crs/v1/favorite', this.courseFavorite)
-      .then(response => {
-        if(response.data == 1){
-          console.log("课程收藏成功")
-          this.isCollected = true; // 收藏成功后设置为已收藏状态
-          this.$message.success('收藏成功');
-        }
-      })
-      .catch(error => {
-        this.$message.error('收藏失败，请重试');
-        console.error('收藏失败:', error);
-      })
+        .then(response => {
+          if (response.data == 1) {
+            console.log("课程收藏成功")
+            this.isCollected = true; // 收藏成功后设置为已收藏状态
+            this.$message.success('收藏成功');
+          }
+        })
+        .catch(error => {
+          this.$message.error('收藏失败，请重试');
+          console.error('收藏失败:', error);
+        })
     },
     handleRecommend() {
       this.$message.info('推荐的题目已展示');
     },
-     //跳转题目详情
-     onAnswerDetailClick() {
+    //跳转题目详情
+    onAnswerDetailClick() {
       const courseId = this.$route.params.courseId;
       const categoryId = this.courseToCategoryMapping[courseId];
 
@@ -162,25 +167,22 @@ this.fetchChapter();
       this.$http.get(`http://localhost:10086/chap/v1/${courseId}`)
         .then(response => {
           this.chapterDetail = response.data;
-          this.showChapterContent = true; // 加载完成后显示章节内容
-          this.loadingChapter = false; // 关闭加载状态
         })
         .catch(error => {
           this.error = error.message;
-          this.loadingChapter = false; // 即使出错也要关闭加载状态
         });
     },
 
   }
 
-  };
-  
+};
+
 
 </script>
 
 <style scoped>
 .course-detail-container {
-max-width: 1200px;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -192,8 +194,8 @@ max-width: 1200px;
   /* 限制页面的最大宽度 */
   margin: 0 auto;
   /* 居中对齐 */
-  
- 
+
+
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   /* 可选：添加阴影效果 */
   border-radius: 10px;
