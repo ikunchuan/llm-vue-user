@@ -9,12 +9,12 @@
           <div class="content-list">
             <h3 style="margin: 15px;">题库列表</h3>
             <el-row :gutter="20">
-              <el-col :span="8" v-for="card in cards" :key="card.id">
-                <el-card class="question-card" @click="goToAnswerDetail(card.id)">
+              <el-col :span="8" v-for="(card, index) in cards" :key="index" v-loading="loading">
+                <el-card class="question-card" @click="goToAnswerDetail(card.catId)">
                   <div class="question-content">
                     <div class="question-header">
-                      <img :src="card.image" :alt="card.title" class="question-icon" />
-                      <h3 class="question-title">{{ card.title }}</h3>
+                      <img :src="card.icon" :alt="card.catName" class="question-icon" />
+                      <h3 class="question-title">{{ card.catName }}</h3>
                     </div>
                     <div class="question-stats">
                       <el-tag size="small">总题数: {{ card.totalCount }}</el-tag>
@@ -78,10 +78,21 @@
           <!-- 热门题目推荐 -->
           <el-card shadow="hover" class="recommend-card">
             <el-carousel :interval="5000" :autoplay="true">
-              <el-carousel-item v-for="item in 4" :key="item">
-                <div class="carousel-item" @click="goToComp(item.compId)">
-                  <h3>竞赛 {{ item.compImg }}</h3>
-                </div>
+              <el-carousel-item v-for="(item, index) in cards" :key="index">
+                <el-tooltip :content="item.relatedContests[0]?.name || '暂无名称'" placement="top" effect="light">
+                  <div class="carousel-item" v-if="item.relatedContests && item.relatedContests.length"
+                    @click="goToComp(item.relatedContests[0].compId)">
+
+                    <img style=" height: 150px;" :src="getImageUrl(item.relatedContests[0]?.url)"
+                      :alt="item.relatedContests[0]?.name || '竞赛图片'" />
+                  </div>
+                  <div class="carousel-item" v-else>
+                    <el-empty description="暂无相关竞赛" />
+                  </div>
+                  <div class="image-overlay">
+                    <span class="image-title">{{ item.relatedContests[0]?.name }}</span>
+                  </div>
+                </el-tooltip>
               </el-carousel-item>
             </el-carousel>
           </el-card>
@@ -90,10 +101,17 @@
           <!-- 热门题目推荐 -->
           <el-card shadow="hover" class="recommend-card">
             <el-carousel :interval="5000" :autoplay="true">
-              <el-carousel-item v-for="item in 4" :key="item">
-                <div class="carousel-item" @click="goToCourse(item.courseId)">
-                  <h3>课程 {{ item.courseImg }}</h3>
-                </div>
+              <el-carousel-item v-for="(item, index) in cards" :key="index">
+                <el-tooltip :content="item.relatedCourses[0]?.name || '暂无名称'" placement="top" effect="light">
+                  <div class="carousel-item" v-if="item.relatedCourses && item.relatedCourses.length"
+                    @click="goToCourse(item.relatedCourses[1].courseId)">
+                    <img style=" height: 150px;" :src="getImageUrl(item.relatedCourses[0]?.url)"
+                      :alt="item.relatedCourses[0]?.name || '课程图片'" />
+                  </div>
+                  <div class="image-overlay">
+                    <span class="image-title">{{ item.relatedCourses[0]?.name }}</span>
+                  </div>
+                </el-tooltip>
               </el-carousel-item>
             </el-carousel>
           </el-card>
@@ -107,61 +125,41 @@
 </template>
 
 <script>
-
 export default {
   name: "Question",
   data() {
     return {
-      date: new Date(),
+      date: new Date(), //获取日期
 
-      activeTab: 'hot',
-      searchName: '',
-      difficulty: '',
-      categoryInfo: [],
-      questions: [], // 所有题目
+      categoryInfo: [],//所有有题目的类别
+      compInfo: [],  //所有竞赛
+      questionInfo: [], // 所有题目
+      courseInfo: [], //所有课程
+      ansRecInfo: [],//答题记录
+      icons: [],
+
       cards: [
         {
-          id: 9, title: "程序设计",
-          image: "src/assets/img/6.png",
-          // solvedCount: 0,  // 解答人数
-          totalCount: 100,  // 总题目数
-          finishedCount: 30,  // 已完成数量
+          catId: "",//类别id
+          catName: "", //类别
+          icon: "", //图标
+          totalCount: 0,  // 总题目数
+          // finishedCount: 0,  // 已完成数量
+          // // solvedCount: 0,  // 解答人数
           viewCount: 0,  // 浏览次数 
+
           relatedContests: [],// 相关竞赛
-        },
-        { id: 10, title: "网络安全", image: "src/assets/img/7.png" },
-        { id: 11, title: "人工智能与大数据", image: "src/assets/img/12.png" },
-        { id: 12, title: "数据挖掘与分析", image: "src/assets/img/9.png" },
-        { id: 13, title: "数学知识", image: "src/assets/img/10.png" },
-        { id: 14, title: "数学建模", image: "src/assets/img/14.png" },
-        { id: 21, title: "语言表达", image: "src/assets/img/8.png" },
-        { id: 22, title: "英语应用", image: "src/assets/img/13.png" },
-        { id: 23, title: "跨文化交流", image: "src/assets/img/11.png" },
+          relatedCourses: [], //相关课程
+        }
       ],
 
-      compImg: [],
+
     }
   },
   computed: {
-
-    // filteredQuestions() {
-    //   return this.questions.filter(question => {
-    //     const matchSearch = !this.searchName ||
-    //       question.title.toLowerCase().includes(this.searchName.toLowerCase());
-    //     const matchDifficulty = !this.difficulty ||
-    //       question.difficulty === this.difficulty;
-    //     return matchSearch && matchDifficulty;
-    //   });
-    // }
   },
 
   methods: {
-
-    handleTabClick(tab) {
-      const type = tab.props.name;
-      this.fetchQuestions(type);
-    },
-
     goToAnswerDetail(answerId) {
       this.$router.push({
         name: 'AnswerDetail',
@@ -171,27 +169,122 @@ export default {
 
     goToComp(compId) {
       this.$router.push({
-        name: 'AnswerDetail',
-        params: { answerId: answerId }
+        name: 'CompDetail',
+        params: { compId: compId }
       });
     },
 
     goToCourse(courseId) {
       this.$router.push({
-        name: 'AnswerDetail',
-        params: { answerId: answerId }
+        name: 'CourseDetail',
+        params: { courseId: courseId }
       });
+    },
+
+    getImageUrl(url) {
+      if (!url) return ''; // 返回默认图片路径或空字符串
+      return `http://localhost:10086/images/upload/${url}`;
+    },
+
+    // 创建一个异步函数来处理所有数据加载
+    async loadAllData() {
+      this.loading = true;
+      try {
+        const userId = sessionStorage.getItem("userId");
+        // 并行获取所有数据
+        const [categoryRes, courseRes, compRes, answerRes] = await Promise.all([
+          this.$http.get('/cat/v1/qstCat'),
+          this.$http.get('/crs/v1'),
+          this.$http.get('/comp/v1/compe'),
+          this.$http.get(`/ans/v1/rec/${userId}`),
+        ]);
+
+        this.categoryInfo = categoryRes.data; console.log(this.categoryInfo);
+        this.courseInfo = courseRes.data; console.log(this.courseInfo);
+        this.compInfo = compRes.data; console.log(this.compInfo);
+        this.ansRecInfo = answerRes.data; console.log(this.ansRecInfo);
+
+        // 创建图片映射
+        const imageMapping = {
+          '程序设计': '6',
+          '网络安全': '7',
+          '人工智能与大数据': '8',
+          '数据挖掘与分析': '9',
+          '数学知识': '10',
+          '数学建模': '11',
+          '语言表达': '12',
+          '英语应用': '13',
+          '跨文化交流': '14'
+        };
+
+        this.cards = await Promise.all(this.categoryInfo.map(async category => {
+          // 并行获取题目数量和答题记录
+          const questionsRes = await this.$http.get(`/qst/v1/qstByParentId?parentId=${category.categoryId}`);
+
+          const questions = questionsRes.data || [];
+          const questionCount = questions.length;
+
+          // 获取该类别下已完成的题目数量
+          // 通过题目ID匹配答题记录
+          const questionIds = questions.map(q => q.questionId); // 获取该类别所有题目的ID
+          const finishedCount = this.ansRecInfo.filter(record =>
+            questionIds.includes(record.questionId)
+          ).length;
+
+          // 找到与当前类别相关的竞赛，并提取需要的字段
+          const relatedContests = this.compInfo
+            .filter(comp => comp.categoryId === category.categoryId)
+            .map(comp => ({
+              compId: comp.competitionId, // 竞赛ID
+              name: comp.competitionName, // 竞赛名称
+              url: comp.competitionImgUrl || '' // 竞赛图片URL
+            }));
+
+          // 找到与当前类别相关的课程，并提取需要的字段
+          const relatedCourses = this.courseInfo
+            .filter(course => course.categoryId === category.categoryId)
+            .map(course => ({
+              courseId: course.courseId, // 课程ID
+              name: course.courseName, // 课程名称
+              url: course.courseImgUrl || '' // 课程图片URL
+            }));
+
+          // 根据类别名称获取对应的图片编号
+          const imageNumber = imageMapping[category.categoryName] || '6';
+
+          return {
+            catId: category.categoryId,
+            catName: category.categoryName,
+            icon: `src/assets/img/${imageNumber}.png`,
+            title: category.catName,
+            totalCount: questionCount, // 使用获取到的题目数量
+            finishedCount: finishedCount,// 使用计算得到的已完成题目数量
+            // viewCount: category.viewCount || 0,
+            relatedContests: relatedContests.slice(0, 2), // 只取前2个相关竞赛,
+            relatedCourses: relatedCourses.slice(0, 2) // 只取前2个相关课程
+          };
+        }));
+
+        console.log('cards', this.cards);
+
+      } catch (error) {
+        console.error('数据加载失败：', error);
+        this.$message.error('数据加载失败，请稍后重试');
+      } finally {
+        this.loading = false;
+      }
+
     },
 
   },
 
-  created() {
-    // this.fetchQuestions('hot'); // 默认获取推荐课程
+  created() { //先白屏获取数据，再加载DOM
   },
-  mounted() {
-    this.$http.get('/api/question/getQuestionList').then((response) => {
-      this.questions = response.data.data;
-    });
+
+  mounted() { //先加载DOM，再获取数据
+    //加载所有
+    this.loadAllData();
+
   }
 };
 </script>
