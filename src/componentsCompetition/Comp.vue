@@ -7,8 +7,8 @@
 
       <!-- 左侧推荐导航 -->
       <div class="recommend-sidebar">
-        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"  :class="{ active: index === currentIndex }"
-          @click="selectSidebarItem(item)" >
+        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
+          :class="{ active: index === currentIndex }" @click="selectSidebarItem(item)">
           {{ item.name }}
         </div>
       </div>
@@ -24,7 +24,7 @@
 
     <!-- 筛选条件 -->
     <section class="filters-section">
-     
+
       <!-- 竞赛名称搜索框 -->
       <div class="filter-item">
         <el-input placeholder="请输入相应竞赛名称" v-model="searchName" class="search-input"></el-input>
@@ -43,41 +43,42 @@
       <div class="filter-item">
         <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
       </div>
-    
+
     </section>
 
     <!-- 图标分类 -->
     <section class="icon-section">
       <div class="icon-item">
         <div class="icon-container">
-          
+
           <div class="icon-item">
-      <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo" @click="onIconClick(1)" /></el-icon>
-      <p>创新创业类</p>
-    </div>
-     <!-- 信息技术与编程类 -->
-     <div class="icon-item">
-      <el-icon class="icon"><img src="../assets/img/2.png" class="logo" @click="onIconClick(2)"/></el-icon>
-      <p>信息技术与编程类</p>
-    </div>
+            <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo"
+                @click="onIconClick(1)" /></el-icon>
+            <p>创新创业类</p>
+          </div>
+          <!-- 信息技术与编程类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/2.png" class="logo" @click="onIconClick(2)" /></el-icon>
+            <p>信息技术与编程类</p>
+          </div>
 
-    <!-- 数学类 -->
-    <div class="icon-item">
-      <el-icon class="icon"><img src="../assets/img/3.png"  class="logo" @click="onIconClick(3)"/></el-icon>
-      <p>数学类</p>
-    </div>
+          <!-- 数学类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/3.png" class="logo" @click="onIconClick(3)" /></el-icon>
+            <p>数学类</p>
+          </div>
 
-    <!-- 经济与管理类 -->
-    <div class="icon-item">
-      <el-icon class="icon"><img src="../assets/img/4.png"  class="logo" @click="onIconClick(4)"/></el-icon>
-      <p>经济与管理类</p>
-    </div>
+          <!-- 经济与管理类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/4.png" class="logo" @click="onIconClick(4)" /></el-icon>
+            <p>经济与管理类</p>
+          </div>
 
-    <!-- 语言与文化类 -->
-    <div class="icon-item">
-      <el-icon class="icon"><img src="../assets/img/5.png"  class="logo" @click="onIconClick(5)"/></el-icon>
-      <p>语言与文化类</p>
-    </div>
+          <!-- 语言与文化类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/5.png" class="logo" @click="onIconClick(5)" /></el-icon>
+            <p>语言与文化类</p>
+          </div>
 
 
 
@@ -94,7 +95,8 @@
     <!-- 展示卡片 -->
     <section class="cards-section">
       <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.competitionId)">
-        <img style="width: 360px; height: 170px":src="'http://localhost:10086/images/upload/' + card.competitionImgUrl" alt="Card Image" />
+        <img style="width: 360px; height: 170px" :src="'http://localhost:10086/images/upload/' + card.competitionImgUrl"
+          alt="Card Image" />
         <div class="card-title">{{ card.competitionName }}</div>
         <div class="card-info">{{ card.levelName }}</div>
         <div class="card-footer">
@@ -144,10 +146,10 @@ export default {
   },
   methods: {
     autoSlideSidebar() {
-  this.currentIndex = (this.currentIndex + 1) % this.sidebarItems.length;
-  console.log('Current Index:', this.currentIndex); // 调试输出
-  this.$forceUpdate(); // 强制视图更新
-},
+      this.currentIndex = (this.currentIndex + 1) % this.sidebarItems.length;
+      console.log('Current Index:', this.currentIndex); // 调试输出
+      this.$forceUpdate(); // 强制视图更新
+    },
 
     fetchRecommendItems(type) {
       const payload = { popular: 1, type: type };
@@ -353,7 +355,7 @@ export default {
 }
 
 .recommend-sidebar-item.active {
-  
+
   background-color: #E0E6F8;
   color: #5A67D8;
   font-weight: bold;
@@ -375,7 +377,7 @@ export default {
 
 /* 单个推荐卡片样式 */
 .recommend-card {
- 
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -392,9 +394,11 @@ export default {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
+
 .card-image {
   width: 250px;
-  height: 170px; /* 调整图片高度 */
+  height: 170px;
+  /* 调整图片高度 */
   object-fit: cover;
   border-radius: 8px;
   transition: transform 0.3s ease;
@@ -409,8 +413,10 @@ export default {
 
 /* 筛选条件样式 */
 .filters-section {
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
   display: flex;
   gap: 10px;
   margin: 20px auto;
@@ -427,21 +433,27 @@ export default {
 
 /* 搜索输入框和日期选择器样式 */
 .search-input {
-  width: 200px; /* 根据需要调整宽度 */
+  width: 200px;
+  /* 根据需要调整宽度 */
 }
 
 /* 搜索按钮样式 */
 .search-button {
-  background-color: #5A67D8; /* 按钮背景色 */
-  color: white; /* 按钮文字颜色 */
+  background-color: #5A67D8;
+  /* 按钮背景色 */
+  color: white;
+  /* 按钮文字颜色 */
   border: none;
-  padding: 10px 20px; /* 按钮内边距 */
-  border-radius: 5px; /* 按钮圆角 */
+  padding: 10px 20px;
+  /* 按钮内边距 */
+  border-radius: 5px;
+  /* 按钮圆角 */
   cursor: pointer;
 }
 
 .search-button:hover {
-  background-color: #4A54C0; /* 按钮悬停背景色 */
+  background-color: #4A54C0;
+  /* 按钮悬停背景色 */
 }
 
 
@@ -453,19 +465,20 @@ export default {
   /* 水平居中 */
   align-items: center;
   /* 垂直居中 */
-  margin:0px auto;
+  margin: 0px auto;
   max-width: 100%;
   /* 限制宽度 */
   padding: 2px 0px 10px 0px;
   /* 内边距 */
   background-color: #ffffff;
   /* 背景色 */
-  border-radius: 10px ;
+  border-radius: 10px;
   /* border-radius: 10px 10px 0px 0px; */
   /* 圆角 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   /* 阴影效果 */
 }
+
 .icon {
   width: 50px;
   height: 50px;
@@ -478,12 +491,15 @@ export default {
   align-items: center;
   text-align: center;
 }
+
 .icon-item p {
   font-size: 12px;
-  color: #5A67D8; /* 主色调 */
+  color: #5A67D8;
+  /* 主色调 */
   font-weight: 500;
   margin: 0;
 }
+
 .icon-container {
   display: flex;
   /* 使用 flexbox 让图片并排 */

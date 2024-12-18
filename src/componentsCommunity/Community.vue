@@ -5,6 +5,28 @@
             <el-row :gutter="20">
                 <!-- 左侧主内容 -->
                 <el-col :span="18">
+                    <div class="stats-overview">
+                        <el-row>
+                            <el-col :span="6">
+                                <div class="stat-card">
+                                    <h3>今日新增社区：{{ newCommunitiesToday || 1 }}</h3>
+                                </div>
+                            </el-col>
+                            <el-col :span="6">
+                                <div class="stat-card">
+                                    <h3>今日新增帖子：{{ newPostsToday || 5 }}</h3>
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </div>
+
+                    <!-- 新增：同宽的长方形框放一张图片 -->
+                    <div class="image-banner mb-3">
+                        <el-image style="width: 300px; height: 100px" :src="logoImage" fit="cover" />
+
+                    </div>
+
+
                     <!-- 搜索与分类筛选 -->
                     <div class="search-filter bg-white p-3 rounded shadow-sm">
                         <el-tabs v-model="activeTab" @tab-click="handleTabClick">
@@ -34,13 +56,19 @@
                                 <h3 class="post-title">{{ item.postTitle }}</h3>
 
                                 <!-- 帖子摘要 -->
-                                <p class="post-summary">{{ item.postContent }}</p>
+                                <p class="post-summary">{{ stripHtmlTags(item.postContent) }}</p>
 
                                 <!-- 帖子互动信息 -->
                                 <div class="post-info">
-                                    <span><i class="el-icon-thumb" /> 👍{{ item.likeCount || 0 }}</span>
-                                    <span><i class="el-icon-star-off" /> 🌟{{ item.favoriteCount || 0 }}</span>
-                                    <span><i class="el-icon-chat-line-round" /> ▭{{ item.commentCount || 0 }}</span>
+                                    <div class="post-info">
+                                        <span title="点赞数"><i class="el-icon-thumb" />👍 {{ item.likeCount || 0 }}</span>
+                                        <span title="收藏数"><i class="el-icon-star-off" />🌟 {{ item.favoriteCount ||
+                                            0 }}</span>
+                                        <span title="评论数"><i class="el-icon-chat-line-round" />💬 {{ item.commentCount
+                                            || 0 }}</span>
+                                        <span title="浏览量"><i class="el-icon-view" />👁️ {{ item.viewCount || 0 }}</span>
+                                    </div>
+
                                 </div>
                             </div>
                         </el-card>
@@ -56,26 +84,46 @@
 
                 <!-- 右侧推荐栏 -->
                 <el-col :span="6">
-                    <!-- 功能分类区域 -->
-
-                    <!-- 创建社区板块 -->
+                    <h3 class="section-title">
+                        <span class="update-dot"></span>
+                        <span>你关注的社区更新了</span>
+                    </h3>
                     <div class="function-buttocardns">
                         <el-card shadow="hover" class="create-community-card" @click="openAddDialog">
                             <div class="create-community-content">
                                 <i class="el-icon-plus create-icon"></i>
                                 <h3>创建社区</h3>
-                                <p>点击这里，开启你的社区之旅！</p>
+                                <p>点击这里，创建属于你的社区！</p>
                             </div>
                         </el-card>
                     </div>
-                    <br />
+
+
+
+
+                    <!-- 新增：与xx竞赛相关的社区 -->
+                    <div class="related-communities mb-3">
+                        <el-card shadow="hover" class="related-card">
+                            <h3>与{{ competitionName }}相关的社区</h3>
+                            <div class="recommend-item" v-for="(community, index) in guessLikeItems" :key="index"
+                                @click="navigateToCommuDetail(community)">
+                                <el-avatar :src="community.avatar" size="medium" class="recommend-avatar" />
+                                <div class="recommend-info">
+                                    <p class="recommend-name">{{ community.communityName }}</p>
+                                    <p class="recommend-desc">活跃用户: {{ community.activeUsers || '未知' }}</p>
+                                </div>
+                            </div>
+                        </el-card>
+                    </div>
+
 
                     <div class="sidebar">
                         <el-card shadow="hover" class="recommend-card">
                             <div class="recommend-header">
-                                <h3>推荐关注</h3>
+                                <h3>推荐社区</h3>
                                 <el-button type="primary" size="small" @click="goToCommuSearch"
                                     class="all-communities-btn">全部社区</el-button>
+                                <p>这些社区正在火热讨论中！</p>
                             </div>
                             <div class="recommend-item" v-for="(community, index) in popularCommunities" :key="index"
                                 @click="navigateToCommuDetail(community)">
@@ -87,7 +135,6 @@
                             </div>
                         </el-card>
                     </div>
-
                 </el-col>
             </el-row>
         </el-main>
@@ -121,19 +168,26 @@
         </div>
     </el-dialog>
 
-
-
 </template>
 
 <script>
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
-
 export default {
     name: "CompetitionCommunity",
-
     data() {
         return {
+
+            guessLikeItems: [ // 猜你喜欢的内容
+                { title: "前端开发学习指南" },
+                { title: "Vue3最佳实践" },
+                { title: "竞赛资源分享平台" }
+            ],
+            relatedCommunities: [ // 与竞赛相关的社区
+
+            ],
+            competitionName: '算法设计大赛', // 动态竞赛名称
+            popularCommunities: [], // 推荐关注的社区
 
             // 搜索与分类,默认展示最热帖子
             activeTab: "hot",
@@ -144,6 +198,10 @@ export default {
 
             // 推荐关注
             popularCommunities: [], // 存储推荐社区的数据
+            //猜你喜欢
+            guessLikeItems: [],
+            // 关注更新
+            followUpdatePosts: [],
 
             //创建社区返回的表单数据
             form: {
@@ -299,13 +357,11 @@ export default {
             console.log('获取帖子统计信息...');
             axios.get(`v1/posts/post/allcount/${postId}`)
                 .then(response => {
-                    console.log('帖子统计信息:', response.data);
                     const postDTO = response.data;
                     this.updatePostCounts(postDTO); // 传递整个 postDTO 对象
                 })
                 .catch(error => {
                     console.error('获取帖子统计信息失败:', error);
-                    ElMessage.error('获取帖子统计信息失败');
                 });
         },
 
@@ -317,7 +373,8 @@ export default {
                     ...this.contentItems[index],
                     likeCount: postDTO.likeCount,
                     commentCount: postDTO.commentCount,
-                    favoriteCount: postDTO.favoriteCount
+                    favoriteCount: postDTO.favoriteCount,
+                    viewCount: postDTO.viewCount,
                 };
             }
         },
@@ -361,7 +418,7 @@ export default {
         },
 
 
-        // 获取社区列表（根据你的需求定制）
+        // 获取社区列表
         getCommunityList() {
             this.$http.get('/community/v1/list').then((response) => {
                 if (response.data) {
@@ -381,10 +438,11 @@ export default {
                 .then(response => {
                     console.log('热门社区数据:', response.data);
 
-                    // 假设后端返回的数据是一个数组
-                    this.popularCommunities = response.data.list; // 这里直接取出数组
+                    this.popularCommunities = response.data.list;
+                    this.guessLikeItems = (response.data.list || []).filter((_, index) => index >= 3 && index < 5);
 
-                    // // 使用 map 提取每个社区的 communityId
+                    console.log('截取后的数据:', this.guessLikeItems);
+
                     // const communityIds = this.popularCommunities.map(community => community.communityId);
                     // console.log('热门社区 ID 列表:', communityIds); // 输出每个社区的 ID
                     // // 如果需要，你可以将 communityIds 存储在数据中
@@ -395,6 +453,9 @@ export default {
                     ElMessage.error('获取推荐社区失败');
                 });
         },
+        stripHtmlTags(content) {
+            return content.replace(/<\/?[^>]+(>|$)/g, ""); // 使用正则表达式去除HTML标签
+        }
 
     },
     mounted() {
@@ -410,9 +471,12 @@ export default {
 <style scoped>
 /* 页面整体布局 */
 .main-page {
+    font-size: 14px;
+    /* 调整全局字体大小 */
     margin: 0 auto;
     max-width: 1200px;
-    padding: 20px;
+    padding: 10px 15px;
+    /* 减少内边距 */
     background-color: #f4f6f8;
     /* 背景色 */
     margin-top: 20px;
@@ -422,13 +486,28 @@ export default {
     /* 轻微阴影增强层次感 */
 }
 
+/* 调整右侧区域整体布局 */
+.el-col {
+    padding-right: 10px;
+    /* 减小左右间隔 */
+}
+
+.sidebar {
+    margin-top: 10px;
+    /* 减小顶部间隔 */
+}
+
 /* 搜索与分类筛选区域 */
 .search-filter {
     background-color: #ffffff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    padding: 15px;
+    /* 减少组件内边距 */
+    margin-bottom: 10px;
+    /* 减少下方间距 */
+
 }
 
 /* 搜索框 */
@@ -450,12 +529,17 @@ export default {
     background-color: #ffffff;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
     transition: all 0.3s ease;
+    padding: 3px;
+    /* 减少卡片内边距 */
+    margin-bottom: 10px;
+    /* 调整卡片之间的间距 */
+    border-left: 5px solid #5a67d8;
+    /* 加入左侧配色条，增加视觉层次 */
 }
 
 .post-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -463,14 +547,16 @@ export default {
     font-size: 12px;
     color: #ffffff;
     background-color: #5a67d8;
-    padding: 3px 8px;
+    padding: 5px 5px;
     border-radius: 5px;
 }
 
 .post-title {
-    font-size: 20px;
+    font-size: 18px;
+    /* 标题字体稍微缩小 */
+    margin: 8px 0;
+    /* 减少标题上下留白 */
     font-weight: 600;
-    margin: 10px 0;
     color: #333;
     transition: color 0.3s ease;
 }
@@ -480,22 +566,24 @@ export default {
 }
 
 .post-summary {
-    font-size: 14px;
     color: #666;
-    line-height: 1.6;
     overflow: hidden;
     /* 隐藏溢出的内容 */
     text-overflow: ellipsis;
     /* 显示省略号 */
     white-space: nowrap;
     /* 防止文本自动换行 */
-    max-height: 4.8em;
-    /* 设置最大高度，根据行高调整 */
+    font-size: 13px;
+    /* 摘要文字更小 */
+    line-height: 1.4;
+    /* 减小行高 */
+    max-height: 3.6em;
+    /* 控制显示最多2-3行 */
 }
 
 .post-info {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     color: #999;
     font-size: 13px;
     margin-top: 10px;
@@ -512,26 +600,44 @@ export default {
 }
 
 /* 侧边栏推荐社区 */
-.recommend-card {
-    background-color: #ffffff;
-    border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* 卡片整体样式 */
+.recommend-card,
+.related-card,
+.guess-card {
+    padding: 5px 5px;
+    /* 减少卡片内边距 */
+    margin-bottom: 10px;
+    /* 减小卡片之间的间距 */
+    border-radius: 8px;
+    /* 稍微减小圆角 */
+    background-color: #fff;
+    /* 白色背景 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* 轻微阴影增强立体感 */
+    transition: all 0.3s ease;
 }
 
-.recommend-header {
+/* 卡片标题样式 */
+.recommend-header h3,
+.guess-card h3,
+.related-card h3 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    justify-content: space-between;
 }
 
 .recommend-item {
+    padding: 3px 3px;
+    /* 减少推荐社区的内边距 */
     display: flex;
     align-items: center;
     margin-bottom: 10px;
     padding: 8px;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -555,8 +661,9 @@ export default {
 }
 
 .recommend-name {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 15px;
+    /* 社区名称字体稍小 */
+    font-weight: 600;
     color: #333;
 }
 
@@ -567,13 +674,15 @@ export default {
 
 /* 创建社区板块 */
 .create-community-card {
-    border-radius: 12px;
+    padding: 5px;
+    /* 调整内边距 */
+    border-radius: 8px;
     text-align: center;
-    padding: 30px;
     transition: all 0.3s ease;
     cursor: pointer;
     background-color: #f9fafb;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
 }
 
 .create-community-card:hover {
@@ -606,7 +715,7 @@ export default {
 .form-container {
     padding: 20px;
     background-color: #ffffff;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -618,7 +727,7 @@ export default {
 .el-input,
 .el-textarea,
 .el-select {
-    border-radius: 8px;
+    border-radius: 15px;
     border: 1px solid #ddd;
     transition: all 0.3s ease;
 }
@@ -642,7 +751,8 @@ export default {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
-    margin-top: 10px;
+    margin-top: 3px;
+    /* 减小表单底部按钮区域的留白 */
 }
 
 .btn-cancel {
@@ -671,22 +781,63 @@ export default {
     border-color: #434190;
 }
 
-/* 按钮统一样式
-.el-button {
-    border-radius: 20px;
+.image-banner {
+    width: 100%;
+    height: 180px;
+    /* 可根据需要调整高度 */
+    overflow: hidden;
+}
+
+.image-banner-content {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* 确保图片铺满 */
+    border-radius: 8px;
+}
+
+.section-title {
+    font-size: 20px;
     font-weight: bold;
-    transition: all 0.3s ease;
+    color: #5a67d8;
+    margin-bottom: 5px;
+    position: relative;
 }
 
-.el-button--primary {
-    background-color: #5a67d8;
-    border-color: #5a67d8;
-    color: #ffffff;
+.section-title span {
+    display: inline-block;
+    padding: 5px 5px;
+    background: #eef2ff;
+    border-radius: 5px;
 }
 
-.el-button--primary:hover {
-    background-color: #434190;
-    border-color: #434190;
-} */
+.section-title .update-dot {
+    width: 5px;
+    height: 5px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 5px;
+    right: -20px;
+}
+
+.guess-item,
+.related-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 3px 3px;
+    /* 减少推荐社区的内边距 */
+}
+
+.related-item span {
+    margin-left: 10px;
+}
+
+.guess-item p {
+    margin: 0;
+    font-size: 14px;
+}
+
 
 </style>

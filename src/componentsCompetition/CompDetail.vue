@@ -14,7 +14,7 @@
           <p>竞赛结束时间：{{ formatDate(competitionDetail.endDate) }}</p>
           <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
           <el-button type="primary" @click="toggleFavorite">收藏竞赛</el-button>
-          <el-button type="primary" @click="goToCourseDetail">课程推荐</el-button>
+
         </div>
         <div class="box">
           <div class="anchor-nav">
@@ -31,6 +31,50 @@
         <div class="header"></div>
 
         <!-- 右侧主内容 -->
+        <!--知识树-->
+        <div class="tree">
+          <div class="left">
+            <span class="left-up">{{ competitionDetail.competitionName }}</span>
+          </div>
+          <div class="right-up">
+            <ul class="three-parts">
+
+
+              <li>
+                <a @click="goToCourseDetailb">{{ recommendedCourseNameb || 1 }}</a>
+                <a @click="goToCourseDetailc">{{ recommendedCourseNamec || 1 }}</a>
+              </li>
+              <li>
+                <a @click="goToCourseDetaild">{{ recommendedCourseNamed || 1 }}</a>
+                <a @click="goToCourseDetaile">{{ recommendedCourseNamee || 1 }}</a>
+                <a @click="goToCourseDetailf">{{ recommendedCourseNamef || 1 }}</a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="line">
+          </div>
+
+
+          <div class="right-down">
+            <ul class="three-columns">
+
+              <li>
+
+                <a @click="goToCourseDetail">{{ recommendedCourseName || 失败 }}</a>
+                <a @click="goToCourseDetaili">{{ recommendedCourseNamei || 1 }}</a>
+              </li>
+
+              <li>
+                <a @click="goToCourseDetailg">{{ recommendedCourseNameg || 1 }}</a>
+                <a @click="goToCourseDetailh">{{ recommendedCourseNameh || 1 }}</a>
+
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
         <div class="content">
           <div class="steps-container">
             <el-steps style="max-width: 600px" :active="1">
@@ -65,6 +109,7 @@
             <div v-html="competitionDetail.detail"></div>
           </div>
         </div>
+
       </section>
     </div>
   </div>
@@ -80,17 +125,158 @@ export default {
       loading: true,        // 加载状态
       error: null,           // 错误信息
       headerImageUrl: '',// 后端传入的图片URL
-      courseMapping: {
-        '23': 1,  // 假设竞赛ID 23 对应 课程ID 1
-        '24': 2,  // 假设竞赛ID 24 对应 课程ID 2
+      recommendedCourseName: '', // 存储推荐课程的名称
+      recommendedCourseNameb: '', // 存储推荐课程的名称b
+      recommendedCourseNamec: '',
+      recommendedCourseNamed: '',
+      recommendedCourseNamee: '',
+      recommendedCourseNamef: '',
+      recommendedCourseNameg: '',
+      recommendedCourseNameh: '',
+      recommendedCourseNamei: '',
+      courseMapping: {           //下方左侧第一个
+        '1': 2,  // 竞赛ID 1 对应 课程ID2
+        '2': 1,  // 竞赛ID 2 对应 课程ID 1
+        '3': 3,
+        '4': 4,
+        '5': 5,
+        '6': 6,
+        '24': 2,  // 竞赛ID 24 对应 课程ID 2
         // 可以继续添加更多映射
       },
+      courseMappingb: {     //上方左侧第一个
+        '1': 5,  // 竞赛ID 1 对应 课程ID 5
+        '2': 2,  // 竞赛ID 2 对应 课程ID 1
+        '3': 3,
+        '4': 4,
+        '5': 5,
+        '6': 6,
+        '24': 3,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappingc: {   //上方左侧第二个
+        '1': 6,  // 竞赛ID 1 对应 课程ID 5
+        '2': 4,  // 竞赛ID 2 对应 课程ID 1
+        '3': 4,
+        '4': 5,
+        '5': 6,
+        '6': 7,
+        '24': 4,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappingd: {   //上方右侧第一个
+        '1': 7,  // 竞赛ID 1 对应 课程ID 5
+        '2': 5,  // 竞赛ID 2 对应 课程ID 1
+        '3': 5,
+        '4': 6,
+        '5': 7,
+        '6': 8,
+        '24': 9,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappinge: {    //上方右侧第二个
+        '1': 8,  // 竞赛ID 1 对应 课程ID 5
+        '2': 9,  // 竞赛ID 2 对应 课程ID 1
+        '3': 1,
+        '4': 7,
+        '5': 8,
+        '6': 9,
+        '24': 10,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappingf: {    //上方右侧第三个
+        '1': 9,  // 竞赛ID 1 对应 课程ID 5
+        '2': 10,  // 竞赛ID 2 对应 课程ID 1
+        '3': 8,
+        '4': 8,
+        '5': 9,
+        '6': 10,
+        '24': 11,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappingg: {//下方右侧第一个
+        '1': 10,  // 竞赛ID 1 对应 课程ID 5
+        '2': 11,  // 竞赛ID 2 对应 课程ID 1
+        '3': 9,
+        '4': 9,
+        '5': 10,
+        '6': 11,
+        '24': 12,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappingh: {//下方右侧第二个
+        '1': 11,  // 竞赛ID 1 对应 课程ID 5
+        '2': 12,  // 竞赛ID 2 对应 课程ID 1
+        '3': 10,
+        '4': 10,
+        '5': 1,
+        '6': 11,
+        '24': 13,  // 竞赛ID 24 对应 课程ID 2
+      },
+      courseMappingi: {//下方左侧第二个
+        '1': 11,  // 竞赛ID 1 对应 课程ID 5
+        '2': 12,  // 竞赛ID 2 对应 课程ID 1
+        '3': 6,
+        '4': 4,
+        '5': 7,
+        '6': 8,
+        '24': 14,  // 竞赛ID 24 对应 课程ID 2
+      },
+
+
     };
   },
   created() {
     this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
+    this.fetchCourse();
   },
   methods: {
+
+
+    // 获取课程信息
+    fetchCourse() {
+      this.$http.get(`http://localhost:10086/crs/v1`)
+        .then(response => {
+          this.courseinfo = response.data;
+          //  courseinfo 是一个数组，每个元素都是一个课程对象
+          const course = this.courseinfo.find(course => course.courseId === this.courseMapping[this.$route.params.compId]);
+          const courseb = this.courseinfo.find(course => course.courseId === this.courseMappingb[this.$route.params.compId]);
+          const coursec = this.courseinfo.find(course => course.courseId === this.courseMappingc[this.$route.params.compId]);
+          const coursed = this.courseinfo.find(course => course.courseId === this.courseMappingd[this.$route.params.compId]);
+          const coursee = this.courseinfo.find(course => course.courseId === this.courseMappinge[this.$route.params.compId]);
+          const coursef = this.courseinfo.find(course => course.courseId === this.courseMappingf[this.$route.params.compId]);
+          const courseg = this.courseinfo.find(course => course.courseId === this.courseMappingg[this.$route.params.compId]);
+          const courseh = this.courseinfo.find(course => course.courseId === this.courseMappingh[this.$route.params.compId]);
+          const coursei = this.courseinfo.find(course => course.courseId === this.courseMappingi[this.$route.params.compId]);
+          if (courseb) {
+            this.recommendedCourseNameb = courseb.courseName;
+          }
+          if (course) {
+            this.recommendedCourseName = course.courseName;
+          }
+          if (coursec) {
+            this.recommendedCourseNamec = coursec.courseName;
+          }
+          if (coursed) {
+            this.recommendedCourseNamed = coursed.courseName;
+          }
+          if (coursee) {
+            this.recommendedCourseNamee = coursee.courseName;
+          }
+          if (coursef) {
+            this.recommendedCourseNamef = coursef.courseName;
+          }
+          if (courseg) {
+            this.recommendedCourseNameg = courseg.courseName;
+          }
+          if (courseh) {
+            this.recommendedCourseNameh = courseh.courseName;
+          }
+          if (coursei) {
+            this.recommendedCourseNamei = coursei.courseName;
+          }
+        })
+        .catch(error => {
+          // 处理错误
+        });
+    },
+
+
+
 
     //跳转课程详情页
     goToCourseDetail() {
@@ -103,6 +289,101 @@ export default {
         this.$message.error('没有找到对应的课程推荐');
       }
     },
+    // 跳转推荐课程b
+    goToCourseDetailb() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingb[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+    // 跳转推荐课程c
+    goToCourseDetailc() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingc[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+    // 跳转推荐课程d
+    goToCourseDetaild() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingd[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+
+    // 跳转推荐课程e
+    goToCourseDetaile() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappinge[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+
+    // 跳转推荐课程f
+    goToCourseDetailf() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingf[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+
+    // 跳转推荐课程g
+    goToCourseDetailg() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingg[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+
+    // 跳转推荐课程h
+    goToCourseDetailh() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingh[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+
+    // 跳转推荐课程i
+    goToCourseDetaili() {
+      const compId = this.$route.params.compId;
+      const courseId = this.courseMappingi[compId];
+      if (courseId) {
+        this.$router.push({ path: `/home/coursedetail/${courseId}` });
+      } else {
+        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
+        this.$message.error('没有找到对应的课程推荐');
+      }
+    },
+
+
     // 获取竞赛详情
     fetchCompetitionDetail() {
       const compId = this.$route.params.compId;
@@ -122,27 +403,27 @@ export default {
     },
 
     //收藏竞赛
-toggleFavorite() {
-  const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
-  const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
+    toggleFavorite() {
+      const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
+      const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
 
-  if (!userId) {
-    this.$message.error('请先登录');
-    return;
-  }
-  this.$http.post(`http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`)
-    .then(response => {
-      // 假设后端返回 表示收藏成功
-      if (response.data == 1) {
-        ElMessage({ message: '收藏成功！', type: "success" });
-      } else {
-        ElMessage({ message: '收藏失败！', type: "error" });
+      if (!userId) {
+        this.$message.error('请先登录');
+        return;
       }
-    })
-    .catch((err) => {
-      ElMessage({ message: '请求失败，请重试', type: "error" });
-    });
-},
+      this.$http.post(`http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`)
+        .then(response => {
+          // 假设后端返回 表示收藏成功
+          if (response.data == 1) {
+            ElMessage({ message: '收藏成功！', type: "success" });
+          } else {
+            ElMessage({ message: '收藏失败！', type: "error" });
+          }
+        })
+        .catch((err) => {
+          ElMessage({ message: '请求失败，请重试', type: "error" });
+        });
+    },
 
     //
 
@@ -164,8 +445,10 @@ toggleFavorite() {
         second: '2-digit',
       });
     }
-  }
+  },
+
 };
+
 </script>
 
 <style scoped>
@@ -206,6 +489,151 @@ body {
   flex-wrap: wrap;
   gap: 20px;
 }
+
+/* 竞赛信息知识图谱样式 */
+.tree {
+  position: relative;
+  /* 设置相对定位，以便子元素可以相对于此定位 */
+  width: 100%;
+  width: 720px;
+  height: 200px;
+}
+
+.left {
+  position: absolute;
+  /* 设置绝对定位 */
+  top: 0;
+  /* 靠上 */
+  left: 0;
+  /* 靠右 */
+  width: 100px;
+  height: 200px;
+}
+
+.left-up {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 200px;
+
+  /* 将span转换为块级元素 */
+  display: flex;
+
+  /* 水平和垂直居中 */
+  align-items: center;
+  justify-content: center;
+}
+
+.right-up {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 600px;
+  /* 设置容器的宽度 */
+  height: 100px;
+  /* 设置容器的高度 */
+  display: flex;
+  align-items: center;
+  /* 垂直居中整个内容（包括ul），但实际上这里主要是确保ul垂直居中 */
+  /* justify-content: center; 不需要，因为ul会占满整个right-up的宽度 */
+}
+
+.three-parts {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  /* 均分三份 */
+  list-style: none;
+  /* 去掉列表的默认样式 */
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  /* 继承父容器的高度 */
+}
+
+.three-parts li {
+  display: flex;
+  flex-direction: column;
+  /* 垂直排列span */
+  align-items: center;
+  /* 垂直居中span */
+  justify-content: space-around;
+  /* 均匀分布span，留一些间距 */
+  flex: 1;
+  /* 让每个li占据相同的空间 */
+  text-align: center;
+  /* 确保文本居中 */
+}
+
+.three-parts span {
+  display: inline-block;
+  /* 让span可以作为flex项 */
+}
+
+
+
+.line {
+  position: absolute;
+  /* 设置绝对定位 */
+  top: 100px;
+  /* 靠上 */
+  right: 0;
+  /* 靠右 */
+  height: 5px;
+  /* 设置高度为1像素 */
+  width: 620px;
+  /* 设置宽度为100%，即占满父容器的宽度 */
+  background-color: black;
+  /* 设置背景色为黑色，这样看起来就像一条线 */
+}
+
+.right-down {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 680px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中，用于整个.right-down的内容 */
+}
+
+.three-columns {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  /* 均分三份 */
+  list-style: none;
+  /* 去掉列表的默认样式 */
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  /* 继承父容器的高度 */
+}
+
+.three-columns li {
+  display: flex;
+  flex-direction: column;
+  /* 垂直排列span */
+  align-items: center;
+  /* 垂直居中span */
+  justify-content: space-around;
+  /* 均匀分布span，留一些间距 */
+  flex: 1;
+  /* 让每个li占据相同的空间 */
+  text-align: center;
+  /* 确保文本居中 */
+}
+
+.three-columns span {
+  display: inline-block;
+  /* 让span可以作为flex项 */
+}
+
+
 
 /* 左侧内容区样式 */
 .left-panel {
