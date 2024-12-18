@@ -106,8 +106,7 @@
               </div>
               <div class="right-column">
                 <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                  <h4>{{ box.title }}</h4>
-                  <p>{{ box.content }}</p>
+                  <img src="../assets/img/54.png" alt="社区图片" class="community-image">
                 </div>
               </div>
             </div>
@@ -451,6 +450,14 @@ export default {
   /* 鼠标悬停时改变链接颜色 */
   color: #4c51bf;
 
+}
+
+/* 社区图片样式 */
+.community-image {
+  width: 100%; /* 或者你希望的宽度 */
+  height: auto; /* 保持图片的纵横比 */
+  display: block; /* 防止图片下方出现空隙 */
+  margin-top: 20px; /* 与上方内容的间距 */
 }
 
 /* 关闭按钮 */
