@@ -50,19 +50,23 @@
                     </div>
                     <div class="activity-stats">
                         <div class="activity-item">
+                            <img src="../assets/img/64.png" alt="浏览图标" class="activity-icon">
                             <span class="activity-text">获得浏览:</span>
                             <span class="activity-number">{{ postView }}</span>
                         </div>
                         <div class="activity-item">
+                            <img src="../assets/img/61.png" alt="点赞图标" class="activity-icon">
                             <span class="activity-text">获得点赞:</span>
                             <span class="activity-number">{{ postLike }}</span>
 
                         </div>
                         <div class="activity-item">
+                            <img src="../assets/img/62.png" alt="收藏图标" class="activity-icon">
                             <span class="activity-text">获得收藏:</span>
                             <span class="activity-number">{{ postFavorite }}</span>
                         </div>
                         <div class="activity-item">
+                            <img src="../assets/img/63.png" alt="评论图标" class="activity-icon">
                             <span class="activity-text">获得评论:</span>
                             <span class="activity-number">{{ postComment }}</span>
                         </div>
@@ -418,8 +422,29 @@ h4 {
     margin-top: 10px;
 }
 
+.activity-item .activity-icon {
+    width: 20px; /* 调整图标宽度 */
+    height: 20px; /* 调整图标高度 */
+    margin-right: 0px; /* 移除图标和文字之间的间距 */
+}
+
+.activity-item .activity-text {
+    font-size: 17px;
+    color: #666;
+    margin-right: 5px; /* 文字之间的间距 */
+}
+
+.activity-item .activity-number {
+    font-size: 17px;
+    font-weight: bold;
+    color: #007bff;
+}
+.activity-item .activity-text {
+    margin-right: 5px; /* 文字之间的间距 */
+}
 .activity-item {
     display: flex;
+    align-items: center; /* 垂直居中对齐 */
     justify-content: space-between;
     margin-bottom: 5px;
     font-size: 14px;
