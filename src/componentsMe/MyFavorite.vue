@@ -1,86 +1,94 @@
 <template>
   <div class="my-favorite">
-    <el-card>
-      <div slot="header" class="clearfix" @click="toggleDetail(0)">
-        <span>收藏的竞赛</span>
+    <!-- 竞赛收藏 -->
+    <div class="favorite-section">
+      <div class="favorite-header" @click="toggleDetail(0)">
+        <span>>>收藏的竞赛</span>
         <i v-if="!showDetails[0]" class="el-icon-arrow-right"></i>
         <i v-if="showDetails[0]" class="el-icon-arrow-up"></i>
       </div>
       <div v-if="showDetails[0]" class="favorite-item-details">
-        <div v-for="(comp, index) in competitions" :key="index" class="competition-item">
-          <div class="item-title">{{ comp.competitionName }}</div>
-          <div class="item-content">
-            <div class="item-image">
-              <img style="width: 50px; height: auto"
-                :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" class="comp-img" />
-            </div>
-            <div class="item-details">
-              <div class="update-time">收藏时间: {{ new Date(comp.updatedTime).toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
-              }).replace(/\//g,
-                '-') }}</div>
-              <el-button type="danger" icon="el-icon-delete"
-                @click="removeFavorite(comp.competitionId, 'competition')">删除</el-button>
-            </div>
+        <div class="favorite-items">
+          <div v-for="(comp, index) in visibleCompetitions" :key="index" class="favorite-card">
+            <el-card  @click="goToCompDetail(comp.competitionId)">
+              <div class="item-title">{{ comp.competitionName }}</div>
+              <div class="item-content">
+                <div class="item-image">
+                  <img :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" class="comp-img" />
+                </div>
+                <div class="item-details">
+                  <div class="update-time">收藏时间: {{ formatTime(comp.updatedTime) }}</div>
+                  <el-button type="danger" icon="el-icon-delete"
+                    @click="removeFavorite(comp.competitionId, 'competition')">删除</el-button>
+                </div>
+              </div>
+            </el-card>
           </div>
         </div>
+        <el-button v-if="competitions.length > 4" @click="toggleShowMore(0)">
+          {{ showAllCompetitions ? '收起' : '查看更多' }}
+        </el-button>
       </div>
-    </el-card>
+    </div>
 
-    <el-card>
-      <div slot="header" class="clearfix" @click="toggleDetail(1)">
-        <span>收藏的课程</span>
+    <!-- 课程收藏 -->
+    <div class="favorite-section">
+      <div class="favorite-header" @click="toggleDetail(1)">
+        <span>>>收藏的课程</span>
         <i v-if="!showDetails[1]" class="el-icon-arrow-right"></i>
         <i v-if="showDetails[1]" class="el-icon-arrow-up"></i>
       </div>
       <div v-if="showDetails[1]" class="favorite-item-details">
-        <div v-for="(course, index) in courses" :key="index" class="course-item">
-          <div class="item-title">{{ course.courseName }}</div>
-          <div class="item-content">
-            <div class="item-image">
-              <img style="width: 50px; height: auto"
-                :src="'http://localhost:10086/images/upload/' + course.courseImgUrl" class="course-img" />
-            </div>
-            <div class="item-details">
-              <div class="course-description">{{ course.courseDescription }}</div>
-              <div class="update-time">收藏时间: {{ new Date(course.updatedTime).toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
-              }).replace(/\//g,
-                '-') }}</div>
-              <el-button type="danger" icon="el-icon-delete"
-                @click="removeFavorite(course.courseId, 'course')">删除</el-button>
-            </div>
+        <div class="favorite-items">
+          <div v-for="(course, index) in visibleCourses" :key="index" class="favorite-card">
+            <el-card @click="goToCourseDetail(course.courseId)">
+              <div class="item-title">{{ course.courseName }}</div>
+              <div class="item-content">
+                <div class="item-image">
+                  <img :src="'http://localhost:10086/images/upload/' + course.courseImgUrl" class="course-img" />
+                </div>
+                <div class="item-details">
+                  <div class="course-description">{{ shortenText(course.courseDescription) }}</div>
+                  <div class="update-time">收藏时间: {{ formatTime(course.updatedTime) }}</div>
+                  <el-button type="danger" icon="el-icon-delete"
+                    @click="removeFavorite(course.courseId, 'course')">删除</el-button>
+                </div>
+              </div>
+            </el-card>
           </div>
         </div>
+        <el-button v-if="courses.length > 4" @click="toggleShowMore(1)">
+          {{ showAllCourses ? '收起' : '查看更多' }}
+        </el-button>
       </div>
-    </el-card>
+    </div>
 
-    <el-card>
-      <div slot="header" class="clearfix" @click="toggleDetail(2)">
-        <span>收藏的帖子</span>
+    <!-- 帖子收藏 -->
+    <div class="favorite-section">
+      <div class="favorite-header" @click="toggleDetail(2)">
+        <span>>>收藏的帖子</span>
         <i v-if="!showDetails[2]" class="el-icon-arrow-right"></i>
         <i v-if="showDetails[2]" class="el-icon-arrow-up"></i>
       </div>
       <div v-if="showDetails[2]" class="favorite-item-details">
-        <div v-for="(post, index) in posts" :key="post.postId">
-          <div class="item-title">{{ post.postTitle }}</div>
-          <div class="item-content">
-            <div class="post-content">{{ post.postContent }}</div>
-            <div class="update-time">
-              收藏时间: {{ new Date(post.updatedTime).toLocaleString('zh-CN', {
-                year: 'numeric', month: '2-digit', day:
-                  '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
-              }).replace(/\//g, '-') }}
-            </div>
-            <el-button type="danger" icon="el-icon-delete" @click="removeFavorite(post.postId, 'post')">删除</el-button>
+        <div class="favorite-items">
+          <div v-for="(post, index) in visiblePosts" :key="post.postId" class="favorite-card">
+            <el-card @click="goToPostDetail(post.postId)">
+              <div class="item-title">{{ post.postTitle }}</div>
+              <div class="item-content">
+                <div class="post-content">{{ shortenText(post.postContent) }}</div>
+                <div class="update-time">收藏时间: {{ formatTime(post.updatedTime) }}</div>
+                <el-button type="danger" icon="el-icon-delete"
+                  @click="removeFavorite(post.postId, 'post')">删除</el-button>
+              </div>
+            </el-card>
           </div>
         </div>
+        <el-button v-if="posts.length > 4" @click="toggleShowMore(2)">
+          {{ showAllPosts ? '收起' : '查看更多' }}
+        </el-button>
       </div>
-    </el-card>
-
-
+    </div>
   </div>
 </template>
 
@@ -91,8 +99,14 @@ export default {
       competitions: [],
       courses: [],
       posts: [],
+      visibleCompetitions: [],
+      visibleCourses: [],
+      visiblePosts: [],
       userId: sessionStorage.userId, // 假设用户ID存储在sessionStorage中
       showDetails: [false, false, false], // 控制三个卡片的展开状态
+      showAllCompetitions: false,
+      showAllCourses: false,
+      showAllPosts: false
     };
   },
   created() {
@@ -101,23 +115,25 @@ export default {
   methods: {
     fetchFavorites() {
       // 调用后端接口获取收藏的数据
-      this.$http.get(`/comp/v1/favorite/${this.userId}`) //竞赛收藏
+      this.$http.get(`/comp/v1/favorite/${this.userId}`) // 竞赛收藏
         .then(response => {
           this.competitions = response.data;
+          this.visibleCompetitions = this.competitions.slice(0, 4); // 初始化只显示前4个
         });
 
-      this.$http.get(`/crs/v1/favorite/${this.userId}`) //课程收藏
+      this.$http.get(`/crs/v1/favorite/${this.userId}`) // 课程收藏
         .then(response => {
           this.courses = response.data;
+          this.visibleCourses = this.courses.slice(0, 4); // 初始化只显示前4个
         });
 
-      this.$http.get(`/v1/posts/userpost/${this.userId}`)     //帖子收藏
+      this.$http.get(`/v1/posts/userpost/${this.userId}`) // 帖子收藏
         .then(response => {
           this.posts = response.data;
+          this.visiblePosts = this.posts.slice(0, 4); // 初始化只显示前4个
         });
     },
     removeFavorite(favoriteId, type) {
-      // 调用后端接口删除收藏项
       let url = '';
       if (type === 'competition') {
         url = `/comp/v1/compe/favorite/${favoriteId}`;
@@ -139,41 +155,142 @@ export default {
     toggleDetail(index) {
       this.showDetails[index] = !this.showDetails[index];
     },
+    toggleShowMore(type) {
+      if (type === 0) {
+        this.showAllCompetitions = !this.showAllCompetitions;
+        this.visibleCompetitions = this.showAllCompetitions ? this.competitions : this.competitions.slice(0, 4);
+      } else if (type === 1) {
+        this.showAllCourses = !this.showAllCourses;
+        this.visibleCourses = this.showAllCourses ? this.courses : this.courses.slice(0, 4);
+      } else if (type === 2) {
+        this.showAllPosts = !this.showAllPosts;
+        this.visiblePosts = this.showAllPosts ? this.posts : this.posts.slice(0, 4);
+      }
+    },
+    goToCourseDetail(courseId) {
+      this.$router.push({ name: 'CourseDetail', params: { courseId } });
+    },
+
+    goToCompDetail(competitionId) {
+      this.$router.push({ name: 'CompDetail', params: { compId: competitionId } });
+    },
+
+    goToPostDetail(postId) {
+      this.$router.push({ name: 'PostDetail', params: { postId } });
+    },
+    formatTime(timestamp) {
+      return new Date(timestamp).toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }).replace(/\//g, '-');
+    },
+    shortenText(text, maxLength = 50) {
+      if (text.length > maxLength) {
+        text = this.stripHtmlTags(text);
+        return text.substring(0, maxLength) + '...';
+      }
+      return text;
+    },
+    stripHtmlTags(content) {
+      return content.replace(/<\/?[^>]+(>|$)/g, ""); // 去除HTML标签
+    }
   },
 };
 </script>
 
+
+
 <style scoped>
 .my-favorite {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 20px auto;
   padding: 20px;
 }
 
-.el-card {
+.favorite-section {
   margin-bottom: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+.favorite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 2px solid #ddd;
 }
 
 .favorite-item-details {
   margin-top: 10px;
 }
 
-.favorite-item-details>div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #ebeef5;
+.favorite-items {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
-.item-title {
-  font-size: 16px;
-  color: #333;
-  flex: 1;
-  margin-right: 10px;
+.favorite-card {
+  display: flex;
+  flex-direction: column;
+  padding: 10px; /* 减少卡片内边距 */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: none; /* 去掉阴影 */
+  margin: 0; /* 去掉卡片之间的空隙 */
+  height: auto; /* 根据内容自适应高度 */
+}
+
+.item-title,
+.course-description,
+.post-content {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* 限制为两行 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.item-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 调整内容的排列 */
+}
+
+.item-image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item-details {
+  margin-top: 10px;
+}
+
+.update-time {
+  font-size: 12px;
+  color: #868e96;
 }
 
 .el-button {
-  margin-left: 10px;
+  margin-top: 10px;
+  color: #dc3545;
+  background-color: transparent;
+  border: none;
+  font-size: 14px;
+}
+
+.el-button:hover {
+  color: #c82333;
 }
 </style>
