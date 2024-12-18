@@ -21,10 +21,21 @@
                     </div>
 
                     <!-- 新增：同宽的长方形框放一张图片 -->
-                    <div class="image-banner mb-3">
+                    <!-- <div class="image-banner mb-3">
                         <el-image style="width: 300px; height: 100px" :src="logoImage" fit="cover" />
 
-                    </div>
+                    </div> -->
+                    <el-carousel
+    height="260px"
+    direction="vertical"
+    motion-blur
+    :autoplay="false"
+  >
+  
+    <el-carousel-item v-for="(image, index) in images" :key="index">
+      <img :src="image" alt="carousel image"class="carousel-image" />
+    </el-carousel-item>
+  </el-carousel>
 
 
                     <!-- 搜索与分类筛选 -->
@@ -171,12 +182,17 @@
 </template>
 
 <script>
+  import image54 from "../assets/img/54.png";
+import image55 from "../assets/img/55.png";
+import image56 from "../assets/img/56.png";
+
 import axios from 'axios';
 import { ElMessage, ElMessageBox } from 'element-plus';
 export default {
     name: "CompetitionCommunity",
     data() {
         return {
+            images: [image54, image55,image56],
 
             guessLikeItems: [ // 猜你喜欢的内容
                 { title: "前端开发学习指南" },
@@ -469,6 +485,29 @@ export default {
 </script>
 
 <style scoped>
+.carousel-image{
+    width: 100%;
+    height: 260px;
+}
+.demonstration {
+  color: var(--el-text-color-secondary);
+}
+
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 200px;
+  margin: 0;
+  text-align: center;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
+}
 /* 页面整体布局 */
 .main-page {
     font-size: 14px;
