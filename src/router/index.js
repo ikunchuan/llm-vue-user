@@ -26,7 +26,7 @@ import CommuSearch from "../componentsCommunity/CommuSearch.vue";
 //社区-帖子
 import PostDetail from "../componentsCommunity/PostDetail.vue";
 import PostCreat from "../componentsCommunity/PostCreat.vue";
-
+import PostUpdate from "../componentsMe/PostUpdate.vue"
 //=================灵验================//
 import Lingyan from "../componentsLingYan/LingYan.vue";
 //灵验-对话
@@ -118,6 +118,11 @@ const routes = [
         path: "commusearch",
         name: "CommuSearch",
         component: CommuSearch,
+      },
+      {
+        path: "postcreat/:postId",
+        name: "PostUpdate",
+        component: PostUpdate,
       },
       {
         path: "postcreat/:communityId/:communityName",
