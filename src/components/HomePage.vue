@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container background-radial-gradient">
       <!-- 顶部区域 -->
      
       <!-- <div class="header-section">
@@ -520,7 +520,7 @@ source.value = 172000
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f4f6f8;
+  
   padding: 20px 30px;
   
  
@@ -557,11 +557,12 @@ source.value = 172000
 }
 
 .header-left h1 {
-  font-size: 50px;
-  font-weight: bold;
-  color: #333;
+  font-size: 50px; /* 调整字体大小 */
+  font-weight: bold; /* 加粗体 */
+  color: #ffffff; /* 白色字体颜色，与背景形成对比 */
   margin-bottom: 20px;
   padding: 30px 45px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 添加阴影以增强可读性 */
 }
 
 .form-section {
@@ -939,6 +940,9 @@ source.value = 172000
 .footer-bottom a:hover {
   text-decoration: underline;
 }
-
+.background-radial-gradient {
+  background: radial-gradient(circle at center, #7c73e6 0%, #c4c1e0 50%, #ffe9e3 100%);
+  background-size: cover; /* 确保背景覆盖整个元素 */
+}
   </style>
   
