@@ -1,762 +1,582 @@
 <template>
-  <!-- 根模板，包含整个布局 -->
-  <div class="container">
+  <div class="main-layout">
 
-    <!-- 主内容区域 -->
-    <div class="main">
-      <!-- 左侧内容区 -->
-      <aside class="left-panel">
-        <!-- 左侧标题 -->
-        <div class="title">{{ competitionDetail.competitionName }}</div>
-        <!-- 左侧内容块 -->
-        <div class="box">
-          <p>竞赛开始时间：{{ formatDate(competitionDetail.startDate) }}</p>
-          <p>竞赛结束时间：{{ formatDate(competitionDetail.endDate) }}</p>
-          <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
-          <el-button type="primary" @click="toggleFavorite">收藏竞赛</el-button>
 
+    <!-- 推荐模块 -->
+    <section class="recommend-section">
+
+      <!-- 左侧推荐导航 -->
+      <div class="recommend-sidebar">
+        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
+          :class="{ active: index === currentIndex }" @click="selectSidebarItem(item)">
+          {{ item.name }}
         </div>
-        <div class="box">
-          <div class="anchor-nav">
-            <a href="#" @click.prevent="scrollTo('schedule')">竞赛日程安排</a>
-            <a href="#" @click.prevent="scrollTo('details')">竞赛详情</a>
-            <!-- 根据需要添加更多锚点 -->
-          </div>
+      </div>
+      <!-- 右侧推荐卡片 -->
+      <div class="recommend-cards">
+        <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
+          <el-image style="width: 250px; height: 170px; border-radius: 8px"
+            :src="'http://localhost:10086/images/upload/' + card" fit="cover" class="card-image"></el-image>
         </div>
-      </aside>
+      </div>
 
-      <!-- 右侧内容区 -->
-      <section class="right-panel">
-        <!-- 右侧顶部内容 -->
-        <div class="header"></div>
+    </section>
 
-        <!-- 右侧主内容 -->
-        <!--知识树-->
-        <div class="tree">
-          <div class="left">
-            <span class="left-up">{{ competitionDetail.competitionName }}</span>
+    <!-- 筛选条件 -->
+    <section class="filters-section">
+
+      <!-- 竞赛名称搜索框 -->
+      <div class="filter-item">
+        <el-input placeholder="请输入相应竞赛名称" v-model="searchName" class="search-input"></el-input>
+      </div>
+      <!-- 开始日期选择器 -->
+      <div class="filter-item">
+        <el-date-picker v-model="searchStartDate" type="date" placeholder="选择开始日期" class="search-input">
+        </el-date-picker>
+      </div>
+      <!-- 结束日期选择器 -->
+      <div class="filter-item">
+        <el-date-picker v-model="searchEndDate" type="date" placeholder="选择结束日期" class="search-input">
+        </el-date-picker>
+      </div>
+      <!-- 搜索按钮 -->
+      <div class="filter-item">
+        <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
+      </div>
+
+    </section>
+
+    <!-- 图标分类 -->
+    <section class="icon-section">
+      <div class="icon-item">
+        <div class="icon-container">
+
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo"
+                @click="onIconClick(1)" /></el-icon>
+            <p>创新创业类</p>
           </div>
-          <div class="right-up">
-            <ul class="three-parts">
-
-
-              <li>
-                <a @click="goToCourseDetailb">{{ recommendedCourseNameb || 1 }}</a>
-                <a @click="goToCourseDetailc">{{ recommendedCourseNamec || 1 }}</a>
-              </li>
-              <li>
-                <a @click="goToCourseDetaild">{{ recommendedCourseNamed || 1 }}</a>
-                <a @click="goToCourseDetaile">{{ recommendedCourseNamee || 1 }}</a>
-                <a @click="goToCourseDetailf">{{ recommendedCourseNamef || 1 }}</a>
-              </li>
-            </ul>
+          <!-- 信息技术与编程类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/2.png" class="logo" @click="onIconClick(2)" /></el-icon>
+            <p>信息技术与编程类</p>
           </div>
 
-          <div class="line">
+          <!-- 数学类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/3.png" class="logo" @click="onIconClick(3)" /></el-icon>
+            <p>数学类</p>
+          </div>
+
+          <!-- 经济与管理类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/4.png" class="logo" @click="onIconClick(4)" /></el-icon>
+            <p>经济与管理类</p>
+          </div>
+
+          <!-- 语言与文化类 -->
+          <div class="icon-item">
+            <el-icon class="icon"><img src="../assets/img/5.png" class="logo" @click="onIconClick(5)" /></el-icon>
+            <p>语言与文化类</p>
           </div>
 
 
-          <div class="right-down">
-            <ul class="three-columns">
 
-              <li>
 
-                <a @click="goToCourseDetail">{{ recommendedCourseName || 失败 }}</a>
-                <a @click="goToCourseDetaili">{{ recommendedCourseNamei || 1 }}</a>
-              </li>
-
-              <li>
-                <a @click="goToCourseDetailg">{{ recommendedCourseNameg || 1 }}</a>
-                <a @click="goToCourseDetailh">{{ recommendedCourseNameh || 1 }}</a>
-
-              </li>
-            </ul>
-          </div>
+          <!-- <img src="../assets/img/1.png" alt="Logo" class="logo" @click="onIconClick(1)" /> -->
+          <!-- <img src="../assets/img/2.png" alt="Image 2" class="logo" @click="onIconClick(2)" />
+          <img src="../assets/img/3.png" alt="Image 3" class="logo" @click="onIconClick(3)" />
+          <img src="../assets/img/4.png" alt="Image 4" class="logo" @click="onIconClick(4)" />
+          <img src="../assets/img/5.png" alt="Image 5" class="logo" @click="onIconClick(5)" /> -->
         </div>
+      </div>
+    </section>
 
-
-        <div class="content">
-          <div class="steps-container">
-            <el-steps style="max-width: 600px" :active="1">
-              <el-step title="未开始" description="摩拳擦掌" />
-              <el-step title="进行中" description="火热报名中" />
-              <el-step title="已结束" description="来年再战" />
-            </el-steps>
-          </div>
-
-          <!-- 竞赛名称 -->
-          <div class="info-item">竞赛名称：<span class="info-content">{{ competitionDetail.competitionName }}</span></div>
-
-          <!-- 竞赛描述 -->
-          <div class="info-item">竞赛描述：<span class="info-content">{{ competitionDetail.competitionDescription }}</span>
-          </div>
-
-          <!-- 竞赛主办方 -->
-          <div class="info-item">竞赛主办方：<span class="info-content">{{ competitionDetail.competitionOrganizer }}</span>
-          </div>
-
-          <!-- 截止日期 -->
-          <div class="info-item">截止日期：<span class="info-content">{{ formatDate(competitionDetail.registrationDeadline)
-              }}</span>
-          </div>
-
-          <!-- 竞赛日程安排 -->
-          <div class="info-item" id="schedule">竞赛日程安排：<span class="info-content">{{
-            competitionDetail.competitionSchedule }}</span></div>
-
-          <!-- 竞赛详情 -->
-          <div class="info-item" id="details">
-            <div v-html="competitionDetail.detail"></div>
-          </div>
+    <!-- 展示卡片 -->
+    <section class="cards-section">
+      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.competitionId)">
+        <img style="width: 360px; height: 170px" :src="'http://localhost:10086/images/upload/' + card.competitionImgUrl"
+          alt="Card Image" />
+        <div class="card-title">{{ card.competitionName }}</div>
+        <div class="card-info">{{ card.levelName }}</div>
+        <div class="card-footer">
+          <div class="price">{{ card.competitionStatus }}</div>
         </div>
-
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
-import { ElMessage } from 'element-plus';
+import axios from 'axios';
 export default {
-  name: 'CompDetail',
+  name: "MainLayout",
   data() {
     return {
-      competitionDetail: {}, // 存储竞赛详情数据
-      loading: true,        // 加载状态
-      error: null,           // 错误信息
-      headerImageUrl: '',// 后端传入的图片URL
-      recommendedCourseName: '', // 存储推荐课程的名称
-      recommendedCourseNameb: '', // 存储推荐课程的名称b
-      recommendedCourseNamec: '',
-      recommendedCourseNamed: '',
-      recommendedCourseNamee: '',
-      recommendedCourseNamef: '',
-      recommendedCourseNameg: '',
-      recommendedCourseNameh: '',
-      recommendedCourseNamei: '',
-      courseMapping: {           //下方左侧第一个
-        '1': 2,  // 竞赛ID 1 对应 课程ID2
-        '2': 1,  // 竞赛ID 2 对应 课程ID 1
+
+      //推荐板块
+      sidebarItems: [
+        { name: "热门竞赛", type: "competition", popular: true, recommendCards: [] },
+        { name: "热门课程", type: "course", popular: true, recommendCards: [] },
+        { name: "热门社区", type: "community", popular: true, recommendCards: [] },
+      ],
+      recommendCards: [],
+      currentType: null,
+
+      iconCategories: {
+        '1': 1,
+        '2': 2,
         '3': 3,
         '4': 4,
         '5': 5,
-        '6': 6,
-        '24': 2,  // 竞赛ID 24 对应 课程ID 2
-        // 可以继续添加更多映射
       },
-      courseMappingb: {     //上方左侧第一个
-        '1': 5,  // 竞赛ID 1 对应 课程ID 5
-        '2': 2,  // 竞赛ID 2 对应 课程ID 1
-        '3': 3,
-        '4': 4,
-        '5': 5,
-        '6': 6,
-        '24': 3,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappingc: {   //上方左侧第二个
-        '1': 6,  // 竞赛ID 1 对应 课程ID 5
-        '2': 4,  // 竞赛ID 2 对应 课程ID 1
-        '3': 4,
-        '4': 5,
-        '5': 6,
-        '6': 7,
-        '24': 4,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappingd: {   //上方右侧第一个
-        '1': 7,  // 竞赛ID 1 对应 课程ID 5
-        '2': 5,  // 竞赛ID 2 对应 课程ID 1
-        '3': 5,
-        '4': 6,
-        '5': 7,
-        '6': 8,
-        '24': 9,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappinge: {    //上方右侧第二个
-        '1': 8,  // 竞赛ID 1 对应 课程ID 5
-        '2': 9,  // 竞赛ID 2 对应 课程ID 1
-        '3': 1,
-        '4': 7,
-        '5': 8,
-        '6': 9,
-        '24': 10,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappingf: {    //上方右侧第三个
-        '1': 9,  // 竞赛ID 1 对应 课程ID 5
-        '2': 10,  // 竞赛ID 2 对应 课程ID 1
-        '3': 8,
-        '4': 8,
-        '5': 9,
-        '6': 10,
-        '24': 11,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappingg: {//下方右侧第一个
-        '1': 10,  // 竞赛ID 1 对应 课程ID 5
-        '2': 11,  // 竞赛ID 2 对应 课程ID 1
-        '3': 9,
-        '4': 9,
-        '5': 10,
-        '6': 11,
-        '24': 12,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappingh: {//下方右侧第二个
-        '1': 11,  // 竞赛ID 1 对应 课程ID 5
-        '2': 12,  // 竞赛ID 2 对应 课程ID 1
-        '3': 10,
-        '4': 10,
-        '5': 1,
-        '6': 11,
-        '24': 13,  // 竞赛ID 24 对应 课程ID 2
-      },
-      courseMappingi: {//下方左侧第二个
-        '1': 11,  // 竞赛ID 1 对应 课程ID 5
-        '2': 12,  // 竞赛ID 2 对应 课程ID 1
-        '3': 6,
-        '4': 4,
-        '5': 7,
-        '6': 8,
-        '24': 14,  // 竞赛ID 24 对应 课程ID 2
-      },
+      // 展示卡片的内容
+      cards: [],
+      filteredCards: [],
+      currentIndex: 0, // 当前激活的导航索引
 
+      //条件查询数据
+      searchName: '',
+      searchStartDate: '',
+      searchEndDate: '',
 
+      activeDrawer: null, // 当前激活的抽屉
+      cards: [],//存储后端查询后返回数据
     };
   },
-  created() {
-    this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
-    this.fetchCourse();
-  },
   methods: {
+    autoSlideSidebar() {
+      this.currentIndex = (this.currentIndex + 1) % this.sidebarItems.length;
+      console.log('Current Index:', this.currentIndex); // 调试输出
+      this.$forceUpdate(); // 强制视图更新
+    },
 
-
-    // 获取课程信息
-    fetchCourse() {
-      this.$http.get(`http://localhost:10086/crs/v1`)
+    fetchRecommendItems(type) {
+      const payload = { popular: 1, type: type };
+      let apiEndpoint = '';
+      switch (type) {
+        case 'community':
+          apiEndpoint = '/v1/cmns/search';
+          break;
+        case 'competition':
+          apiEndpoint = 'comp/v1/search';
+          break;
+        case 'course':
+          apiEndpoint = 'crs/search';
+          break;
+        default:
+          console.error('未知类型:', type);
+          return;
+      }
+      axios.post(apiEndpoint, payload)
         .then(response => {
-          this.courseinfo = response.data;
-          //  courseinfo 是一个数组，每个元素都是一个课程对象
-          const course = this.courseinfo.find(course => course.courseId === this.courseMapping[this.$route.params.compId]);
-          const courseb = this.courseinfo.find(course => course.courseId === this.courseMappingb[this.$route.params.compId]);
-          const coursec = this.courseinfo.find(course => course.courseId === this.courseMappingc[this.$route.params.compId]);
-          const coursed = this.courseinfo.find(course => course.courseId === this.courseMappingd[this.$route.params.compId]);
-          const coursee = this.courseinfo.find(course => course.courseId === this.courseMappinge[this.$route.params.compId]);
-          const coursef = this.courseinfo.find(course => course.courseId === this.courseMappingf[this.$route.params.compId]);
-          const courseg = this.courseinfo.find(course => course.courseId === this.courseMappingg[this.$route.params.compId]);
-          const courseh = this.courseinfo.find(course => course.courseId === this.courseMappingh[this.$route.params.compId]);
-          const coursei = this.courseinfo.find(course => course.courseId === this.courseMappingi[this.$route.params.compId]);
-          if (courseb) {
-            this.recommendedCourseNameb = courseb.courseName;
-          }
-          if (course) {
-            this.recommendedCourseName = course.courseName;
-          }
-          if (coursec) {
-            this.recommendedCourseNamec = coursec.courseName;
-          }
-          if (coursed) {
-            this.recommendedCourseNamed = coursed.courseName;
-          }
-          if (coursee) {
-            this.recommendedCourseNamee = coursee.courseName;
-          }
-          if (coursef) {
-            this.recommendedCourseNamef = coursef.courseName;
-          }
-          if (courseg) {
-            this.recommendedCourseNameg = courseg.courseName;
-          }
-          if (courseh) {
-            this.recommendedCourseNameh = courseh.courseName;
-          }
-          if (coursei) {
-            this.recommendedCourseNamei = coursei.courseName;
-          }
-        })
-        .catch(error => {
-          // 处理错误
-        });
-    },
+          console.log('获取推荐数据成功:', response.data);
+          if (response.data && Array.isArray(response.data.list)) {
+            // 使用 slice 方法获取前5条数据
+            const items = response.data.list.slice(0, 3);
+            console.log('推荐详情数据5条:', items);
 
-
-
-
-    //跳转课程详情页
-    goToCourseDetail() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMapping[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-    // 跳转推荐课程b
-    goToCourseDetailb() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingb[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-    // 跳转推荐课程c
-    goToCourseDetailc() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingc[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-    // 跳转推荐课程d
-    goToCourseDetaild() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingd[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-
-    // 跳转推荐课程e
-    goToCourseDetaile() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappinge[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-
-    // 跳转推荐课程f
-    goToCourseDetailf() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingf[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-
-    // 跳转推荐课程g
-    goToCourseDetailg() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingg[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-
-    // 跳转推荐课程h
-    goToCourseDetailh() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingh[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-
-    // 跳转推荐课程i
-    goToCourseDetaili() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingi[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
-      }
-    },
-
-
-    // 获取竞赛详情
-    fetchCompetitionDetail() {
-      const compId = this.$route.params.compId;
-      this.$http.get(`http://localhost:10086/comdetail/v1/detail/${compId}`)
-        .then(response => {
-          this.competitionDetail = response.data;
-        })
-        .catch(error => {
-          this.error = error.message;
-        });
-    },
-    scrollTo(anchor) {
-      const element = document.getElementById(anchor);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    },
-
-    //收藏竞赛
-    toggleFavorite() {
-      const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
-      const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
-
-      if (!userId) {
-        this.$message.error('请先登录');
-        return;
-      }
-      this.$http.post(`http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`)
-        .then(response => {
-          // 假设后端返回 表示收藏成功
-          if (response.data == 1) {
-            ElMessage({ message: '收藏成功！', type: "success" });
+            this.recommendCards = items.map(item => {
+              if (type === 'community') {
+                return item.communityImageUrl;
+              } else if (type === 'competition') {
+                return item.competitionImgUrl;
+              } else if (type === 'course') {
+                return item.courseImgUrl;
+              }
+            });
           } else {
-            ElMessage({ message: '收藏失败！', type: "error" });
+            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
           }
         })
-        .catch((err) => {
-          ElMessage({ message: '请求失败，请重试', type: "error" });
+        .catch(error => {
+          console.error('获取数据失败:', error.response ? error.response.data : error.message);
         });
     },
 
-    //
-
-    // 假设你有一个获取当前用户ID的方法
-    getCurrentUserId() {
-      console.log('sessionStorage.userId:', sessionStorage.userId);
-      return sessionStorage.userId;
+    // 推荐板块的热门社区和热门竞赛
+    selectSidebarItem(item) {
+      this.currentType = item.type;
+      if (item.popular) {
+        this.fetchRecommendItems(item.type);
+      }
     },
-    // 时间格式化方法
-    formatDate(date) {
-      if (!date) return '-';
-      const d = new Date(date);
-      return d.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      });
+
+    //条件查询方法
+    searchCompetitions() {
+      const payload = {
+        competitionName: this.searchName,
+        startDate: this.searchStartDate,
+        endDate: this.searchEndDate
+      };
+      axios.post('comp/v1/search', payload)
+        .then(response => {
+          if (response.data && Array.isArray(response.data.list)) {
+            this.cards = response.data.list;
+          } else {
+            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('查询失败:', error.response ? error.response.data : error.message);
+        });
+    },
+    //获取竞赛数据
+    fetchCards() {
+      this.loading = true;
+      this.error = null;
+      // 发送GET请求到后端API
+      this.$http.get('http://localhost:10086/comp/v1/compe')
+        .then(response => {
+          // 假设后端返回的数据是一个数组，每个元素都是一个卡片对象
+          this.cards = response.data;
+        })
+        .catch(error => {
+          this.error = '加载卡片数据失败，请稍后再试。';
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+
+    // 
+    toggleDrawer(menu) {
+      this.activeDrawer = menu;
+    },
+    // 保持抽屉打开
+    keepDrawerOpen() {
+      // 不做任何操作，保持抽屉打开
+    },
+    onIconClick(iconKey) {
+      const categoryId = this.iconCategories[iconKey];
+      this.searchByCategory(categoryId);
+    },
+    searchByCategory(categoryId) {
+      const competitionSearch = { categoryId };
+      this.$http.post('comp/v1/search', competitionSearch, {
+        params: {
+          pageNum: 1,
+          pageSize: 5
+        }
+      })
+        .then(response => {
+          if (response.data) {
+            this.cards = response.data.list;
+            this.filteredCards = response.data.list;
+          } else {
+            console.error('后端返回的数据格式不正确:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('查询失败:', error.response ? error.response.data : error.message);
+        });
+    },
+    goToDetail(compId) {
+      // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
+      this.$router.push({ name: 'CompDetail', params: { compId: compId } });
+    },
+    searchCompetitions() {
+      this.filteredCards = this.searchName
+        ? this.cards.filter(card => card.courseName.includes(this.searchName))
+        : this.cards;
     }
+
   },
+  mounted() {
+    this.fetchCards();
 
+    // 在组件挂载时，可以自动获取推荐板块的数据
+    this.sidebarItems.forEach(item => {
+      if (item.popular) {
+        this.fetchRecommendItems(item.type);
+      }
+    });
+    this.slideInterval = setInterval(this.autoSlideSidebar, 3000);// 每3秒自动切换导航栏索引
+
+  },
+  beforeDestroy() {
+    clearInterval(this.slideInterval);
+  },
 };
-
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
-
-body {
-  margin: 0;
-  font-family: 'Roboto', Arial, sans-serif;
-  background-color: #F4F6F8;
-  color: #333;
+/* 外部容器，控制整体布局的宽度和居中 */
+.main-layout {
+  max-width: 1200px;
+  /* 限制页面的最大宽度 */
+  margin: 0 auto;
+  /* 居中对齐 */
+  padding: 5px;
+  /* 增加内边距，避免贴边 */
+  background-color: #f4f6f8;
+  /* 设置背景颜色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 可选：添加阴影效果 */
+  border-radius: 10px;
+  /* 可选：添加圆角效果 */
 }
 
-.container {
-  max-width: 1200px;
+/* 推荐模块样式 */
+.recommend-section {
+  display: flex;
+  gap: 20px;
   margin: 20px auto;
   padding: 20px;
-  background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* background-color: #f9f9f9; */
+  background-color: #FFFFFF;
+  box-shadow: 0 8px 16px rgba(223, 190, 190, 0.1);
+  border-radius: 15px;
+  flex-wrap: wrap;
+}
+
+/* 左侧推荐导航样式 */
+.recommend-sidebar {
+  width: 250px;
+  background-color: #F4F6F8;
   border-radius: 8px;
+  padding: 30px 0;
 }
 
-.header {
+.recommend-sidebar-item {
+  padding: 20px 20px;
+  font-size: 18px;
+  color: #333333;
+  cursor: pointer;
   text-align: center;
-  margin-bottom: 20px;
+  transition: all 0.3s ease;
 }
 
-.header h1 {
-  font-size: 2em;
-  color: #c4c1e0;
+.recommend-sidebar-item:hover {
+  background-color: #E0E6F8;
+  border-left: 5px solid #5A67D8;
+  color: #5A67D8;
+  font-weight: bold;
 }
 
-.header p {
-  color: #666;
+.recommend-sidebar-item.active {
+
+  background-color: #E0E6F8;
+  color: #5A67D8;
+  font-weight: bold;
+  border-left: 5px solid #5A67D8;
 }
 
-.main {
+
+/* 右侧推荐卡片容器 */
+.recommend-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-}
-
-/* 竞赛信息知识图谱样式 */
-.tree {
-  position: relative;
-  /* 设置相对定位，以便子元素可以相对于此定位 */
-  width: 100%;
-  width: 720px;
-  height: 200px;
-}
-
-.left {
-  position: absolute;
-  /* 设置绝对定位 */
-  top: 0;
-  /* 靠上 */
-  left: 0;
-  /* 靠右 */
-  width: 100px;
-  height: 200px;
-}
-
-.left-up {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100px;
-  height: 200px;
-
-  /* 将span转换为块级元素 */
-  display: flex;
-
-  /* 水平和垂直居中 */
-  align-items: center;
+  gap: 30px;
+  justify-content: space-evenly;
+  padding: 40px;
   justify-content: center;
-}
-
-.right-up {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 600px;
-  /* 设置容器的宽度 */
-  height: 100px;
-  /* 设置容器的高度 */
-  display: flex;
-  align-items: center;
-  /* 垂直居中整个内容（包括ul），但实际上这里主要是确保ul垂直居中 */
-  /* justify-content: center; 不需要，因为ul会占满整个right-up的宽度 */
-}
-
-.three-parts {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  /* 均分三份 */
-  list-style: none;
-  /* 去掉列表的默认样式 */
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  /* 继承父容器的高度 */
-}
-
-.three-parts li {
-  display: flex;
-  flex-direction: column;
-  /* 垂直排列span */
-  align-items: center;
-  /* 垂直居中span */
-  justify-content: space-around;
-  /* 均匀分布span，留一些间距 */
+  /* 均匀分布卡片 */
   flex: 1;
-  /* 让每个li占据相同的空间 */
-  text-align: center;
-  /* 确保文本居中 */
 }
 
-.three-parts span {
-  display: inline-block;
-  /* 让span可以作为flex项 */
-}
+/* 单个推荐卡片样式 */
+.recommend-card {
 
-
-
-.line {
-  position: absolute;
-  /* 设置绝对定位 */
-  top: 100px;
-  /* 靠上 */
-  right: 0;
-  /* 靠右 */
-  height: 5px;
-  /* 设置高度为1像素 */
-  width: 620px;
-  /* 设置宽度为100%，即占满父容器的宽度 */
-  background-color: black;
-  /* 设置背景色为黑色，这样看起来就像一条线 */
-}
-
-.right-down {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 680px;
-  height: 100px;
   display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 180px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.recommend-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-image {
+  width: 250px;
+  height: 170px;
+  /* 调整图片高度 */
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.recommend-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+
+
+
+/* 筛选条件样式 */
+.filters-section {
+  justify-content: center;
+  /* 水平居中 */
   align-items: center;
   /* 垂直居中 */
-  justify-content: center;
-  /* 水平居中，用于整个.right-down的内容 */
-}
-
-.three-columns {
   display: flex;
-  width: 100%;
-  justify-content: space-between;
-  /* 均分三份 */
-  list-style: none;
-  /* 去掉列表的默认样式 */
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  /* 继承父容器的高度 */
-}
-
-.three-columns li {
-  display: flex;
-  flex-direction: column;
-  /* 垂直排列span */
-  align-items: center;
-  /* 垂直居中span */
-  justify-content: space-around;
-  /* 均匀分布span，留一些间距 */
-  flex: 1;
-  /* 让每个li占据相同的空间 */
-  text-align: center;
-  /* 确保文本居中 */
-}
-
-.three-columns span {
-  display: inline-block;
-  /* 让span可以作为flex项 */
-}
-
-
-
-/* 左侧内容区样式 */
-.left-panel {
-  flex: 0 0 35%;
-  /* 不增长不缩小，基础宽度为30% */
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  overflow: hidden;
-  padding: 20px;
-  /* 增加内边距 */
-  box-sizing: border-box;
-  /* 确保padding和border包含在宽度内 */
-}
-
-/* 右侧内容区样式 */
-.right-panel {
-  flex: 1;
-  /* 占据剩余空间 */
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  overflow: hidden;
-  padding: 20px;
-  /* 增加内边距 */
-  box-sizing: border-box;
-  /* 确保padding和border包含在宽度内 */
-}
-
-/* 右侧主内容样式 */
-.content {
-  display: flex;
-  /* 启用 Flexbox 布局 */
-  flex-direction: column;
-  /* 子元素垂直排列 */
-  align-items: flex-start;
-  /* 默认靠左对齐所有子元素 */
-  padding: 20px;
-  /* 内边距 */
-}
-
-/* 步骤容器样式，确保它居中 */
-.steps-container {
-  max-width: 600px;
-  /* 最大宽度 */
-  width: 100%;
-  /* 充满父容器宽度 */
+  gap: 10px;
   margin: 20px auto;
-  /* 上下边距，左右自动，实现水平居中 */
-}
-
-/* 信息项样式，确保它们靠左对齐 */
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
-  white-space: nowrap;
-  /* 禁止换行 */
-}
-
-.info-content {
-  font-size: 14px;
-  color: #666;
-  white-space: normal;
-  /* 允许内容换行，但不影响标题 */
-}
-
-/* 特定信息项的样式，如果需要特殊对齐 */
-.special-item {
-  text-align: center;
-  /* 居中对齐 */
-}
-
-.left-panel .title,
-.right-panel .header {
-  background-color: #c4c1e0;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px 8px 0 0;
-}
-
-.box {
   padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ffffff;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  max-width: 800px;
+  /* 调整宽度 */
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 30px;
+  /* 添加圆角 */
 }
 
-.anchor-nav a {
-  display: block;
+
+
+/* 搜索输入框和日期选择器样式 */
+.search-input {
+  width: 200px;
+  /* 根据需要调整宽度 */
+}
+
+/* 搜索按钮样式 */
+.search-button {
+  background-color: #5A67D8;
+  /* 按钮背景色 */
+  color: white;
+  /* 按钮文字颜色 */
+  border: none;
+  padding: 10px 20px;
+  /* 按钮内边距 */
+  border-radius: 5px;
+  /* 按钮圆角 */
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #4A54C0;
+  /* 按钮悬停背景色 */
+}
+
+
+/* 图标分类样式 */
+.icon-section {
+  display: flex;
+  /* 使用 Flexbox 布局 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  margin: 0px auto;
+  max-width: 100%;
+  /* 限制宽度 */
+  padding: 2px 0px 10px 0px;
+  /* 内边距 */
+  background-color: #ffffff;
+  /* 背景色 */
+  border-radius: 10px;
+  /* border-radius: 10px 10px 0px 0px; */
+  /* 圆角 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 阴影效果 */
+}
+
+.icon {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 1px;
+}
+
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.icon-item p {
+  font-size: 12px;
+  color: #5A67D8;
+  /* 主色调 */
+  font-weight: 500;
+  margin: 0;
+}
+
+.icon-container {
+  display: flex;
+  /* 使用 flexbox 让图片并排 */
+  justify-content: center;
+  /* 居中对齐 */
+  align-items: center;
+  /* 垂直居中 */
+  margin: 0 auto;
+  /* 让整个容器居中 */
+  gap: 100px;
+  /* 设置图片之间的间距 */
+}
+
+.logo {
+  width: 23px;
+  /* 设置图片宽度 */
+  height: auto;
+  /* 保持图片宽高比 */
+  transition: transform 0.2s;
+  /* 添加动画效果（可选） */
+}
+
+.logo:hover {
+  transform: scale(1.2);
+  /* 鼠标悬停放大图片（可选） */
+}
+
+/* 展示卡片样式 */
+.cards-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  margin: 0px auto;
+  max-width: 1200px;
+  /* 限制展示区域的最大宽度 */
+}
+
+/* 单个卡片样式 */
+.card {
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
   padding: 10px;
-  color: #7c73e6;
-  text-decoration: none;
-  border-bottom: 1px solid #e0e0e0;
+  border-radius: 10px;
+  /* 添加圆角 */
 }
 
-.anchor-nav a:hover {
-  background-color: #e0e0e0;
+.card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  /* 图片圆角 */
 }
 
-.info-item {
+.card-title {
+  font-size: 1.2em;
+  margin: 10px 0;
+}
+
+.card-info {
+  color: #777;
+  font-size: 0.9em;
+}
+
+.card-footer {
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
 }
 
-.info-content {
-  font-size: 1em;
-  color: #666;
+.price {
+  color: #e53935;
+  font-weight: bold;
 }
 
-.el-button {
-  background-color: #7c73e6;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.el-button:hover {
-  background-color: #ffe9e3;
+.rating {
+  color: #5a67d8;
 }
 </style>
