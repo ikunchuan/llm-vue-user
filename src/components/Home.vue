@@ -8,7 +8,14 @@
         <nav class="nav-menu">
           <div class="nav-item" v-for="item in navItems" :key="item.name" @mouseenter="toggleDrawer(item)"
             @mouseleave="toggleDrawer(item)" @click="navigate(item.path)">
-            {{ item.name }}
+            <!-- 图片在左边 -->
+            <img v-if="item.name === '竞赛中心'" src="../assets/img/49.png" alt="icon" class="nav-item-icon">
+            <img v-if="item.name === '资源中心'" src="../assets/img/48.png" alt="icon" class="nav-item-icon">
+            <img v-if="item.name === '灵验知道'" src="../assets/img/47.png" alt="icon" class="nav-item-icon">
+            <img v-if="item.name === '社区'" src="../assets/img/50.png" alt="icon" class="nav-item-icon">
+            <img v-if="item.name === '个人中心'" src="../assets/img/46.png" alt="icon" class="nav-item-icon">
+            <!-- 文字在右边 -->
+            <span>{{ item.name }}</span>
           </div>
         </nav>
 
@@ -311,7 +318,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  /* height: auto; */
+  height: 80px; 
   z-index: 10000;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -321,10 +328,12 @@ export default {
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
+  
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 15px 20px;
+  
 }
 
 /* LOGO 样式 */
@@ -348,6 +357,7 @@ export default {
 .nav-menu {
   display: flex;
   gap: 40px;
+  height: 50px; 
   position: relative;
 }
 
@@ -356,18 +366,25 @@ export default {
   font-weight: bold;
   color: #333333;
   position: relative;
+  display: flex; /* 使用flex布局 */
+  align-items: center; /* 子元素垂直居中 */
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.3s ease, color 0.3s ease;
+  gap: 5px; /* 调整图片和文字之间的间距 */
+}
+
+/* 导航项图标样式 */
+.nav-item-icon {
+  width: 15px; /* 调整图片宽度 */
+  height: 15px; /* 调整图片高度 */
 }
 
 /* 鼠标悬停时文字滑动效果 */
 .nav-item:hover {
   color: #5a67d8;
-  transform: translateY(-5px);
-  /* 向上滑动效果 */
+  transform: translateY(-5px); /* 向上滑动效果 */
 }
-
 /* 抽屉样式 */
 .drawer {
   position: fixed;
