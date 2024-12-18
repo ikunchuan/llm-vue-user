@@ -108,6 +108,9 @@
                     <img style=" height: 150px;" :src="getImageUrl(item.relatedCourses[0]?.url)"
                       :alt="item.relatedCourses[0]?.name || '课程图片'" />
                   </div>
+                  <div class="carousel-item" v-else>
+                    <el-empty description="暂无相关竞赛" />
+                  </div>
                   <div class="image-overlay">
                     <span class="image-title">{{ item.relatedCourses[0]?.name }}</span>
                   </div>
@@ -290,6 +293,45 @@ export default {
 </script>
 
 <style scoped>
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.image-container:hover .image-overlay {
+  transform: translateY(0);
+}
+
+.image-title {
+  color: white;
+  font-size: 14px;
+  display: block;
+  text-align: center;
+}
+
+.carousel-item {
+  cursor: pointer;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
 :deep(.el-card__body) {
   padding: 0;
 }
