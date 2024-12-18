@@ -56,17 +56,9 @@
                 <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px;">
               </div>
               <div class="right-column">
-                <h1>最新动态</h1>
-                <div class="image-section">
-                  <!-- 其他可能的 v-for 使用 -->
-                  <div v-for="(comp, index) in popularCompetitions" :key="index">
-                    <img :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl"
-                      @click="goToCompetitionDetail(comp.competitionId)" />
-                  </div>
-
-                </div>
-                <div class="text-container">
-                  <p>这里是图片下方的文字描述。</p>
+                <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index" @click="goToCompetitionDetail(comp.competitionId)">
+                  <el-image :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" fit="cover" class="card-image"></el-image>
+                  <div class="card-title">{{ comp.competitionName }}</div>
                 </div>
               </div>
             </div>
@@ -78,26 +70,38 @@
                 <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
               </div>
               <div class="right-column">
-                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                  <h4>{{ box.title }}</h4>
-                  <p>{{ box.content }}</p>
+                <!-- 第一列 -->
+                <div class="resource-column">
+                  <h3 class="drawer-title">更多课程网站</h3>
+                  <div class="resource-item" v-for="item in courseResources" :key="item.name">
+                    <img :src="item.icon" alt="icon" class="resource-icon">
+                    <span>{{ item.name }}</span>
+                  </div>
                 </div>
+                <!-- 第二列 -->
+                <div class="resource-column">
+                  <h3 class="drawer-title">更多题库网站</h3>
+                  <div class="resource-item" v-for="item in questionResources" :key="item.name">
+                    <img :src="item.icon" alt="icon" class="resource-icon">
+                    <span>{{ item.name }}</span>
+                  </div>
+                </div>
+                <!-- 竖线分隔符 -->
+                <div class="divider"></div>
               </div>
             </div>
 
             <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
-              <div class="left-column">
-                <h3 class="drawer-title">灵验知道</h3>
-                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-              </div>
-              <div class="right-column">
-                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                  <h4>{{ box.title }}</h4>
-                  <p>{{ box.content }}</p>
-                </div>
+            <div class="left-column">
+              <h3 class="drawer-title">灵验知道</h3>
+              
+            </div>
+            <div class="right-column">
+              <div class="resource-box lingyan-know">
+                <p>灵验知道，您的智能竞赛伙伴，为您提供个性化的学习资源和实时互动体验。无论是寻找竞赛信息、解决编程难题还是获取学习建议，灵验知道都能以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。</p>
               </div>
             </div>
+          </div>
             <div v-if="activeDrawer?.name === '社区'" class="resource-center">
               <div class="left-column">
                 <h3 class="drawer-title">社区</h3>
@@ -141,6 +145,16 @@
 export default {
   data() {
     return {
+      courseResources: [
+      { name: '课程资源1', icon: '../assets/icons/course1.png' },
+      { name: '课程资源2', icon: '../assets/icons/course2.png' },
+      // 更多课程资源...
+    ],
+    questionResources: [
+      { name: '题库资源1', icon: '../assets/icons/question1.png' },
+      { name: '题库资源2', icon: '../assets/icons/question2.png' },
+      // 更多题库资源...
+    ],
       headerHeight: 0, // 保存 el-header 高度
       navItems: [  // 导航项
         { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
@@ -193,6 +207,9 @@ export default {
       sessionStorage.removeItem('userName');
       this.$router.push('/login');
     },
+    goToCompetitionDetail(competitionId) {
+    this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+  },
 
     goToIndex() {
       this.$router.push({ path: '/homepage' });
@@ -417,13 +434,44 @@ export default {
   transform: translateY(0);
 }
 
-/* 标题样式 */
-.drawer-title {
-  font-size: 2em;
-  color: #333;
-  margin-bottom: 20px;
-  font-weight: bold;
+/* 调整.right-column的布局为垂直排列 */
+.right-column {
+  display: flex;
+  flex-wrap: wrap; /* 允许换行 */
+  justify-content: flex-start; /* 从左侧开始排列 */
 }
+
+.resource-column {
+  flex: 1; /* 两列平分空间 */
+  padding: 10px; /* 内边距 */
+}
+
+.drawer-title {
+  font-size: 20px; /* 大标题字体大小 */
+  color: #333; /* 字体颜色 */
+  margin-bottom: 10px; /* 与内容之间的间距 */
+}
+
+/* 资源项样式 */
+.resource-item {
+  display: flex; /* 使用flex布局 */
+  align-items: center; /* 垂直居中对齐 */
+  margin-bottom: 10px; /* 每行之间的间距 */
+}
+
+.resource-icon {
+  width: 20px; /* 图标宽度 */
+  height: 20px; /* 图标高度 */
+  margin-right: 10px; /* 图标和文字之间的间距 */
+}
+
+.divider {
+  width: 1px; /* 竖线宽度 */
+  background-color: #ccc; /* 竖线颜色 */
+  margin: 0 10px; /* 与内容的间距 */
+}
+
+/* 其他样式保持不变 */
 
 /* 内容文本样式 */
 .drawer-text {
@@ -543,13 +591,9 @@ export default {
 
 /* 调整.right-column的布局为垂直排列 */
 .right-column {
-  width: 70%;
-  /* 占满整个容器宽度 */
-  display: block;
-  /* 改为块级元素，不再使用flex布局 */
-
-  padding: 20px;
-  /* 添加内边距 */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around; /* 确保图片均匀分布 */
 }
 
 /* 大标题样式，使其靠左显示 */
@@ -598,14 +642,30 @@ export default {
 
 
 .resource-box {
-  width: 45%;
+  width: 80%;
   margin-bottom: 20px;
   text-align: center;
-  border: 1px solid #E0E0E0;
-  /* 边框颜色 */
+  border: 0px solid #E0E0E0;
   border-radius: 5px;
+  padding: 20px; /* 添加内边距以便于阅读 */
+  font-family: 'Arial', sans-serif; /* 自定义字体 */
+  font-size: 20px; /* 自定义字体大小 */
+  color: #333; /* 自定义字体颜色 */
 }
 
+/* 如果需要特别为灵验知道的文本框添加样式，可以添加一个新的类 */
+.lingyan-know {
+  text-align: left; /* 文本段文本左对齐 */
+  margin-top: 0px; /* 与上方内容的间距 */
+}
+.lingyan-know p {
+  text-indent: 40px; /* 首行缩进40像素，大约相当于两个字符的空格 */
+  line-height: 1.6; /* 调整行间距 */
+  font-size: 20px; /* 如果需要，可以调整字体大小 */
+  color: #7e6bc4; /* 字体颜色 */
+  text-align: justify; /* 如果需要两端对齐 */
+  
+}
 .resource-link {
   cursor: pointer;
   color: #5a67d8;
@@ -614,5 +674,30 @@ export default {
   font-size: 1.2em;
   /* 使字体更大 */
   transition: color 0.3s ease;
+}
+.recommend-card {
+  display: flex;
+  flex-direction: column; /* 垂直排列图片和文字 */
+  align-items: center; /* 水平居中对齐 */
+  margin: 0px; /* 图片之间的间距 */
+  width: 25%; /* 图片宽度，三张图片一行 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+}
+
+.card-image {
+  width: 80%; /* 图片宽度 */
+  height: auto; /* 高度自动 */
+  border-radius: 8px; /* 圆角边框 */
+  transition: transform 0.3s ease; /* 过渡效果 */
+}
+
+.card-title {
+  margin-top: 10px; /* 图片和名称之间的间距 */
+  font-size: 16px; /* 字体大小 */
+  color: #333; /* 字体颜色 */
+  text-align: center; /* 文本居中 */
+  overflow: hidden; /* 隐藏溢出的文字 */
+  text-overflow: ellipsis; /* 超出部分显示省略号 */
+  white-space: nowrap; /* 防止文本换行 */
 }
 </style>
