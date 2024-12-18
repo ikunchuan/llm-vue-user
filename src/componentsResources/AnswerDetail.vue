@@ -387,11 +387,13 @@ export default {
 /* 左侧导航栏 */
 .aside-menu {
   background-color: #ffffff;
-  height: 100%;
+  height: 820px;
   border-right: 1px solid #e6e6e6;
   padding-top: 20px;
 }
-
+.content-card {
+  height: 800px;
+}
 /* 题目内容样式 */
 .question-content {
   font-size: 16px;
