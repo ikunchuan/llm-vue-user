@@ -4,21 +4,6 @@
       <el-row :gutter="20">
         <!-- 左侧主内容区域 -->
         <el-col :span="18">
-          <!-- 搜索与分类筛选 -->
-          <div class="search-filter bg-white p-3 rounded shadow-sm">
-            <el-tabs v-model="activeTab" @tab-click="handleTabClick">
-              <el-input v-model="searchName" placeholder="搜索题目关键字" class="mt-3" prefix-icon="el-icon-search" />
-              <el-tab-pane label="最热" name="hot">
-                <!-- 热门内容 -->
-              </el-tab-pane>
-              <el-tab-pane label="推荐" name="recommend">
-                <!-- 推荐内容 -->
-              </el-tab-pane>
-              <el-tab-pane label="最新" name="latest">
-                <!-- 最新内容 -->
-              </el-tab-pane>
-            </el-tabs>
-          </div>
 
           <!-- 题库列表 -->
           <div class="content-list">
@@ -36,9 +21,25 @@
             </el-row>
           </div>
 
+          <!-- 搜索与分类筛选 -->
+          <div class="search-filter bg-white p-3 rounded shadow-sm">
+            <h3 class="section-title">推荐题目</h3>
+            <el-tabs v-model="activeTab" @tab-click="handleTabClick">
+              <el-input v-model="searchName" placeholder="搜索题目关键字" class="mt-3" prefix-icon="el-icon-search" />
+              <el-tab-pane label="最热" name="hot">
+                <!-- 热门内容 -->
+              </el-tab-pane>
+              <el-tab-pane label="推荐" name="recommend">
+                <!-- 推荐内容 -->
+              </el-tab-pane>
+              <el-tab-pane label="最新" name="latest">
+                <!-- 最新内容 -->
+              </el-tab-pane>
+            </el-tabs>
+          </div>
+
           <!-- 推荐题目列表 -->
           <div class="recommended-list">
-            <h3 class="section-title">推荐题目</h3>
             <el-row :gutter="20">
               <el-col :span="8" v-for="(item, index) in recommendedQuestions" :key="index">
                 <el-card class="recommended-card" shadow="hover">
@@ -56,6 +57,7 @@
               </el-col>
             </el-row>
           </div>
+
         </el-col>
 
         <!-- 右侧推荐区域 -->
@@ -153,6 +155,7 @@ export default {
 
 .question-card:hover {
   transform: translateY(-5px);
+
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -179,6 +182,10 @@ export default {
   font-weight: 600;
   color: #333;
   margin: 0;
+}
+
+.question-title:hover {
+  color: #5a67d8;
 }
 
 .recommend-card {
