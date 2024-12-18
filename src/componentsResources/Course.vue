@@ -25,13 +25,13 @@
         <img src="../assets/img/3.png" alt="Image 3" class="logo" @click="onIconClick(3)" />
         <img src="../assets/img/4.png" alt="Image 4" class="logo" @click="onIconClick(4)" />
         <img src="../assets/img/5.png" alt="Image 5" class="logo" @click="onIconClick(5)" />
-           -->
-           <div class="icon-item">
+          -->
+          <div class="icon-item">
       <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo" @click="onIconClick(1)" /></el-icon>
       <p>创新创业类</p>
     </div>
-     <!-- 信息技术与编程类 -->
-     <div class="icon-item">
+    <!-- 信息技术与编程类 -->
+    <div class="icon-item">
       <el-icon class="icon"><img src="../assets/img/2.png" class="logo" @click="onIconClick(2)"/></el-icon>
       <p>信息技术与编程类</p>
     </div>
