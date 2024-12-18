@@ -121,6 +121,24 @@ export default {
     },
 
   },
+  mounted() {
+    this.$http.get('/qst/v1/all')
+      .then(response => {
+        this.recommendedQuestions = response.data;
+
+        while (randomQuestions.length < 10) {
+          const randomIndex = Math.floor(Math.random() * this.recommendedQuestions.length);
+          if (!randomQuestions.includes(this.recommendedQuestions[randomIndex])) {
+            randomQuestions.push(this.recommendedQuestions[randomIndex]);
+          }
+        }
+        console.log(this.recommendedQuestions);
+
+      })
+      .catch(error => {
+        console.error('获取题目列表失败:', error);
+      });
+  }
 };
 </script>
 
