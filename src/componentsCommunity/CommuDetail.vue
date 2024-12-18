@@ -39,12 +39,13 @@
                 <div class="post-content">
                   <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
                   <h3 class="post-title">{{ post.postTitle }}</h3>
-                  <p class="post-summary">{{ post.postContent }}</p>
+                  <p class="post-summary">{{ stripHtmlTags(post.postContent) }}</p>
                 </div>
                 <div class="post-info">
                   <span><i class="el-icon-thumb" /> 👍{{ post.likeCount || 0 }}</span>
                   <span><i class="el-icon-star-off" /> 🌟{{ post.favoriteCount || 0 }}</span>
-                  <span><i class="el-icon-chat-line-round" /> ▭{{ post.commentCount || 0 }}</span>
+                  <span><i class="el-icon-chat-line-round" /> 💬{{ post.commentCount || 0 }}</span>
+                  <span><i class="el-icon-view" />👁️ {{ post.viewCount || 0 }}</span>
                 </div>
               </el-card>
             </el-tab-pane>
@@ -74,6 +75,16 @@
                 <span class="ranking-score">{{ user.score }}</span>
               </div>
             </div>
+
+            <div class="active-users">
+              <h3>本周活跃用户</h3>
+              <div v-for="user in activeUsersList" :key="user.id" class="user-item">
+                <el-avatar :src="user.avatar" />
+                <span>{{ user.name }}</span>
+                <el-tag>{{ user.rank }}</el-tag>
+              </div>
+            </div>
+
           </el-card>
         </el-col>
       </el-row>
@@ -244,30 +255,34 @@ export default {
         userId: userId,
         communityId: this.communityId
       })
-      .then(response => {
-        // 根据后端的响应来处理
-        if (response.data === 1) { // 假设后端返回1表示加入成功
-          this.$message.success('加入社区成功');
-          this.isMember = true; // 更新社区成员状态
-        } else {
+        .then(response => {
+          // 根据后端的响应来处理
+          if (response.data === 1) { // 假设后端返回1表示加入成功
+            this.$message.success('加入社区成功');
+            this.isMember = true; // 更新社区成员状态
+          } else {
+            this.$message.error('加入社区失败');
+          }
+        })
+        .catch(error => {
+          console.error('加入社区失败:', error);
           this.$message.error('加入社区失败');
-        }
-      })
-      .catch(error => {
-        console.error('加入社区失败:', error);
-        this.$message.error('加入社区失败');
-      });
+        });
     },
     goToPostCreat() {
-      this.$router.push({ name: 'PostCreat' ,
-        params:{
+      this.$router.push({
+        name: 'PostCreat',
+        params: {
           communityId: this.communityId,
           communityName: this.communityName,
-          userId : sessionStorage.getItem("userId")
+          userId: sessionStorage.getItem("userId")
         }
       });
-      console.log(this.communityId,sessionStorage.getItem("userId"));
-      
+      console.log(this.communityId, sessionStorage.getItem("userId"));
+
+    },
+    stripHtmlTags(content) {
+      return content.replace(/<\/?[^>]+(>|$)/g, ""); // 使用正则表达式去除HTML标签
     }
 
   }
@@ -307,7 +322,7 @@ export default {
 .community-created {
   margin: 5px 0;
   font-size: 14px;
-  color: #c4c1e0;
+  color: #ffffff;
 }
 
 /* 搜索框 */
@@ -323,17 +338,22 @@ export default {
 }
 
 /* 帖子列表 */
+/* 内容卡片样式 */
 .post-card {
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
   transition: all 0.3s ease;
-  margin-bottom: 20px;
+  padding: 3px;
+  /* 减少卡片内边距 */
+  margin-bottom: 10px;
+  /* 调整卡片之间的间距 */
+  border-left: 5px solid #5a67d8;
+  /* 加入左侧配色条，增加视觉层次 */
 }
 
 .post-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -341,16 +361,38 @@ export default {
   font-size: 12px;
   color: #ffffff;
   background-color: #5a67d8;
-  padding: 3px 8px;
+  padding: 5px 5px;
   border-radius: 5px;
-  margin-bottom: 10px;
 }
 
 .post-title {
-  font-size: 20px;
+  font-size: 18px;
+  /* 标题字体稍微缩小 */
+  margin: 8px 0;
+  /* 减少标题上下留白 */
   font-weight: 600;
-  margin: 10px 0;
   color: #333;
+  transition: color 0.3s ease;
+}
+
+.post-title:hover {
+  color: #5a67d8;
+}
+
+.post-summary {
+  color: #666;
+  overflow: hidden;
+  /* 隐藏溢出的内容 */
+  text-overflow: ellipsis;
+  /* 显示省略号 */
+  white-space: nowrap;
+  /* 防止文本自动换行 */
+  font-size: 13px;
+  /* 摘要文字更小 */
+  line-height: 1.4;
+  /* 减小行高 */
+  max-height: 3.6em;
+  /* 控制显示最多2-3行 */
 }
 
 .post-summary {
@@ -362,18 +404,22 @@ export default {
   white-space: nowrap;
   max-height: 4.8em;
 }
+
 /* 社区成员展示 */
 .community-members {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start; /* 从左侧开始排列 */
+  justify-content: flex-start;
+  /* 从左侧开始排列 */
 }
 
 .member-item {
   display: flex;
   align-items: center;
-  margin: 10px; /* 每个成员项之间的间隔 */
-  width: calc(33.33% - 20px); /* 每个成员占据大约33.33%的宽度，留出间隔 */
+  margin: 10px;
+  /* 每个成员项之间的间隔 */
+  width: calc(33.33% - 20px);
+  /* 每个成员占据大约33.33%的宽度，留出间隔 */
 }
 
 .member-name {
@@ -417,5 +463,22 @@ export default {
   color: #333;
 }
 
+.post-info {
+  display: flex;
+  gap: 20px;
+  color: #999;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.post-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.post-info i {
+  color: #5a67d8;
+}
 
 </style>
