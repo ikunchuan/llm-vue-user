@@ -248,9 +248,33 @@ export default {
       // 不做任何操作，保持抽屉打开
     },
     onIconClick(iconKey) {
-      const categoryId = this.iconCategories[iconKey];
-      this.searchByCategory(categoryId);
-    },
+    // 假设你的 iconCategories 对象中的值是后端的 parentId
+    console.log(iconKey);
+    const parentId = iconKey;
+    
+    // 构建后端接口的URL
+    const url = `comp/v1/comp/byParentId?parentId=${parentId}`;
+    
+    // 发送GET请求到后端接口
+    this.$http.get(url)
+      .then(response => {
+        if (response.data) { // 确保后端返回的 list 是数组
+          // 成功获取数据，更新前端的卡片数据
+          console.log(response.data)
+          this.cards = response.data; // 更新为正确的属性名
+
+        } else {
+          // 后端返回的数据格式不正确
+          console.error('后端返回的数据格式不正确:', response.data);
+          this.$message.error('数据加载失败，请稍后再试。');
+        }
+      })
+      .catch(error => {
+        // 请求失败处理
+        console.error('获取数据失败:', error.response ? error.response.data : error.message);
+        this.$message.error('数据加载失败，请稍后再试。');
+      });
+  },
     searchByCategory(categoryId) {
       const competitionSearch = { categoryId };
       this.$http.post('comp/v1/search', competitionSearch, {
