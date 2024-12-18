@@ -299,11 +299,11 @@ export default {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CompDetail', params: { compId: compId } });
     },
-    searchCompetitions() {
-      this.filteredCards = this.searchName
-        ? this.cards.filter(card => card.courseName.includes(this.searchName))
-        : this.cards;
-    }
+    // searchCompetitions() {
+    //   this.filteredCards = this.searchName
+    //     ? this.cards.filter(card => card.courseName.includes(this.searchName))
+    //     : this.cards;
+    // }
 
   },
   mounted() {
