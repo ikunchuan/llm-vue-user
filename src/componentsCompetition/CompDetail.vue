@@ -86,12 +86,12 @@
 
               <li>
 
-                <a class="hover-effect" @click="goToCourseDetail">{{ recommendedCourseName || 失败 }}</a>
-                <a class="hover-effect" @click="goToCourseDetaili">{{ recommendedCourseNamei || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetail">{{ recommendedCourseName || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaili">{{ recommendedCourseNamei ||1  }}</a>
               </li>
 
               <li>
-                <a class="hover-effect" @click="goToCourseDetailg">{{ recommendedCourseNameg || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailg">{{ recommendedCourseNameg ||1  }}</a>
                 <a class="hover-effect" @click="goToCourseDetailh">{{ recommendedCourseNameh || 1 }}</a>
 
               </li>
@@ -170,6 +170,7 @@ export default {
         '5': 5,
         '6': 6,
         '24': 2,  // 竞赛ID 24 对应 课程ID 2
+        '31':5,  // 竞赛ID 24 对应 课程ID 2
         // 可以继续添加更多映射
       },
       courseMappingb: {     //上方左侧第一个
@@ -180,6 +181,7 @@ export default {
         '5': 5,
         '6': 6,
         '24': 3,  // 竞赛ID 24 对应 课程ID 2
+        '31': 25,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingc: {   //上方左侧第二个
         '1': 6,  // 竞赛ID 1 对应 课程ID 5
@@ -189,6 +191,7 @@ export default {
         '5': 6,
         '6': 7,
         '24': 4,  // 竞赛ID 24 对应 课程ID 2
+        '31': 24,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingd: {   //上方右侧第一个
         '1': 7,  // 竞赛ID 1 对应 课程ID 5
@@ -198,6 +201,7 @@ export default {
         '5': 7,
         '6': 8,
         '24': 9,  // 竞赛ID 24 对应 课程ID 2
+        '31': 16,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappinge: {    //上方右侧第二个
         '1': 8,  // 竞赛ID 1 对应 课程ID 5
@@ -207,6 +211,7 @@ export default {
         '5': 8,
         '6': 9,
         '24': 10,  // 竞赛ID 24 对应 课程ID 2
+        '31': 23,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingf: {    //上方右侧第三个
         '1': 9,  // 竞赛ID 1 对应 课程ID 5
@@ -216,6 +221,7 @@ export default {
         '5': 9,
         '6': 10,
         '24': 11,  // 竞赛ID 24 对应 课程ID 2
+        '31': 12,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingg: {//下方右侧第一个
         '1': 10,  // 竞赛ID 1 对应 课程ID 5
@@ -225,6 +231,7 @@ export default {
         '5': 10,
         '6': 11,
         '24': 12,  // 竞赛ID 24 对应 课程ID 2
+        '31': 17,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingh: {//下方右侧第二个
         '1': 11,  // 竞赛ID 1 对应 课程ID 5
@@ -234,6 +241,7 @@ export default {
         '5': 1,
         '6': 11,
         '24': 13,  // 竞赛ID 24 对应 课程ID 2
+        '31': 10,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingi: {//下方左侧第二个
         '1': 11,  // 竞赛ID 1 对应 课程ID 5
@@ -243,6 +251,7 @@ export default {
         '5': 7,
         '6': 8,
         '24': 14,  // 竞赛ID 24 对应 课程ID 2
+        '31': 16,  // 竞赛ID 24 对应 课程ID 2
       },
 
 

@@ -117,6 +117,9 @@ export default {
       courseToCategoryMapping: {
         '1': '13', // 假设课程ID 1 对应 题目类别ID 13
         '2': '14', // 假设课程ID 2 对应 题目类别ID 14
+        '23': '20',
+        '24': '20',
+        '25': '20',
         // 添加更多映射
       },
       courseFavorite: {},

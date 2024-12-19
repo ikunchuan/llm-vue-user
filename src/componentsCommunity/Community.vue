@@ -132,7 +132,7 @@
                             </div>
                             <div class="recommend-item" v-for="(community, index) in popularCommunities" :key="index"
                                 @click="navigateToCommuDetail(community)">
-                                <el-avatar :src="community.avatar" size="medium" class="recommend-avatar" />
+                                <el-avatar :src="'../assets/img/58.png'" size="medium" class="recommend-avatar" />
                                 <div class="recommend-info">
                                     <p class="recommend-name">{{ community.communityName }}</p>
                                     <p class="recommend-desc">活跃用户: {{ community.activeUsers || '未知' }}</p>
