@@ -1,9 +1,11 @@
 <template>
   <div class="browsing-history">
     <!-- 课程浏览历史 -->
-    <div v-if="coursehistory.length" class="history-section">
+    <div v-if="courseHistory.length" class="history-section">
       <div class="history-header">课程浏览历史</div>
-      <div v-for="(item, index) in sortedCourseHistory" :key="index" class="history-item">
+      <div v-for="(item, index) in sortedCourseHistory" :key="index" class="history-item"
+        @mouseenter="hoveredCourse = item.courseViewId" @mouseleave="hoveredCourse = null"
+        @click="goToCourse(item.courseId)">
         <div class="item-image">
           <img :src="getImgUrl(item.courseImgUrl)" alt="Course Image" />
         </div>
@@ -11,25 +13,29 @@
           <div class="item-title">{{ item.courseName }}</div>
           <div class="update-time">最后浏览时间: {{ formatTime(item.updatedTime) }}</div>
         </div>
-        <el-button text="true" style="font-size: larger;" v-if="1" @click="removeHistory(item.id)">×</el-button>
+        <el-button style="font-size: larger;" v-show="hoveredCourse === item.courseViewId"
+          @click.stop="removeCourseViewHistory(item.courseViewId); console.log('删除课程', item.courseViewId)">×</el-button>
       </div>
     </div>
 
     <!-- 帖子浏览历史 -->
-    <div v-if="posthistory.length" class="history-section">
+    <div v-if="postHistory.length" class="history-section">
       <div class="history-header">帖子浏览历史</div>
-      <div v-for="(item, index) in sortedPostHistory" :key="index" class="history-item">
+      <div v-for="(item, index) in sortedPostHistory" :key="index" class="history-item"
+        @mouseenter="hoveredPost = item.postViewId" @mouseleave="hoveredPost = null"
+        @click="goToPost(item.communityId)">
         <div class="item-details">
           <div class="item-title">{{ item.postTitle }}</div>
           <div class="post-content">{{ stripHtmlTags(item.postContent) }}</div>
           <div class="update-time">最后浏览时间: {{ formatTime(item.updatedTime) }}</div>
         </div>
-        <el-button text="true" style="font-size: larger;" @click="removeHistory(item.id)">×</el-button>
+        <el-button style="font-size: larger;" v-show="hoveredPost === item.postViewId"
+          @click.stop="removePostViewHistory(item.postViewId); console.log('删除课程', item.postViewId)">×</el-button>
       </div>
     </div>
 
     <!-- 没有历史记录时的提示 -->
-    <div v-if="coursehistory.length === 0 && posthistory.length === 0" class="empty-message">
+    <div v-if="courseHistory.length === 0 && postHistory.length === 0" class="empty-message">
       暂无浏览记录
     </div>
   </div>
@@ -39,13 +45,16 @@
 export default {
   data() {
     return {
-      coursehistory: [],
-      posthistory: [],
+      courseHistory: [],
+      postHistory: [],
       userId: sessionStorage.userId,
+      hoveredCourse: null, // 跟踪课程悬停状态
+      hoveredPost: null,   // 跟踪帖子悬停状态
     };
   },
-  created() {
-    this.fetchHistory();
+  mounted() {
+    this.fetchCourseViewHistory();
+    this.fetchPostViewHistory();
   },
   methods: {
     getImgUrl(url) {
@@ -53,19 +62,22 @@ export default {
       return `http://localhost:10086/images/upload/${url}`;
     },
 
-    fetchHistory() {
-      this.$http.get(`uis/v1/courseview/${this.userId}`)
+    fetchCourseViewHistory() {
+      this.$http.get(`/uis/v1/courseView/${this.userId}`)
         .then(response => {
-          this.coursehistory = response.data;
+          this.courseHistory = response.data;
+          console.log('获取课程浏览历史:', this.courseHistory);
         })
         .catch(error => {
-          console.error('获取课程浏览历史失败:', error);
           this.$message.error('获取浏览历史失败');
         });
+    },
 
-      this.$http.get(`uis/v1/postsview/${this.userId}`)
+    fetchPostViewHistory() {
+      this.$http.get(`/uis/v1/postsView/${this.userId}`)
         .then(response => {
-          this.posthistory = response.data;
+          this.postHistory = response.data;
+          console.log('获取帖子浏览历史:', this.postHistory);
         })
         .catch(error => {
           console.error('获取帖子浏览历史失败:', error);
@@ -73,10 +85,22 @@ export default {
         });
     },
 
-    removeHistory(historyId) {
-      this.$http.delete(`/v1/browsing/history/${historyId}`)
+    removeCourseViewHistory(courseViewId) {
+      this.$http.delete(`/uis/v1/courseView/del/${courseViewId}`)
         .then(() => {
-          this.fetchHistory();
+          this.fetchCourseViewHistory();
+          this.$message.success('删除成功');
+        })
+        .catch(error => {
+          console.error('删除浏览历史失败:', error);
+          this.$message.error('删除失败');
+        });
+    },
+
+    removePostViewHistory(postViewId) {
+      this.$http.delete(`/uis/v1/postView/del/${postViewId}`)
+        .then(() => {
+          this.fetchPostViewHistory();
           this.$message.success('删除成功');
         })
         .catch(error => {
@@ -98,16 +122,28 @@ export default {
 
     stripHtmlTags(content) {
       return content.replace(/<\/?[^>]+(>|$)/g, ""); // 使用正则表达式去除HTML标签
-    }
+    },
+
+    goToCourse(courseId) {
+      this.$router.push(`/home/coursedetail/${courseId}`);
+    },
+
+    goToPost(postId) {
+      this.$router.push(`/home/postdetail/${postId}`);
+    },
+
   },
+
   computed: {
 
     sortedCourseHistory() {
-      return this.coursehistory.sort((a, b) => new Date(b.updatedTime) - new Date(a.updatedTime));
+      if (!this.courseHistory) return [];
+
+      return this.courseHistory.sort((a, b) => new Date(b.updatedTime) - new Date(a.updatedTime));
     },
 
     sortedPostHistory() {
-      return this.posthistory.sort((a, b) => new Date(b.updatedTime) - new Date(a.updatedTime));
+      return this.postHistory.sort((a, b) => new Date(b.updatedTime) - new Date(a.updatedTime));
     }
   }
 };
