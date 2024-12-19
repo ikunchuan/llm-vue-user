@@ -25,11 +25,13 @@
               rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
             <template #reference>
               <!-- shape：square； border: 1px solid #007bff;-->
-              <img :src="userAvatarUrl" alt="user" class="user-avatar" />
+              <img :src="'http://localhost:10086/images/upload/' + userInfo.userProfilePicture" alt="user"
+                class="user-avatar" />
             </template>
             <template #default>
               <div class="rich-conent" style="display: flex; gap: 16px; flex-direction: column">
-                <img :src="userAvatarUrl" alt="user" class="user-avatar" />
+                <img :src="'http://localhost:10086/images/upload/' + userInfo.userProfilePicture" alt="user"
+                  class="user-avatar" />
                 <div>
                   <p style="margin: 0; text-align: center;">{{ userName }}</p>
                 </div>
@@ -56,8 +58,10 @@
                 <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px;">
               </div>
               <div class="right-column">
-                <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index" @click="goToCompetitionDetail(comp.competitionId)">
-                  <el-image :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" fit="cover" class="card-image"></el-image>
+                <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index"
+                  @click="goToCompetitionDetail(comp.competitionId)">
+                  <el-image :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" fit="cover"
+                    class="card-image"></el-image>
                   <div class="card-title">{{ comp.competitionName }}</div>
                 </div>
               </div>
@@ -67,12 +71,13 @@
               <div class="right-column">
                 <!-- 第一列 -->
                 <div class="resource-column">
-                  <div class="resource-link" @click="navigateToPath('course')"><img src="../assets/img/72.png" alt="课程资源" style="width: 20px; height: 20px;">课程资源</div>
+                  <div class="resource-link" @click="navigateToPath('course')"><img src="../assets/img/72.png"
+                      alt="课程资源" style="width: 20px; height: 20px;">课程资源</div>
                   <h3 class="drawer-title">更多课程网站</h3>
                   <a href="https://www.bing.com/" class="resource-item">
                     <img src="../assets/img/65.png" alt="哔哩哔哩图标" style="width: 20px; height: 20px;">
                     <span>哔哩哔哩 (Bilibili)</span>
-                  </a>                  
+                  </a>
                   <a href="https://www.icourse163.org/" class="resource-item">
                     <img src="../assets/img/66.png" alt="中国大学MOOC图标" style="width: 20px; height: 20px;">
                     <span>中国大学MOOC</span>
@@ -86,7 +91,8 @@
                 <div class="divider"></div>
                 <!-- 第二列 -->
                 <div class="resource-column">
-                  <div class="resource-link" @click="navigateToPath('question')"><img src="../assets/img/73.png" alt="题库资源" style="width: 20px; height: 20px;">题库资源</div>
+                  <div class="resource-link" @click="navigateToPath('question')"><img src="../assets/img/73.png"
+                      alt="题库资源" style="width: 20px; height: 20px;">题库资源</div>
                   <h3 class="drawer-title">更多题库网站</h3>
                   <a href="https://leetcode-cn.com/" class="resource-item">
                     <img src="../assets/img/68.png" alt="LeetCode图标" style="width: 20px; height: 20px;">
@@ -105,34 +111,35 @@
             </div>
 
             <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
-            <div class="left-column">
-              <h3 class="drawer-title">灵验知道</h3>
-              <p>灵验知道,以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。</p>
-            </div>
-            <div class="right-column">
-              <div class="resource-box lingyan-know">
-                
-                <img src="../assets/img/71.png" alt="灵验知道图片" class="know-image">
+              <div class="left-column">
+                <h3 class="drawer-title">灵验知道</h3>
+                <p>灵验知道,以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。</p>
+              </div>
+              <div class="right-column">
+                <div class="resource-box lingyan-know">
+
+                  <img src="../assets/img/71.png" alt="灵验知道图片" class="know-image">
+                </div>
               </div>
             </div>
-          </div>
-          <div v-if="activeDrawer?.name === '社区'" class="community-section">
-            <div class="community-images-text">
-              <img src="../assets/img/74.png" alt="社区图片1" class="community-image">
-              <p>创新设计官方社区</p>
-              <!-- <img src="../assets/img/75.png" alt="社区图片2" class="community-image">
+            <div v-if="activeDrawer?.name === '社区'" class="community-section">
+              <div class="community-images-text">
+                <img src="../assets/img/74.png" alt="社区图片1" class="community-image">
+                <p>创新设计官方社区</p>
+                <!-- <img src="../assets/img/75.png" alt="社区图片2" class="community-image">
               <p>这里是社区图片2的描述文本，也可以编辑大小。</p> -->
+              </div>
+              <div class="community-card">
+                <h3 class="drawer-title">更多竞赛社区网站</h3>
+                <a href="http://acm-icpc.org/" class="resource-item">
+                  <span><img src="../assets/img/70.png" alt="中国大学生程序设计竞赛网"
+                      style="width: 20px; height: 20px;">中国大学生程序设计竞赛网</span>
+                </a>
+                <a href="https://tianchi.aliyun.com/" class="resource-item">
+                  <span><img src="../assets/img/68.png" alt="阿里云天池" style="width: 20px; height: 20px;">阿里云天池</span>
+                </a>
+              </div>
             </div>
-            <div class="community-card">
-              <h3 class="drawer-title">更多竞赛社区网站</h3>
-              <a href="http://acm-icpc.org/" class="resource-item">
-                <span><img src="../assets/img/70.png" alt="中国大学生程序设计竞赛网" style="width: 20px; height: 20px;">中国大学生程序设计竞赛网</span>
-              </a>
-              <a href="https://tianchi.aliyun.com/" class="resource-item">
-                <span><img src="../assets/img/68.png" alt="阿里云天池" style="width: 20px; height: 20px;">阿里云天池</span>
-              </a>
-            </div>
-          </div>
             <div v-if="activeDrawer?.name === '个人中心'" class="resource-center">
               <div class="left-column">
                 <h3 class="drawer-title">个人中心</h3>
@@ -165,15 +172,15 @@ export default {
   data() {
     return {
       courseResources: [
-      { name: '课程资源1', icon: '../assets/icons/course1.png' },
-      { name: '课程资源2', icon: '../assets/icons/course2.png' },
-      // 更多课程资源...
-    ],
-    questionResources: [
-      { name: '题库资源1', icon: '../assets/icons/question1.png' },
-      { name: '题库资源2', icon: '../assets/icons/question2.png' },
-      // 更多题库资源...
-    ],
+        { name: '课程资源1', icon: '../assets/icons/course1.png' },
+        { name: '课程资源2', icon: '../assets/icons/course2.png' },
+        // 更多课程资源...
+      ],
+      questionResources: [
+        { name: '题库资源1', icon: '../assets/icons/question1.png' },
+        { name: '题库资源2', icon: '../assets/icons/question2.png' },
+        // 更多题库资源...
+      ],
       headerHeight: 0, // 保存 el-header 高度
       navItems: [  // 导航项
         { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
@@ -188,10 +195,13 @@ export default {
       activeDrawer: null,
       isDrawerVisible: false,
       isContentVisible: false,
+      userInfo: {},
     };
   },
 
   methods: {
+    //获取数据
+
     updateHeaderHeight() {
       // 获取 el-header 的高度
       const header = this.$refs.header;
@@ -227,8 +237,8 @@ export default {
       this.$router.push('/login');
     },
     goToCompetitionDetail(competitionId) {
-    this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
-  },
+      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+    },
 
     goToIndex() {
       this.$router.push({ path: '/homepage' });
@@ -309,6 +319,22 @@ export default {
 
   mounted() {
     console.log(this.navItems); // 查看 navItems 数组的内容
+    const userId = sessionStorage.userId;
+
+    if (!userId) {  //未登录重定向到注册
+      this.$router.push('/login');
+    }
+
+    this.$http.get(`/uis/v1/ui/${userId}`)
+      .then(response => {
+        console.log('User data:', response.data);
+        this.userInfo = response.data;
+        this.loading = false;
+      }).catch(error => {
+        console.error('Error fetching user data:', error);
+      }).finally(() => {
+        this.loading = false;
+      });
 
     this.$nextTick(() => {// 初次加载时计算高度
       this.updateHeaderHeight();
@@ -353,7 +379,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 80px; 
+  height: 80px;
   z-index: 10000;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -363,12 +389,12 @@ export default {
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
-  
+
 }
 
 /* LOGO 样式 */
@@ -392,7 +418,7 @@ export default {
 .nav-menu {
   display: flex;
   gap: 40px;
-  height: 50px; 
+  height: 50px;
   position: relative;
 }
 
@@ -401,25 +427,32 @@ export default {
   font-weight: bold;
   color: #333333;
   position: relative;
-  display: flex; /* 使用flex布局 */
-  align-items: center; /* 子元素垂直居中 */
+  display: flex;
+  /* 使用flex布局 */
+  align-items: center;
+  /* 子元素垂直居中 */
   cursor: pointer;
   text-decoration: none;
   transition: transform 0.3s ease, color 0.3s ease;
-  gap: 5px; /* 调整图片和文字之间的间距 */
+  gap: 5px;
+  /* 调整图片和文字之间的间距 */
 }
 
 /* 导航项图标样式 */
 .nav-item-icon {
-  width: 15px; /* 调整图片宽度 */
-  height: 15px; /* 调整图片高度 */
+  width: 15px;
+  /* 调整图片宽度 */
+  height: 15px;
+  /* 调整图片高度 */
 }
 
 /* 鼠标悬停时文字滑动效果 */
 .nav-item:hover {
   color: #5a67d8;
-  transform: translateY(-5px); /* 向上滑动效果 */
+  transform: translateY(-5px);
+  /* 向上滑动效果 */
 }
+
 /* 抽屉样式 */
 .drawer {
   position: fixed;
@@ -455,72 +488,112 @@ export default {
 
 .right-column {
   display: flex;
-  flex-wrap: wrap; /* 允许换行 */
-  justify-content: center; /* 水平居中 */
-  align-items: stretch; /* 使所有列高度一致 */
-  margin: 0 auto; /* 水平居中整个容器 */
-  width: 70%; /* 占满宽度 */
-  padding: 0px; /* 内边距 */
+  flex-wrap: wrap;
+  /* 允许换行 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: stretch;
+  /* 使所有列高度一致 */
+  margin: 0 auto;
+  /* 水平居中整个容器 */
+  width: 70%;
+  /* 占满宽度 */
+  padding: 0px;
+  /* 内边距 */
 }
+
 .resource-column {
-  flex: 0 1 auto; /* 根据内容自动调整大小，但允许缩小 */
-  max-width: 45%; /* 设置最大宽度 */
-  min-width: 400px; /* 设置最小宽度，防止卡片过窄 */
-  margin: 0px; /* 外边距，确保卡片之间有间距 */
-  padding: 10px; /* 内边距 */
-  border: 1px solid #e0e0e0; /* 边框 */
-  border-radius: 8px; /* 圆角 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
+  flex: 0 1 auto;
+  /* 根据内容自动调整大小，但允许缩小 */
+  max-width: 45%;
+  /* 设置最大宽度 */
+  min-width: 400px;
+  /* 设置最小宽度，防止卡片过窄 */
+  margin: 0px;
+  /* 外边距，确保卡片之间有间距 */
+  padding: 10px;
+  /* 内边距 */
+  border: 1px solid #e0e0e0;
+  /* 边框 */
+  border-radius: 8px;
+  /* 圆角 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* 阴影 */
   display: flex;
-  flex-direction: column; /* 垂直排列内容 */
-  align-items: center; /* 水平居中内容 */
-  justify-content: flex-start; /* 顶部对齐内容 */
+  flex-direction: column;
+  /* 垂直排列内容 */
+  align-items: center;
+  /* 水平居中内容 */
+  justify-content: flex-start;
+  /* 顶部对齐内容 */
 }
+
 .drawer-title {
-  font-size: 20px; /* 大标题字体大小 */
-  color: #333; /* 字体颜色 */
-  margin-bottom: 10px; /* 与内容之间的间距 */
+  font-size: 20px;
+  /* 大标题字体大小 */
+  color: #333;
+  /* 字体颜色 */
+  margin-bottom: 10px;
+  /* 与内容之间的间距 */
 }
 
 .resource-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px; /* 链接之间的间距 */
-  width: 100%; /* 占满整列宽度 */
+  margin-bottom: 10px;
+  /* 链接之间的间距 */
+  width: 100%;
+  /* 占满整列宽度 */
 }
 
 .resource-item a {
   display: flex;
   align-items: center;
-  justify-content: center; /* 水平居中 */
-  padding: 10px 20px; /* 内边距 */
-  border-radius: 5px; /* 圆角边框 */
-  background-color: #f0f8ff; /* 背景颜色 */
-  color: #007bff; /* 文字颜色 */
-  text-decoration: none; /* 去除下划线 */
-  transition: background-color 0.3s, color 0.3s; /* 平滑过渡效果 */
+  justify-content: center;
+  /* 水平居中 */
+  padding: 10px 20px;
+  /* 内边距 */
+  border-radius: 5px;
+  /* 圆角边框 */
+  background-color: #f0f8ff;
+  /* 背景颜色 */
+  color: #007bff;
+  /* 文字颜色 */
+  text-decoration: none;
+  /* 去除下划线 */
+  transition: background-color 0.3s, color 0.3s;
+  /* 平滑过渡效果 */
 }
 
 .resource-item a:hover {
-  background-color: #e0f7ff; /* 鼠标悬停时的背景颜色 */
-  color: #0056b3; /* 鼠标悬停时的文字颜色 */
+  background-color: #e0f7ff;
+  /* 鼠标悬停时的背景颜色 */
+  color: #0056b3;
+  /* 鼠标悬停时的文字颜色 */
 }
 
 .resource-icon {
-  width: 24px; /* 图标大小 */
+  width: 24px;
+  /* 图标大小 */
   height: 24px;
-  margin-right: 10px; /* 图标和文字之间的间距 */
+  margin-right: 10px;
+  /* 图标和文字之间的间距 */
 }
 
 .resource-item span {
-  font-size: 16px; /* 文字大小 */
-  color: #333; /* 文字颜色 */
+  font-size: 16px;
+  /* 文字大小 */
+  color: #333;
+  /* 文字颜色 */
 }
 
 .divider {
-  width: 1px; /* 竖线宽度 */
-  background-color: #ccc; /* 竖线颜色 */
-  margin: 0 1px; /* 与内容的间距 */
+  width: 1px;
+  /* 竖线宽度 */
+  background-color: #ccc;
+  /* 竖线颜色 */
+  margin: 0 1px;
+  /* 与内容的间距 */
 }
 
 /* 其他样式保持不变 */
@@ -554,10 +627,14 @@ export default {
 
 /* 社区图片样式 */
 .community-image {
-  width: 100%; /* 或者你希望的宽度 */
-  height: auto; /* 保持图片的纵横比 */
-  display: block; /* 防止图片下方出现空隙 */
-  margin-top: 20px; /* 与上方内容的间距 */
+  width: 100%;
+  /* 或者你希望的宽度 */
+  height: auto;
+  /* 保持图片的纵横比 */
+  display: block;
+  /* 防止图片下方出现空隙 */
+  margin-top: 20px;
+  /* 与上方内容的间距 */
 }
 
 /* 关闭按钮 */
@@ -640,16 +717,22 @@ export default {
   padding: 10px 0px;
   /* 添加内边距 */
 }
+
 .drawer-title {
-  font-size: 20px; /* 大标题字体大小 */
-  color: #333; /* 字体颜色 */
-  margin-bottom: 10px; /* 与内容之间的间距 */
+  font-size: 20px;
+  /* 大标题字体大小 */
+  color: #333;
+  /* 字体颜色 */
+  margin-bottom: 10px;
+  /* 与内容之间的间距 */
 }
+
 /* 调整.right-column的布局为垂直排列 */
 .right-column {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around; /* 确保图片均匀分布 */
+  justify-content: space-around;
+  /* 确保图片均匀分布 */
 }
 
 /* 大标题样式，使其靠左显示 */
@@ -703,136 +786,209 @@ export default {
   text-align: center;
   border: 0px solid #E0E0E0;
   border-radius: 5px;
-  padding: 20px; /* 添加内边距以便于阅读 */
-  font-family: 'Arial', sans-serif; /* 自定义字体 */
-  font-size: 20px; /* 自定义字体大小 */
-  color: #333; /* 自定义字体颜色 */
+  padding: 20px;
+  /* 添加内边距以便于阅读 */
+  font-family: 'Arial', sans-serif;
+  /* 自定义字体 */
+  font-size: 20px;
+  /* 自定义字体大小 */
+  color: #333;
+  /* 自定义字体颜色 */
 }
+
 .resource-item {
   display: flex;
   align-items: center;
-  margin-bottom: 20px; /* 链接之间的间距 */
+  margin-bottom: 20px;
+  /* 链接之间的间距 */
 }
 
 .resource-item a {
-  font-size: 16px; /* 链接文字大小 */
-  color: #007bff; /* 链接文字颜色 */
-  text-decoration: none; /* 去除下划线 */
-  transition: color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+  font-size: 16px;
+  /* 链接文字大小 */
+  color: #007bff;
+  /* 链接文字颜色 */
+  text-decoration: none;
+  /* 去除下划线 */
+  transition: color 0.3s, transform 0.3s;
+  /* 平滑过渡效果 */
   display: flex;
   align-items: center;
 }
 
 .resource-item a:hover {
-  color: #0056b3; /* 鼠标悬停时的颜色 */
-  transform: translateY(-5px); /* 鼠标悬停时的移动效果 */
+  color: #0056b3;
+  /* 鼠标悬停时的颜色 */
+  transform: translateY(-5px);
+  /* 鼠标悬停时的移动效果 */
 }
 
 .resource-item img {
-  width: 24px; /* 图片大小 */
+  width: 24px;
+  /* 图片大小 */
   height: 24px;
-  margin-right: 12px; /* 图片和文字之间的间距 */
+  margin-right: 12px;
+  /* 图片和文字之间的间距 */
 }
 
 /* 如果需要特别为灵验知道的文本框添加样式，可以添加一个新的类 */
 .lingyan-know {
-  text-align: left; /* 文本段文本左对齐 */
-  margin-top: 0px; /* 与上方内容的间距 */
+  text-align: left;
+  /* 文本段文本左对齐 */
+  margin-top: 0px;
+  /* 与上方内容的间距 */
 }
+
 .lingyan-know p {
-  text-indent: 40px; /* 首行缩进40像素，大约相当于两个字符的空格 */
-  line-height: 1.6; /* 调整行间距 */
-  font-size: 20px; /* 如果需要，可以调整字体大小 */
-  color: #7e6bc4; /* 字体颜色 */
-  text-align: justify; /* 如果需要两端对齐 */
-  
+  text-indent: 40px;
+  /* 首行缩进40像素，大约相当于两个字符的空格 */
+  line-height: 1.6;
+  /* 调整行间距 */
+  font-size: 20px;
+  /* 如果需要，可以调整字体大小 */
+  color: #7e6bc4;
+  /* 字体颜色 */
+  text-align: justify;
+  /* 如果需要两端对齐 */
+
 }
+
 .know-image {
-  max-width: 100%; /* 图片最大宽度占满容器 */
-  height: auto; /* 高度自动，保持图片比例 */
-  margin-top: 0px; /* 图片与文本的间距 */
-  border-radius: 8px; /* 圆角边框 */
+  max-width: 100%;
+  /* 图片最大宽度占满容器 */
+  height: auto;
+  /* 高度自动，保持图片比例 */
+  margin-top: 0px;
+  /* 图片与文本的间距 */
+  border-radius: 8px;
+  /* 圆角边框 */
 }
+
 .resource-link {
   cursor: pointer;
   color: #5a67d8;
-  margin-left: 20px; /* 左侧外边距 */
-  margin-bottom: 0px; /* 移除外边距 */
-  text-align: left; /* 文本靠左对齐 */
-  font-size: 1.2em; /* 使字体更大 */
+  margin-left: 20px;
+  /* 左侧外边距 */
+  margin-bottom: 0px;
+  /* 移除外边距 */
+  text-align: left;
+  /* 文本靠左对齐 */
+  font-size: 1.2em;
+  /* 使字体更大 */
   transition: color 0.3s ease;
   border: 0px solid #E0E0E0;
 }
+
 .recommend-card {
   display: flex;
-  flex-direction: column; /* 垂直排列图片和文字 */
-  align-items: center; /* 水平居中对齐 */
-  margin: 0px; /* 图片之间的间距 */
-  width: 25%; /* 图片宽度，三张图片一行 */
-  cursor: pointer; /* 鼠标悬停时显示手型 */
-  
+  flex-direction: column;
+  /* 垂直排列图片和文字 */
+  align-items: center;
+  /* 水平居中对齐 */
+  margin: 0px;
+  /* 图片之间的间距 */
+  width: 25%;
+  /* 图片宽度，三张图片一行 */
+  cursor: pointer;
+  /* 鼠标悬停时显示手型 */
+
 }
 
 .card-image {
-  width: 80%; /* 图片宽度 */
-  height: auto; /* 高度自动 */
-  border-radius: 8px; /* 圆角边框 */
-  transition: transform 0.3s ease; /* 过渡效果 */
+  width: 80%;
+  /* 图片宽度 */
+  height: auto;
+  /* 高度自动 */
+  border-radius: 8px;
+  /* 圆角边框 */
+  transition: transform 0.3s ease;
+  /* 过渡效果 */
 }
 
 .card-title {
-  margin-top: 10px; /* 图片和名称之间的间距 */
-  font-size: 16px; /* 字体大小 */
-  color: #333; /* 字体颜色 */
-  text-align: center; /* 文本居中 */
-  overflow: hidden; /* 隐藏溢出的文字 */
-  text-overflow: ellipsis; /* 超出部分显示省略号 */
-  white-space: nowrap; /* 防止文本换行 */
+  margin-top: 10px;
+  /* 图片和名称之间的间距 */
+  font-size: 16px;
+  /* 字体大小 */
+  color: #333;
+  /* 字体颜色 */
+  text-align: center;
+  /* 文本居中 */
+  overflow: hidden;
+  /* 隐藏溢出的文字 */
+  text-overflow: ellipsis;
+  /* 超出部分显示省略号 */
+  white-space: nowrap;
+  /* 防止文本换行 */
 }
+
 .community-section {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  padding: 0px; /* 内边距 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  padding: 0px;
+  /* 内边距 */
 }
 
 .community-images-text {
-  flex: 1; /* 占据可用空间 */
-  text-align: center; /* 文本居中 */
+  flex: 1;
+  /* 占据可用空间 */
+  text-align: center;
+  /* 文本居中 */
 }
 
 .community-image {
-  max-width: 60%; /* 图片最大宽度占满容器 */
-  height: auto; /* 高度自动，保持图片比例 */
-  margin-bottom: 5px; /* 图片下方间距 */
-  border-radius: 8px; /* 圆角边框 */
+  max-width: 60%;
+  /* 图片最大宽度占满容器 */
+  height: auto;
+  /* 高度自动，保持图片比例 */
+  margin-bottom: 5px;
+  /* 图片下方间距 */
+  border-radius: 8px;
+  /* 圆角边框 */
   padding: 0px 150px;
 }
 
 .community-card {
-  flex: 1; /* 占据可用空间 */
-  padding: 5px; /* 内边距 */
-  border: 1px solid #e0e0e0; /* 边框 */
-  border-radius: 8px; /* 圆角 */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影 */
-  margin: 0 20px; /* 外边距 */
-  text-align: center; /* 文本居中 */
+  flex: 1;
+  /* 占据可用空间 */
+  padding: 5px;
+  /* 内边距 */
+  border: 1px solid #e0e0e0;
+  /* 边框 */
+  border-radius: 8px;
+  /* 圆角 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* 阴影 */
+  margin: 0 20px;
+  /* 外边距 */
+  text-align: center;
+  /* 文本居中 */
 }
 
 .resource-item {
-  display: block; /* 块级元素，使链接独占一行 */
-  margin-bottom: 10px; /* 链接之间的间距 */
+  display: block;
+  /* 块级元素，使链接独占一行 */
+  margin-bottom: 10px;
+  /* 链接之间的间距 */
 }
 
 .resource-item a {
-  font-size: 16px; /* 链接文字大小 */
-  color: #007bff; /* 链接文字颜色 */
-  text-decoration: none; /* 去除下划线 */
-  transition: color 0.3s, transform 0.3s; /* 平滑过渡效果 */
+  font-size: 16px;
+  /* 链接文字大小 */
+  color: #007bff;
+  /* 链接文字颜色 */
+  text-decoration: none;
+  /* 去除下划线 */
+  transition: color 0.3s, transform 0.3s;
+  /* 平滑过渡效果 */
 }
 
 .resource-item a:hover {
-  color: #0056b3; /* 鼠标悬停时的颜色 */
+  color: #0056b3;
+  /* 鼠标悬停时的颜色 */
 }
 </style>

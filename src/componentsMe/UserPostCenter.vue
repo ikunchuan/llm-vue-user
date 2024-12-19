@@ -139,7 +139,7 @@ export default {
   left: 0;
   width: 5px; /* 三角形的宽度 */
   height: 100%;
-  background-color: #4CAF50; /* 三角形的颜色 */
+  background-color: #7c73e6; /* 三角形的颜色 */
   border-radius: 12px 0 0 12px; /* 圆角仅在左侧 */
 }
 

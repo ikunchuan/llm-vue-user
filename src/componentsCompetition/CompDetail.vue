@@ -6,22 +6,47 @@
     <div class="main">
       <!-- 左侧内容区 -->
       <aside class="left-panel">
-        <!-- 左侧标题 -->
-        <div class="title">{{ competitionDetail.competitionName }}</div>
-        <!-- 左侧内容块 -->
+        <!-- 标题区块：标题变大，图片放在标题下方 -->
+        <div class="title-block">
+          <h1 class="large-title">{{ competitionBasicInfo.competitionName }}</h1>
+          <el-image style="width: 330px; height: 170px; border-radius: 8px"
+            :src="'http://localhost:10086/images/upload/' + competitionBasicInfo.competitionImgUrl" fit="cover"
+            class="card-image"></el-image>
+        </div>
+
+        <!-- 原有竞赛时间和链接区域 -->
         <div class="box">
           <p>竞赛开始时间：{{ formatDate(competitionDetail.startDate) }}</p>
           <p>竞赛结束时间：{{ formatDate(competitionDetail.endDate) }}</p>
           <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
           <el-button type="primary" @click="toggleFavorite">收藏竞赛</el-button>
-
         </div>
-        <div class="box">
-          <div class="anchor-nav">
-            <a href="#" @click.prevent="scrollTo('schedule')">竞赛日程安排</a>
-            <a href="#" @click.prevent="scrollTo('details')">竞赛详情</a>
-            <!-- 根据需要添加更多锚点 -->
-          </div>
+
+        <!-- 锚点导航 -->
+        <div class="box anchor-nav">
+          <a href="#" @click.prevent="scrollTo('schedule')">竞赛日程安排>></a>
+          <a href="#" @click.prevent="scrollTo('details')">竞赛详情>></a>
+        </div>
+        <!-- 新增“相关竞赛”模块 -->
+        <div class="box related-competitions">
+          <h3>相关竞赛</h3>
+          <ul>
+            <li v-for="competition in competitionRecommends" :key="competition.competitionId" class="list-item">
+              <a @click="gotoCompDetail(competition.competitionId)" class="title">{{ competition.competitionName }}</a>
+              <p class="date">上线日期：{{ formatDateShort(competition.updatedTime) }}</p>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 新增“查看竞赛相关帖子”模块 -->
+        <div class="box competition-posts">
+          <h3>查看竞赛相关帖子</h3>
+          <ul>
+            <li v-for="post in relatedPosts" :key="post.id" class="list-item">
+              <a @click="viewPost(post.id)" class="title">{{ post.postTitle }}</a>
+              <p class="date">发布日期：{{ formatDateShort(post.updatedTime) }}</p>
+            </li>
+          </ul>
         </div>
       </aside>
 
@@ -41,13 +66,13 @@
 
 
               <li>
-                <a @click="goToCourseDetailb">{{ recommendedCourseNameb || 1 }}</a>
-                <a @click="goToCourseDetailc">{{ recommendedCourseNamec || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailb">{{ recommendedCourseNameb || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailc">{{ recommendedCourseNamec || 1 }}</a>
               </li>
               <li>
-                <a @click="goToCourseDetaild">{{ recommendedCourseNamed || 1 }}</a>
-                <a @click="goToCourseDetaile">{{ recommendedCourseNamee || 1 }}</a>
-                <a @click="goToCourseDetailf">{{ recommendedCourseNamef || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaild">{{ recommendedCourseNamed || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaile">{{ recommendedCourseNamee || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailf">{{ recommendedCourseNamef || 1 }}</a>
               </li>
             </ul>
           </div>
@@ -61,13 +86,13 @@
 
               <li>
 
-                <a @click="goToCourseDetail">{{ recommendedCourseName || 失败 }}</a>
-                <a @click="goToCourseDetaili">{{ recommendedCourseNamei || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetail">{{ recommendedCourseName || 失败 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaili">{{ recommendedCourseNamei || 1 }}</a>
               </li>
 
               <li>
-                <a @click="goToCourseDetailg">{{ recommendedCourseNameg || 1 }}</a>
-                <a @click="goToCourseDetailh">{{ recommendedCourseNameh || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailg">{{ recommendedCourseNameg || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailh">{{ recommendedCourseNameh || 1 }}</a>
 
               </li>
             </ul>
@@ -121,7 +146,10 @@ export default {
   name: 'CompDetail',
   data() {
     return {
+      competitionBasicInfo: {}, // 存储竞赛基本信息
       competitionDetail: {}, // 存储竞赛详情数据
+      competitionRecommends: {},// 存储竞赛推荐数据
+      relatedPosts: [], // 存储相关帖子数据
       loading: true,        // 加载状态
       error: null,           // 错误信息
       headerImageUrl: '',// 后端传入的图片URL
@@ -221,7 +249,10 @@ export default {
     };
   },
   created() {
-    this.fetchCompetitionDetail(); // 在组件创建时获取竞赛详情
+    this.fetchCompetitionDetail(this.$route.params.compId); // 获取竞赛详情
+    this.fetchCompetitionBasicInfo(this.$route.params.compId); // 获取竞赛基本信息
+
+
     this.fetchCourse();
   },
   methods: {
@@ -276,12 +307,17 @@ export default {
     },
 
 
-
+    // 跳转到竞赛详情页面
+    gotoCompDetail(compId) {
+      this.$router.push({ path: `/home/competitiondetail/${compId}` });
+    },
 
     //跳转课程详情页
     goToCourseDetail() {
       const compId = this.$route.params.compId;
-      const courseId = this.courseMapping[compId];
+      const courseMapping = this[`courseMapping${courseType}`];
+      const courseId = courseMapping[compId];
+
       if (courseId) {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
@@ -289,6 +325,7 @@ export default {
         this.$message.error('没有找到对应的课程推荐');
       }
     },
+
     // 跳转推荐课程b
     goToCourseDetailb() {
       const compId = this.$route.params.compId;
@@ -371,7 +408,7 @@ export default {
       }
     },
 
-    // 跳转推荐课程i
+    // 跳转推荐课程
     goToCourseDetaili() {
       const compId = this.$route.params.compId;
       const courseId = this.courseMappingi[compId];
@@ -385,14 +422,34 @@ export default {
 
 
     // 获取竞赛详情
-    fetchCompetitionDetail() {
-      const compId = this.$route.params.compId;
-      this.$http.get(`http://localhost:10086/comdetail/v1/detail/${compId}`)
+    fetchCompetitionDetail(compId) {
+      this.$http.get(`comdetail/v1/detail/${compId}`)
         .then(response => {
-          this.competitionDetail = response.data;
+          this.competitionDetail = response.data; // 假设后端返回的数据格式正确
+          this.loading = false;
         })
         .catch(error => {
-          this.error = error.message;
+          this.error = '加载竞赛详情失败，请稍后再试。';
+          console.error('获取竞赛详情时发生错误:', error);
+          this.loading = false;
+        });
+    },
+    // 获取竞赛基本信息
+    fetchCompetitionBasicInfo(compId) {
+      this.$http.get(`comp/v1/compe/${compId}`) // 注意这里的URL可能需要根据后端实际接口调整
+        .then(response => {
+          console.log("competitionBasicInfo", response.data);
+
+          this.competitionBasicInfo = response.data;
+          this.categoryId = this.competitionBasicInfo.categoryId; // 设置categoryId
+          this.loading = false;
+          this.fetchCompetitionsByCategoryId(this.categoryId); // 获取相关竞赛
+          this.fetchCommunitiesByCategoryId(this.categoryId); // 获取社区
+        })
+        .catch(error => {
+          this.error = '加载竞赛基本信息失败，请稍后再试。';
+          console.error('获取竞赛基本信息时发生错误:', error);
+          this.loading = false;
         });
     },
     scrollTo(anchor) {
@@ -401,6 +458,7 @@ export default {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     },
+
 
     //收藏竞赛
     toggleFavorite() {
@@ -425,7 +483,68 @@ export default {
         });
     },
 
-    //
+    // 根据categoryId获取竞赛
+    fetchCompetitionsByCategoryId() {
+      if (this.categoryId === null) {
+        console.error('categoryId is not defined');
+        return;
+      }
+      this.$http.get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
+        .then(response => {
+          console.log('相关的竞赛数据:', response.data);
+          if (Array.isArray(response.data)) {
+            this.competitionRecommends = response.data;
+            console.log('处理后的竞赛数据:', this.competitionRecommends);
+          } else {
+            console.warn('未获取到相关的竞赛或数据格式不正确');
+            this.competitionRecommends = [];
+          }
+        })
+        .catch(error => {
+          console.error('查询相关的竞赛错误:', error);
+          this.competitionRecommends = [];
+        });
+    },
+    // 根据categoryId获取社区
+    fetchCommunitiesByCategoryId() {
+      this.$http.get(`v1/cmns/cmn/byParentId`, { params: { parentId: this.categoryId } })
+        .then(response => {
+          console.log('根据categoryId社区数据:', response.data);
+          this.communities = response.data;
+          if (this.communities.length > 0) {
+            this.communityName = this.communities[0].communityId;
+            console.log('communityName:', this.communityName);
+            this.fetchRelatedPosts(this.communityName);
+          }
+        })
+        .catch(error => {
+          console.error('获取社区时发生错误:', error);
+        });
+    },
+
+    // 根据communityId获取相关帖子
+    fetchRelatedPosts(communityName) {
+      this.$http.post(`v1/posts/search`, { params: { communityName } })
+        .then(response => {
+          console.log('获取相关帖子的响应:', response.data);
+          // 检查 response.data.list 是否存在且不是 undefined
+          if (response.data && response.data.list && Array.isArray(response.data.list)) {
+            const posts = response.data.list;
+            this.relatedPosts = posts.map(post => ({
+              postId: post.postId,
+              postTitle: post.postTitle, // 确保这里使用正确的字段名
+              updatedTime: post.updatedTime
+            }));
+          } else {
+            console.error('帖子列表未定义或不是数组:', response.data.list);
+            this.relatedPosts = []; // 确保相关帖子数组被设置为空数组
+          }
+        })
+        .catch(error => {
+          console.error('获取相关帖子时发生错误:', error);
+          this.relatedPosts = []; // 确保相关帖子数组被设置为空数组
+        });
+    },
 
     // 假设你有一个获取当前用户ID的方法
     getCurrentUserId() {
@@ -444,12 +563,18 @@ export default {
         minute: '2-digit',
         second: '2-digit',
       });
+    },
+    formatDateShort(date) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(date).toLocaleDateString('zh-CN', options); // 格式化为 "YYYY-MM-DD"
     }
   },
+
 
 };
 
 </script>
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
@@ -470,279 +595,203 @@ body {
   border-radius: 8px;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.header h1 {
-  font-size: 2em;
-  color: #c4c1e0;
-}
-
-.header p {
-  color: #666;
-}
-
 .main {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 
-/* 竞赛信息知识图谱样式 */
-.tree {
-  position: relative;
-  /* 设置相对定位，以便子元素可以相对于此定位 */
-  width: 100%;
-  width: 720px;
-  height: 200px;
-}
-
-.left {
-  position: absolute;
-  /* 设置绝对定位 */
-  top: 0;
-  /* 靠上 */
-  left: 0;
-  /* 靠右 */
-  width: 100px;
-  height: 200px;
-}
-
-.left-up {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100px;
-  height: 200px;
-
-  /* 将span转换为块级元素 */
-  display: flex;
-
-  /* 水平和垂直居中 */
-  align-items: center;
-  justify-content: center;
-}
-
-.right-up {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 600px;
-  /* 设置容器的宽度 */
-  height: 100px;
-  /* 设置容器的高度 */
-  display: flex;
-  align-items: center;
-  /* 垂直居中整个内容（包括ul），但实际上这里主要是确保ul垂直居中 */
-  /* justify-content: center; 不需要，因为ul会占满整个right-up的宽度 */
-}
-
-.three-parts {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  /* 均分三份 */
-  list-style: none;
-  /* 去掉列表的默认样式 */
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  /* 继承父容器的高度 */
-}
-
-.three-parts li {
-  display: flex;
-  flex-direction: column;
-  /* 垂直排列span */
-  align-items: center;
-  /* 垂直居中span */
-  justify-content: space-around;
-  /* 均匀分布span，留一些间距 */
-  flex: 1;
-  /* 让每个li占据相同的空间 */
-  text-align: center;
-  /* 确保文本居中 */
-}
-
-.three-parts span {
-  display: inline-block;
-  /* 让span可以作为flex项 */
-}
-
-
-
-.line {
-  position: absolute;
-  /* 设置绝对定位 */
-  top: 100px;
-  /* 靠上 */
-  right: 0;
-  /* 靠右 */
-  height: 5px;
-  /* 设置高度为1像素 */
-  width: 620px;
-  /* 设置宽度为100%，即占满父容器的宽度 */
-  background-color: black;
-  /* 设置背景色为黑色，这样看起来就像一条线 */
-}
-
-.right-down {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 680px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  /* 垂直居中 */
-  justify-content: center;
-  /* 水平居中，用于整个.right-down的内容 */
-}
-
-.three-columns {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  /* 均分三份 */
-  list-style: none;
-  /* 去掉列表的默认样式 */
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  /* 继承父容器的高度 */
-}
-
-.three-columns li {
-  display: flex;
-  flex-direction: column;
-  /* 垂直排列span */
-  align-items: center;
-  /* 垂直居中span */
-  justify-content: space-around;
-  /* 均匀分布span，留一些间距 */
-  flex: 1;
-  /* 让每个li占据相同的空间 */
-  text-align: center;
-  /* 确保文本居中 */
-}
-
-.three-columns span {
-  display: inline-block;
-  /* 让span可以作为flex项 */
-}
-
-
 
 /* 左侧内容区样式 */
 .left-panel {
-  flex: 0 0 35%;
-  /* 不增长不缩小，基础宽度为30% */
+  flex: 0 0 30%;
+  /* 调整左侧宽度 */
   background-color: #f9f9f9;
   border-radius: 8px;
   overflow: hidden;
-  padding: 20px;
-  /* 增加内边距 */
+  padding: 15px;
   box-sizing: border-box;
-  /* 确保padding和border包含在宽度内 */
 }
+
+.left-panel .title-block {
+  margin-bottom: 20px;
+}
+
+.left-panel .large-title {
+  font-size: 2.2em;
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.left-panel .card-image {
+  width: 100%;
+  height: 170px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.left-panel .box {
+  margin-bottom: 20px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.left-panel .anchor-nav {
+  margin-top: 20px;
+}
+
+.left-panel .anchor-nav a {
+  display: block;
+  padding: 8px 0;
+  color: #7c73e6;
+  /* 链接颜色统一 */
+  text-decoration: none;
+  font-size: 16px;
+  /* 字体大小统一 */
+  font-weight: normal;
+  /* 普通字体 */
+  margin-bottom: 10px;
+}
+
+.left-panel .anchor-nav a:hover {
+  background-color: #e0e0e0;
+  text-decoration: underline;
+  /* 鼠标悬停下划线 */
+}
+
+.left-panel .related-competitions h3,
+.left-panel .competition-posts h3 {
+  margin-bottom: 10px;
+  color: #333;
+  font-weight: 600;
+  font-size: 18px;
+  /* 标题字体统一 */
+}
+
+.left-panel .related-competitions ul,
+.left-panel .competition-posts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.left-panel .related-competitions li,
+.left-panel .competition-posts li {
+  margin-bottom: 10px;
+}
+
+.left-panel .related-competitions a,
+.left-panel .competition-posts a {
+  color: #7c73e6;
+  /* 链接颜色统一 */
+  text-decoration: none;
+  font-weight: normal;
+  /* 普通字体 */
+  font-size: 16px;
+  /* 字体大小统一 */
+}
+
+.left-panel .related-competitions a:hover,
+.left-panel .competition-posts a:hover {
+  text-decoration: underline;
+  /* 鼠标悬停下划线 */
+}
+
+/* 相关竞赛和相关帖子样式 */
+.related-competitions ul,
+.competition-posts ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  /* 增加下划线分隔效果 */
+  padding-bottom: 10px;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+  /* 去除最后一项的分隔线 */
+}
+
+.title {
+  display: block;
+  font-size: 16px;
+  /* 标题字体大小 */
+  font-weight: 500;
+  /* 半粗字体 */
+  color: #7c73e6;
+  /* 链接颜色 */
+  text-decoration: none;
+  white-space: nowrap;
+  /* 单行显示 */
+  overflow: hidden;
+  /* 超出隐藏 */
+  text-overflow: ellipsis;
+  /* 显示省略号 */
+  margin-bottom: 5px;
+  /* 标题与日期间距 */
+}
+
+.title:hover {
+  text-decoration: underline;
+  /* 鼠标悬停时添加下划线 */
+}
+
+.date {
+  font-size: 14px;
+  /* 日期字体大小 */
+  color: #999;
+  /* 日期颜色 */
+  margin: 0;
+  text-align: right;
+  /* 日期靠右对齐 */
+  white-space: nowrap;
+  /* 禁止换行 */
+  flex-shrink: 0;
+  /* 防止日期被压缩 */
+}
+
 
 /* 右侧内容区样式 */
 .right-panel {
   flex: 1;
-  /* 占据剩余空间 */
   background-color: #f9f9f9;
   border-radius: 8px;
   overflow: hidden;
   padding: 20px;
-  /* 增加内边距 */
   box-sizing: border-box;
-  /* 确保padding和border包含在宽度内 */
 }
 
-/* 右侧主内容样式 */
 .content {
   display: flex;
-  /* 启用 Flexbox 布局 */
   flex-direction: column;
-  /* 子元素垂直排列 */
   align-items: flex-start;
-  /* 默认靠左对齐所有子元素 */
   padding: 20px;
-  /* 内边距 */
 }
 
-/* 步骤容器样式，确保它居中 */
 .steps-container {
   max-width: 600px;
-  /* 最大宽度 */
   width: 100%;
-  /* 充满父容器宽度 */
   margin: 20px auto;
-  /* 上下边距，左右自动，实现水平居中 */
 }
 
-/* 信息项样式，确保它们靠左对齐 */
 .info-item {
   display: flex;
   justify-content: space-between;
   padding: 10px;
   border-bottom: 1px solid #e0e0e0;
   white-space: nowrap;
-  /* 禁止换行 */
 }
 
 .info-content {
   font-size: 14px;
-  color: #666;
-  white-space: normal;
-  /* 允许内容换行，但不影响标题 */
-}
-
-/* 特定信息项的样式，如果需要特殊对齐 */
-.special-item {
-  text-align: center;
-  /* 居中对齐 */
-}
-
-.left-panel .title,
-.right-panel .header {
-  background-color: #c4c1e0;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px 8px 0 0;
-}
-
-.box {
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ffffff;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.anchor-nav a {
-  display: block;
-  padding: 10px;
-  color: #7c73e6;
-  text-decoration: none;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.anchor-nav a:hover {
-  background-color: #e0e0e0;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.info-content {
-  font-size: 1em;
   color: #666;
 }
 
@@ -758,5 +807,118 @@ body {
 
 .el-button:hover {
   background-color: #ffe9e3;
+}
+
+/* 竞赛信息知识图谱样式 */
+.tree {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background-color: #7c73e6;
+  border-radius: 18px;
+}
+
+.left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 200px;
+  color: #fff;
+}
+
+.left-up {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.right-up {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 600px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+}
+
+.three-parts {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.three-parts li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  flex: 1;
+  text-align: center;
+  color: #fff;
+}
+
+.line {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  height: 5px;
+  width: 620px;
+  background-color: #fff;
+}
+
+.right-down {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 680px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.three-columns {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+
+}
+
+.three-columns li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  flex: 1;
+  text-align: center;
+  color: #fff;
+}
+
+/* 添加悬停效果样式 */
+.hover-effect {
+  color: #fff;
+  text-decoration:
+    none;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.hover-effect:hover {
+  color: black;
+  text-decoration: underline;
 }
 </style>

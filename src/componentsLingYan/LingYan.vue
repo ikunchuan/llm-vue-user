@@ -1,31 +1,18 @@
 <template>
-
   <div class="common-layout">
     <el-container>
-      <el-aside width="200px">
-        <el-button  type="primary" round @click="openIframe">开启会话</el-button>
-      </el-aside>
+      <el-header class="lingyantitle">
+        灵验领航,伴您一路成长
+        <el-button type="primary" round @click="openIframe" style="margin-left: 20px;">开启会话</el-button>
+      </el-header>
 
-      <el-container>
-        <el-header class="lingyantitle">
-          灵验领航,伴您一路成长
-        </el-header>
-
-        <el-main>
-
-          <iframe src="http://localhost/chatbot/YsfCrau3h9HVXv8e" v-show="iframeVisible"
-           style="width: 100%; height: 95%; min-height: 830px" frameborder="0" allow="microphone">
-          </iframe>
-        
-        </el-main>
-      </el-container>
+      <el-main>
+        <iframe src="http://192.168.103.145/chatbot/YsfCrau3h9HVXv8e" v-show="iframeVisible"
+          style="width: 100%; height: 95%; min-height: 830px" frameborder="0" allow="microphone">
+        </iframe>
+      </el-main>
     </el-container>
-
   </div>
-
-
-
-
 </template>
 
 <script>
@@ -137,6 +124,26 @@ export default {
 </script>
 
 <style scoped>
+:root {
+  --primary-color: #409EFF; /* Element UI 的主题色 */
+  --background-color: #F5F5F5;
+  --text-color: #333;
+  --border-color: #EAEAEA;
+}
+
+body {
+  font-family: 'Arial', sans-serif; /* 使用更现代的字体 */
+  color: var(--text-color);
+  background-color: var(--background-color);
+}
+
+.lingyantitle {
+  font-size: 24px; /* 调整字体大小 */
+  font-weight: bold;
+  color: var(--primary-color);
+  padding: 30px 0; /* 调整内边距 */
+  border-bottom: 1px solid var(--border-color); /* 添加底部边框 */
+}
 .openai-app {
   height: calc(100vh - 77px);
   overflow: hidden;
@@ -242,7 +249,22 @@ export default {
   justify-content: center;
   padding: 20px;
 }
+.el-button {
+  background-color: var(--primary-color) !important; /* 覆盖Element UI按钮的背景色 */
+  border-color: var(--primary-color) !important;
+  color: white !important;
+  font-weight: bold;
+  border-radius: 20px; /* 调整圆角 */
+  padding: 10px 20px; /* 调整内边距 */
+}
 
+.el-button:hover {
+  background-color: #337ecc !important; /* 按钮悬停效果 */
+  border-color: #337ecc !important;
+}
+.el-button {
+  transition: background-color 0.3s, border-color 0.3s; /* 添加过渡效果 */
+}
 @keyframes typing {
 
   0%,
