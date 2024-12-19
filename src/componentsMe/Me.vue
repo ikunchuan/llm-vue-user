@@ -133,53 +133,10 @@
         </el-container>
     </div>
 
+
+
+
     <!-- 编辑简介弹窗 -->
-    <el-dialog v-model="dialogFormVisible" title="简介编辑" width="500">
-        <el-form :model="form" label-position="left" label-width="80px" :rules="rules">
-            <el-form-item v-show="false">
-                <el-input v-model="form.userId" />
-            </el-form-item>
-
-            <el-form-item label="用户名">
-                <el-input v-model="form.userName" maxlength="20" type="textarea" placeholder="请输入用户名" show-word-limit />
-            </el-form-item>
-
-            <el-form-item label="性别">
-                <el-select v-model="form.userSex" placeholder="请选择性别">
-                    <el-option label="男" value="1" />
-                    <el-option label="女" value="2" />
-                </el-select>
-            </el-form-item>
-
-            <el-form-item label="年龄">
-                <el-input v-model="form.userAge" type="number" placeholder="请选择年龄" :min="1" />
-            </el-form-item>
-
-            <el-form-item label="电话">
-                <el-input v-model="form.userPhone" type="text" placeholder="请输入电话" />
-            </el-form-item>
-
-            <el-form-item label="邮箱">
-                <el-input v-model="form.userEmail" type="email" placeholder="请输入邮箱" />
-            </el-form-item>
-
-            <el-form-item label="所在地">
-                <el-input v-model="form.userLocal" maxlength="50" type="textarea" placeholder="请输入所在地"
-                    show-word-limit />
-            </el-form-item>
-
-            <el-form-item label="简介">
-                <el-input v-model="form.userBio" maxlength="50" type="textarea" placeholder="请输入简介" show-word-limit />
-            </el-form-item>
-        </el-form>
-
-        <template #footer>
-            <div>
-                <el-button @click="closeDialog">取消</el-button>
-                <el-button type="primary" @click="editProfile">确定</el-button>
-            </div>
-        </template>
-    </el-dialog> <!-- 编辑简介弹窗 -->
     <el-dialog v-model="dialogFormVisible" title="简介编辑" width="500">
         <el-form :model="form" label-position="left" label-width="80px" :rules="rules">
             <el-row :gutter="24">
@@ -287,7 +244,7 @@ export default {
 
     methods: {
         //图片回调
-        handleAvatarSuccess() {
+        handleAvatarSuccess(response) {
             console.log(response);
             this.form.userProfilePicture = response;
         },

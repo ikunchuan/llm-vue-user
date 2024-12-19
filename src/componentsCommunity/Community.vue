@@ -126,9 +126,9 @@
                         <el-card shadow="hover" class="recommend-card">
                             <div class="recommend-header">
                                 <h3>推荐社区</h3>
-                                <el-button type="primary" size="small" @click="goToCommuSearch"
-                                    class="all-communities-btn">全部社区</el-button>
-                                <p>这些社区正在火热讨论中！</p>
+                                <div class="community-search-button-container">
+                                    <el-button type="primary" size="small" @click="goToCommuSearch">全部社区</el-button>
+                                </div>
                             </div>
                             <div class="recommend-item" v-for="(community, index) in popularCommunities" :key="index"
                                 @click="navigateToCommuDetail(community)">
@@ -567,7 +567,7 @@ export default {
     transition: all 0.3s ease;
     padding: 3px;
     /* 减少卡片内边距 */
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     /* 调整卡片之间的间距 */
     border-left: 5px solid #5a67d8;
     /* 加入左侧配色条，增加视觉层次 */
@@ -639,20 +639,19 @@ export default {
 .post-info i {
     color: #5a67d8;
 }
+
 /* 侧边栏推荐社区 */
 /* 卡片整体样式 */
 .recommend-card,
 .related-card,
 .guess-card {
-    padding: 5px 5px;
-    /* 减少卡片内边距 */
     margin-bottom: 10px;
     /* 减小卡片之间的间距 */
     border-radius: 8px;
     /* 稍微减小圆角 */
     background-color: #fff;
     /* 白色背景 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05);
     /* 轻微阴影增强立体感 */
     transition: all 0.3s ease;
 }
@@ -664,10 +663,18 @@ export default {
     font-size: 16px;
     font-weight: bold;
     color: #333;
-    margin-bottom: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.community-search-button-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    /* 确保容器占满整个宽度 */
+    margin-top: 10px;
+    /* 根据需要调整上边距 */
 }
 
 .recommend-item {
@@ -676,7 +683,6 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-    padding: 8px;
     border-radius: 8px;
     transition: all 0.3s ease;
     cursor: pointer;
@@ -866,8 +872,7 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 8px;
-    padding: 3px 3px;
-    /* 减少推荐社区的内边距 */
+
 }
 
 .related-item span {
