@@ -107,15 +107,15 @@
               <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
             </div>
           </el-card>
-
+          <br/>
           <!-- 点赞按钮 -->
-          <el-button type="text" size="small" @click="likePost" :disabled="liked"
+          <el-button type="primary" size="middle" @click="likePost" :disabled="liked"
             :icon="liked ? 'el-icon-thumb' : 'el-icon-thumb-solid'">
             {{ liked ? '已点赞' : '点赞' }}
           </el-button>
 
           <!-- 收藏按钮 -->
-          <el-button type="text" size="small" @click="favoritePost" :disabled="favorited"
+          <el-button type="success" size="middle" @click="favoritePost" :disabled="favorited"
             :icon="favorited ? 'el-icon-star-on' : 'el-icon-star-off'">
             {{ favorited ? '已收藏' : '收藏' }}
           </el-button>
