@@ -25,13 +25,13 @@
               rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
             <template #reference>
               <!-- shape：square； border: 1px solid #007bff;-->
-              <img :src="'http://localhost:10086/images/upload/' + userInfo.userProfilePicture" alt="user"
-                class="user-avatar" />
+              <img :src="getUserImg(userInfo.userProfilePicture)" alt="user" class="user-avatar" />
+
             </template>
             <template #default>
               <div class="rich-conent" style="display: flex; gap: 16px; flex-direction: column">
-                <img :src="'http://localhost:10086/images/upload/' + userInfo.userProfilePicture" alt="user"
-                  class="user-avatar" />
+                <img :src="getUserImg(userInfo.userProfilePicture)" alt="user" class="user-avatar" />
+
                 <div>
                   <p style="margin: 0; text-align: center;">{{ userName }}</p>
                 </div>
@@ -53,11 +53,11 @@
         <transition name="fade">
           <div v-if="isDrawerVisible && activeDrawer">
             <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
-              <div class="left-column">
+              <div class="title-column">
                 <h3 class="drawer-title">竞赛中心</h3>
                 <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px;">
               </div>
-              <div class="right-column">
+              <div class="content-column">
                 <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index"
                   @click="goToCompetitionDetail(comp.competitionId)">
                   <el-image :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" fit="cover"
@@ -111,11 +111,11 @@
             </div>
 
             <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
-              <div class="left-column">
+              <div class="title-section">
                 <h3 class="drawer-title">灵验知道</h3>
                 <p>灵验知道,以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。</p>
               </div>
-              <div class="right-column">
+              <div class="content-section">
                 <div class="resource-box lingyan-know">
 
                   <img src="../assets/img/71.png" alt="灵验知道图片" class="know-image">
@@ -140,19 +140,7 @@
                 </a>
               </div>
             </div>
-            <div v-if="activeDrawer?.name === '个人中心'" class="resource-center">
-              <div class="left-column">
-                <h3 class="drawer-title">个人中心</h3>
-                <div class="resource-link" @click="navigateToPath('course')">课程资源</div>
-                <div class="resource-link" @click="navigateToPath('question')">题库资源</div>
-              </div>
-              <div class="right-column">
-                <div class="resource-box" v-for="box in resourceBoxes" :key="box.title">
-                  <h4>{{ box.title }}</h4>
-                  <p>{{ box.content }}</p>
-                </div>
-              </div>
-            </div>
+            
           </div>
         </transition>
       </el-drawer>
@@ -200,6 +188,14 @@ export default {
   },
 
   methods: {
+    //图片预览
+    getUserImg(url) {
+      if (!url) {
+        return this.userAvatarUrl;
+      }
+      return `http://localhost:10086/images/upload/${url}`;
+    },
+
     //获取数据
 
     updateHeaderHeight() {
@@ -256,21 +252,25 @@ export default {
     },
 
     toggleDrawer(item) {
-      if (item) {
-        this.activeDrawer = item;// 打开抽屉
-        if (!item) {
-          this.popularCompetitions = [];
-        }
-        this.fetchPopularCompetitions();
-        this.isDrawerVisible = true;
+    if (item) {
+      // 当点击的是“个人中心”，则不显示抽屉，而是直接跳转到个人中心页面
+      if (item.name === '个人中心') {
+        this.goToPersonalCenter(); // 假设这是跳转到个人中心的方法
       } else {
-        // 等待内容淡出动画完成再关闭抽屉
-        setTimeout(() => {
-          this.isDrawerVisible = false;
-          this.activeDrawer = null;
-        }, 300); // 动画时长（与 CSS 保持一致）
+        // 对于其他项，正常打开抽屉
+        this.activeDrawer = item;
+        this.isDrawerVisible = true;
+        this.fetchPopularCompetitions(); // 如果需要的话，获取热门竞赛数据
       }
-    },
+    } else {
+      // 等待内容淡出动画完成再关闭抽屉
+      setTimeout(() => {
+        this.isDrawerVisible = false;
+        this.activeDrawer = null;
+      }, 300); // 动画时长（与 CSS 保持一致）
+    }
+  },
+
 
     navigateToPath(path) {
       this.$router.push({ path: `/home/${path}` });
@@ -322,7 +322,7 @@ export default {
     const userId = sessionStorage.userId;
 
     if (!userId) {  //未登录重定向到注册
-      this.$router.push('/login');
+     
     }
 
     this.$http.get(`/uis/v1/ui/${userId}`)
@@ -541,6 +541,7 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  text-decoration: none; /* 去除下划线 */
   /* 链接之间的间距 */
   width: 100%;
   /* 占满整列宽度 */
@@ -707,8 +708,25 @@ export default {
 
 .resource-center {
   display: flex;
-  width: 100%;
-  justify-content: space-between;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  width: 100%; /* 抽屉的总宽度 */
+
+}
+
+.title-column {
+  margin-right: px; /* 与内容列的间距 */
+  padding: 10px;
+  width: 200px;
+}
+
+.content-column {
+  display: flex;
+  flex-wrap: wrap; /* 允许内容换行 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  width: 66.67%; /* 根据需要调整宽度以容纳三个卡片 */
+  padding: 0px;
 }
 
 .left-column {
@@ -780,20 +798,31 @@ export default {
 }
 
 
+.title-section {
+  margin-right: 20px; /* 与内容区的间距 */
+  text-align: center; /* 文本居中 */
+  justify-content: center; /* 水平居中 */
+  width: 300px;
+}
+
+.content-section {
+  display: flex;
+  flex-wrap: wrap; /* 允许内容换行 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  width: 100%; /* 根据需要调整宽度以容纳内容 */
+}
+
 .resource-box {
-  width: 80%;
-  margin-bottom: 20px;
-  text-align: center;
-  border: 0px solid #E0E0E0;
-  border-radius: 5px;
-  padding: 20px;
-  /* 添加内边距以便于阅读 */
-  font-family: 'Arial', sans-serif;
-  /* 自定义字体 */
-  font-size: 20px;
-  /* 自定义字体大小 */
-  color: #333;
-  /* 自定义字体颜色 */
+  width: 100%; /* 资源框宽度 */
+  max-width: 400px; /* 最大宽度，防止过大 */
+  margin: 10px; /* 外边距 */
+  text-align: center; /* 文本居中 */
+}
+.know-image {
+  max-width: 100%; /* 图片最大宽度 */
+  height: auto; /* 高度自动 */
+  border-radius: 8px; /* 圆角边框 */
 }
 
 .resource-item {
@@ -853,16 +882,7 @@ export default {
 
 }
 
-.know-image {
-  max-width: 100%;
-  /* 图片最大宽度占满容器 */
-  height: auto;
-  /* 高度自动，保持图片比例 */
-  margin-top: 0px;
-  /* 图片与文本的间距 */
-  border-radius: 8px;
-  /* 圆角边框 */
-}
+
 
 .resource-link {
   cursor: pointer;
@@ -891,6 +911,7 @@ export default {
   /* 图片宽度，三张图片一行 */
   cursor: pointer;
   /* 鼠标悬停时显示手型 */
+  padding: 40px;
 
 }
 
@@ -908,7 +929,7 @@ export default {
 .card-title {
   margin-top: 10px;
   /* 图片和名称之间的间距 */
-  font-size: 16px;
+  font-size: 12px;
   /* 字体大小 */
   color: #333;
   /* 字体颜色 */
