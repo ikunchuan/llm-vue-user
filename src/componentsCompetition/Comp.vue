@@ -7,56 +7,69 @@
       <h2 class="section-title">🔥 精选推荐</h2>
       <div class="recommend-container">
 
-      <!-- 左侧推荐导航 -->
-      <div class="recommend-sidebar">
-        
-        <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
-          :class="{ active: index === currentIndex }" @click="selectSidebarItem(item)">
-          {{ item.name }}   &nbsp  &nbsp  🔥
+        <!-- 左侧推荐导航 -->
+        <div class="recommend-sidebar">
+
+          <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
+            :class="{ active: index === currentIndex }" @click="selectSidebarItem(item)">
+            {{ item.name }} &nbsp &nbsp 🔥
+          </div>
         </div>
-      </div>
-      <!-- 右侧推荐卡片 -->
-      <div class="recommend-cards">
-  <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
-    <el-image style="width: 250px; height: 170px; border-radius: 8px"
-      :src="'http://localhost:10086/images/upload/' + card.imageUrl" fit="cover" class="card-image"></el-image>
-    <div class="card-title">{{ card.name }}</div> <!-- 显示卡片名称 -->
-  </div>
-</div>
+        <!-- 右侧推荐卡片 -->
+        <div class="recommend-cards">
+          <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
+            <el-image style="width: 250px; height: 170px; border-radius: 8px"
+              :src="'http://localhost:10086/images/upload/' + card.imageUrl" fit="cover" class="card-image"></el-image>
+            <div class="card-title">{{ card.name }}</div> <!-- 显示卡片名称 -->
+          </div>
+        </div>
       </div>
 
     </section>
 
     <!-- 筛选条件 -->
     <section class="filters-section">
-      <h2 class="section-title">🔎 筛选你的目标竞赛</h2>
+      <h2 class="section-title">🔎筛选你的目标竞赛</h2>
+
       <div class="filters-container">
-      
-      <!-- 竞赛名称搜索框 -->
-      <div class="filter-item">
-        <el-input placeholder="请输入相应竞赛名称" v-model="searchName" class="search-input"></el-input>
-      </div>
-      <!-- 开始日期选择器 -->
-      <div class="filter-item">
-        <el-date-picker v-model="searchStartDate" type="date" placeholder="选择开始日期" class="search-input">
-        </el-date-picker>
-      </div>
-      <!-- 结束日期选择器 -->
-      <div class="filter-item">
-        <el-date-picker v-model="searchEndDate" type="date" placeholder="选择结束日期" class="search-input">
-        </el-date-picker>
+        <!-- 竞赛名称搜索框 -->
+        <div class="filter-item">
+          <el-input placeholder="请输入相应竞赛名称" v-model="searchName" class="search-input"></el-input>
+        </div>
+        <!-- 开始日期选择器 -->
+        <div class="filter-item">
+          <el-date-picker v-model="searchStartDate" type="date" placeholder="选择开始日期"
+            class="search-input"></el-date-picker>
+        </div>
+        <!-- 结束日期选择器 -->
+        <div class="filter-item">
+          <el-date-picker v-model="searchEndDate" type="date" placeholder="选择结束日期"
+            class="search-input"></el-date-picker>
+        </div>
+        <!-- 参赛状态选择器 -->
+        <div class="filter-item">
+          <el-select v-model="searchStatus" placeholder="选择参赛状态" class="search-input">
+            <el-option label="全部" value=""></el-option>
+            <el-option label="报名中" value="报名中"></el-option>
+            <el-option label="进行中" value="进行中"></el-option>
+            <el-option label="已结束" value="已结束"></el-option>
+          </el-select>
+        </div>
+        <!-- 难度级别选择器 -->
+        <div class="filter-item">
+          <el-select v-model="searchLevel" placeholder="选择难度级别" class="search-input">
+            <el-option label="全部" value=""></el-option>
+            <el-option label="初级" value="初级"></el-option>
+            <el-option label="中级" value="中级"></el-option>
+            <el-option label="高级" value="高级"></el-option>
+          </el-select>
+        </div>
       </div>
       <!-- 搜索按钮 -->
-      <div class="filter-item">
+      <div class="filter-item search-button-item">
         <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
       </div>
-</div>
     </section>
-
-
-
-
-
     <!-- 图标分类 -->
     <section class="icon-section">
       <div class="icon-item">
@@ -104,7 +117,10 @@
         <div class="card-title">{{ card.competitionName }}</div>
         <div class="card-info">{{ card.levelName }}</div>
         <div class="card-footer">
-          <div class="price">{{ card.competitionStatus }}</div>
+          <!-- 动态绑定颜色样式 -->
+          <div class="status" :style="{ color: statusColors[card.competitionStatus] || '#333' }">
+            {{ card.competitionStatus }}
+          </div>
         </div>
       </div>
     </section>
@@ -140,12 +156,21 @@ export default {
       currentIndex: 0, // 当前激活的导航索引
 
       //条件查询数据
-      searchName: '',
-      searchStartDate: '',
-      searchEndDate: '',
+      searchName: '',       // 竞赛名称
+      searchStartDate: '',  // 开始日期
+      searchEndDate: '',    // 结束日期
+      searchStatus: '',     // 参赛状态
+      searchLevel: '',      // 难度级别
 
       activeDrawer: null, // 当前激活的抽屉
       cards: [],//存储后端查询后返回数据
+
+      // 参赛状态与颜色的映射
+      statusColors: {
+        "进行中": "#17C964", // 绿色
+        "未开始": "#FFA726", // 橙色
+        "已结束": "#E53935"  // 红色
+      },
     };
   },
   methods: {
@@ -181,27 +206,15 @@ export default {
             console.log('推荐详情数据5条:', items);
             this.recommendCards = items.map(item => {
               const imageUrl = type === 'community' ? item.communityImageUrl :
-                          type === 'competition' ? item.competitionImgUrl :
-                          item.courseImgUrl;
-          // 直接提取名称
-          const name = type === 'community' ? item.communityName :
-                      type === 'competition' ? item.competitionName :
-                      item.courseName;
+                type === 'competition' ? item.competitionImgUrl :
+                  item.courseImgUrl;
+              // 直接提取名称
+              const name = type === 'community' ? item.communityName :
+                type === 'competition' ? item.competitionName :
+                  item.courseName;
 
-          return { imageUrl, name }; // 返回一个对象，包含图片和名称
+              return { imageUrl, name }; // 返回一个对象，包含图片和名称
 
-
-
-              if (type === 'community') {
-                return item.communityImageUrl;
-                
-              } else if (type === 'competition') {
-                return item.competitionImgUrl;
-                
-              } else if (type === 'course') {
-                return item.courseImgUrl;
-                
-              }
             });
           } else {
             console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
@@ -220,17 +233,20 @@ export default {
       }
     },
 
-    //条件查询方法
+
     searchCompetitions() {
       const payload = {
-        competitionName: this.searchName,
-        startDate: this.searchStartDate,
-        endDate: this.searchEndDate
+        competitionName: this.searchName, // 按竞赛名称搜索
+        startDate: this.searchStartDate,  // 按开始日期筛选
+        endDate: this.searchEndDate,      // 按结束日期筛选
+        status: this.searchStatus,        // 按参赛状态筛选
+        level: this.searchLevel           // 按难度级别筛选
       };
+
       axios.post('comp/v1/search', payload)
         .then(response => {
           if (response.data && Array.isArray(response.data.list)) {
-            this.cards = response.data.list;
+            this.cards = response.data.list; // 更新搜索结果
           } else {
             console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
           }
@@ -239,6 +255,7 @@ export default {
           console.error('查询失败:', error.response ? error.response.data : error.message);
         });
     },
+
     //获取竞赛数据
     fetchCards() {
       this.loading = true;
@@ -266,33 +283,33 @@ export default {
       // 不做任何操作，保持抽屉打开
     },
     onIconClick(iconKey) {
-    // 假设你的 iconCategories 对象中的值是后端的 parentId
-    console.log(iconKey);
-    const parentId = iconKey;
-    
-    // 构建后端接口的URL
-    const url = `comp/v1/comp/byParentId?parentId=${parentId}`;
-    
-    // 发送GET请求到后端接口
-    this.$http.get(url)
-      .then(response => {
-        if (response.data) { // 确保后端返回的 list 是数组
-          // 成功获取数据，更新前端的卡片数据
-          console.log(response.data)
-          this.cards = response.data; // 更新为正确的属性名
+      // 假设你的 iconCategories 对象中的值是后端的 parentId
+      console.log(iconKey);
+      const parentId = iconKey;
 
-        } else {
-          // 后端返回的数据格式不正确
-          console.error('后端返回的数据格式不正确:', response.data);
+      // 构建后端接口的URL
+      const url = `comp/v1/comp/byParentId?parentId=${parentId}`;
+
+      // 发送GET请求到后端接口
+      this.$http.get(url)
+        .then(response => {
+          if (response.data) { // 确保后端返回的 list 是数组
+            // 成功获取数据，更新前端的卡片数据
+            console.log(response.data)
+            this.cards = response.data; // 更新为正确的属性名
+
+          } else {
+            // 后端返回的数据格式不正确
+            console.error('后端返回的数据格式不正确:', response.data);
+            this.$message.error('数据加载失败，请稍后再试。');
+          }
+        })
+        .catch(error => {
+          // 请求失败处理
+          console.error('获取数据失败:', error.response ? error.response.data : error.message);
           this.$message.error('数据加载失败，请稍后再试。');
-        }
-      })
-      .catch(error => {
-        // 请求失败处理
-        console.error('获取数据失败:', error.response ? error.response.data : error.message);
-        this.$message.error('数据加载失败，请稍后再试。');
-      });
-  },
+        });
+    },
     searchByCategory(categoryId) {
       const competitionSearch = { categoryId };
       this.$http.post('comp/v1/search', competitionSearch, {
@@ -343,8 +360,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 /* 页面背景 */
 body {
   background: linear-gradient(135deg, #fafafa, #ffe9e3);
@@ -375,7 +390,7 @@ body {
 .recommend-section {
   display: flex;
   gap: 0px;
-  margin: 10px auto;
+  margin: 10px 0;
   padding: 0px;
   /* background-color: #f9f9f9; */
   background-color: #FFFFFF;
@@ -383,27 +398,30 @@ body {
   border-radius: 15px;
   flex-wrap: wrap;
 }
+
 .recommend-container {
   display: flex;
-  align-items: center; /* 垂直居中 */
-  gap: 40px; /* 左侧导航与卡片之间的间距 */
+  align-items: center;
+  /* 垂直居中 */
+  gap: 40px;
+  /* 左侧导航与卡片之间的间距 */
 }
-
 
 /* 左侧推荐导航样式 */
 .recommend-sidebar {
   width: 220px;
-  background-color:  #fafafa;
+  background-color: #fafafa;
   border-radius: 8px;
   padding: 20px 0;
 }
+
 .section-title {
-  font-size: 18px;
+  margin: 0;
+  font-size: 20px;
   margin-bottom: 0px;
   color: #7c73e6;
   text-align: center;
 }
-
 
 .recommend-sidebar-item {
   padding: 15px 20px;
@@ -415,13 +433,10 @@ body {
 }
 
 .recommend-sidebar-item:hover {
-  background-color: #c4c1e0; /* 激活状态背景色 */
+  background-color: #c4c1e0;
+  /* 激活状态背景色 */
   color: #7c73e6;
   font-weight: bold;
-  /* background-color: #E0E6F8;
-  border-left: 5px solid #5A67D8;
-  color: #5A67D8;
-  font-weight: bold; */
 }
 
 .recommend-sidebar-item.active {
@@ -439,7 +454,7 @@ body {
   flex-wrap: wrap;
   gap: 30px;
   justify-content: space-evenly;
-  padding: 40px;
+  padding: 0 40px 30px 40px;
   justify-content: center;
   /* 均匀分布卡片 */
   flex: 1;
@@ -448,93 +463,114 @@ body {
 /* 单个推荐卡片样式 */
 .recommend-card {
   display: flex;
-  flex-direction: column; /* 使卡片内容垂直排列 */
-  align-items: center; /* 水平居中 */
+  flex-direction: column;
+  /* 使卡片内容垂直排列 */
+  align-items: center;
+  /* 水平居中 */
   width: 250px;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease;
-  margin-bottom: 10px; /* 为卡片添加底部间距 */
+  margin-bottom: 0px;
+  /* 为卡片添加底部间距 */
 }
 
 .recommend-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(237, 155, 255, 0.15);
 }
 
 .card-image {
-  width: 250px;
-  height: 170px;
+  width: 240px;
+  height: 160px;
   object-fit: cover;
   border-radius: 8px;
   transition: transform 0.3s ease;
 }
 
 .card-title {
-  font-size: 14px;
+  font-size: 13px;
   color: #333;
-  padding: 5px 0;
+  padding: 0;
   text-align: center;
-  visibility: visible; /* 确保可见 */
-  opacity: 1; /* 确保不透明 */
+  visibility: visible;
+  /* 确保可见 */
+  opacity: 1;
+  /* 确保不透明 */
 }
-
-
-
-
 
 /* 筛选条件样式 */
 .filters-section {
+  display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   /* 水平居中 */
   align-items: center;
   /* 垂直居中 */
-  display: flex;
-  gap: 10px;
-  margin: 20px auto;
-  padding: 20px;
-  max-width: 800px;
-  /* 调整宽度 */
+  width: 100%;
+  /* 占满整个宽度 */
+  padding: 20px 0;
+  /* 增加上下内边距 */
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 30px;
-  /* 添加圆角 */
-  position: relative; /* 相对定位 */
-  border-bottom: 3px solid #c4c1e0; /* 添加淡紫色下边框 */
+  margin: 10px 0;
+  /* 增加上下外边距 */
 }
 
 .filters-container {
   display: flex;
+  flex-wrap: wrap;
+  /* 允许内容换行 */
   gap: 10px;
+  /* 设置元素之间的间距 */
   justify-content: center;
+  /* 水平居中 */
+  max-width: 800px;
+  /* 限制最大宽度 */
+}
+
+.search-button-item {
+  margin-right: 25px;
+  /* 将搜索按钮推到最右边 */
 }
 
 /* 搜索输入框和日期选择器样式 */
 .search-input {
-  width: 200px;
+  width: 180px;
   /* 根据需要调整宽度 */
 }
 
 /* 搜索按钮样式 */
 .search-button {
+  padding: 20px 20px;
+  /* 增加内边距 */
+  font-size: 18px;
+  /* 增加字体大小 */
+  font-weight: bold;
+  /* 加粗字体 */
+  color: #ffffff;
+  /* 设置文字颜色 */
   background-color: #5A67D8;
   /* 按钮背景色 */
-  color: white;
-  /* 按钮文字颜色 */
   border: none;
-  padding: 10px 20px;
-  /* 按钮内边距 */
+  /* 去掉边框 */
   border-radius: 5px;
-  /* 按钮圆角 */
+  /* 增加圆角 */
+  transition: all 0.3s ease;
+  /* 平滑过渡效果 */
   cursor: pointer;
+  /* 鼠标悬停时显示指针 */
 }
 
 .search-button:hover {
   background-color: #4A54C0;
   /* 按钮悬停背景色 */
+  box-shadow: 0 15px 25px rgba(96, 48, 147, 0.4);
+  /* 悬停时的阴影 */
+  transform: translateY(-2px);
+  /* 轻微上移，增加点击感 */
 }
 
 
@@ -661,7 +697,9 @@ body {
 .rating {
   color: #5a67d8;
 }
+
 .status {
+  font-size: 15px;
   color: #5a67d8;
   font-weight: bold;
 }
