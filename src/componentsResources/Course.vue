@@ -11,7 +11,7 @@
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
+        <el-button type="primary" v-model="searchName" @click="searchCompetitions" class="search-button">搜索</el-button>
       </div>
     </section>
 
@@ -74,7 +74,7 @@
 
 <script>
 import { fi } from 'element-plus/es/locales.mjs';
-
+import axios from 'axios';
 export default {
   name: "MainLayout",
   name: "Navbar",
@@ -91,6 +91,7 @@ export default {
       cards: [],//存储获取后端课程数据
       searchQuery: '', //存储搜索条件
       filteredCards: [],//用于存储筛选后的卡片
+      searchName: '', // 确保这里初始化了 searchName
 
 
       activeDrawer: null, // 当前激活的抽屉
@@ -176,11 +177,25 @@ export default {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CourseDetail', params: { courseId: courseId } });
     },
-    searchCompetitions() {
-      this.filteredCards = this.searchName
-        ? this.cards.filter(card => card.courseName.includes(this.searchName))
-        : this.cards;
-    }
+    searchCourses() {
+      const payload = {
+        courseName: this.searchName, // 注意这里使用的是 searchName
+        // startDate: this.searchStartDate, // Course.vue 中没有这两个属性，所以注释掉
+        // endDate: this.searchEndDate,     // Course.vue 中没有这两个属性，所以注释掉
+      };
+      axios.post('crs/search', payload)
+        .then(response => {
+          if (response.data && Array.isArray(response.data.list)) {
+            this.cards = response.data.list; // 更新 cards 数组
+          } else {
+            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('查询失败:', error.response ? error.response.data : error.message);
+        });
+    },
+
 
   },
 
