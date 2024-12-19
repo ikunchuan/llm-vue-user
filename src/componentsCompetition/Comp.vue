@@ -4,27 +4,34 @@
 
     <!-- 推荐模块 -->
     <section class="recommend-section">
+      <h2 class="section-title">🔥 精选推荐</h2>
+      <div class="recommend-container">
 
       <!-- 左侧推荐导航 -->
       <div class="recommend-sidebar">
+        
         <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
           :class="{ active: index === currentIndex }" @click="selectSidebarItem(item)">
-          {{ item.name }}
+          {{ item.name }}   &nbsp  &nbsp  🔥
         </div>
       </div>
       <!-- 右侧推荐卡片 -->
       <div class="recommend-cards">
-        <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
-          <el-image style="width: 250px; height: 170px; border-radius: 8px"
-            :src="'http://localhost:10086/images/upload/' + card" fit="cover" class="card-image"></el-image>
-        </div>
+  <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
+    <el-image style="width: 250px; height: 170px; border-radius: 8px"
+      :src="'http://localhost:10086/images/upload/' + card.imageUrl" fit="cover" class="card-image"></el-image>
+    <div class="card-title">{{ card.name }}</div> <!-- 显示卡片名称 -->
+  </div>
+</div>
       </div>
 
     </section>
 
     <!-- 筛选条件 -->
     <section class="filters-section">
-
+      <h2 class="section-title">🔎 筛选你的目标竞赛</h2>
+      <div class="filters-container">
+      
       <!-- 竞赛名称搜索框 -->
       <div class="filter-item">
         <el-input placeholder="请输入相应竞赛名称" v-model="searchName" class="search-input"></el-input>
@@ -43,8 +50,12 @@
       <div class="filter-item">
         <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
       </div>
-
+</div>
     </section>
+
+
+
+
 
     <!-- 图标分类 -->
     <section class="icon-section">
@@ -80,20 +91,13 @@
             <p>语言与文化类</p>
           </div>
 
-
-
-
-          <!-- <img src="../assets/img/1.png" alt="Logo" class="logo" @click="onIconClick(1)" /> -->
-          <!-- <img src="../assets/img/2.png" alt="Image 2" class="logo" @click="onIconClick(2)" />
-          <img src="../assets/img/3.png" alt="Image 3" class="logo" @click="onIconClick(3)" />
-          <img src="../assets/img/4.png" alt="Image 4" class="logo" @click="onIconClick(4)" />
-          <img src="../assets/img/5.png" alt="Image 5" class="logo" @click="onIconClick(5)" /> -->
         </div>
       </div>
     </section>
 
     <!-- 展示卡片 -->
     <section class="cards-section">
+      <!-- <h2 class="section-title">📋 竞赛列表</h2> -->
       <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.competitionId)">
         <img style="width: 360px; height: 170px" :src="'http://localhost:10086/images/upload/' + card.competitionImgUrl"
           alt="Card Image" />
@@ -175,14 +179,28 @@ export default {
             // 使用 slice 方法获取前5条数据
             const items = response.data.list.slice(0, 3);
             console.log('推荐详情数据5条:', items);
-
             this.recommendCards = items.map(item => {
+              const imageUrl = type === 'community' ? item.communityImageUrl :
+                          type === 'competition' ? item.competitionImgUrl :
+                          item.courseImgUrl;
+          // 直接提取名称
+          const name = type === 'community' ? item.communityName :
+                      type === 'competition' ? item.competitionName :
+                      item.courseName;
+
+          return { imageUrl, name }; // 返回一个对象，包含图片和名称
+
+
+
               if (type === 'community') {
                 return item.communityImageUrl;
+                
               } else if (type === 'competition') {
                 return item.competitionImgUrl;
+                
               } else if (type === 'course') {
                 return item.courseImgUrl;
+                
               }
             });
           } else {
@@ -325,6 +343,18 @@ export default {
 </script>
 
 <style scoped>
+
+
+/* 页面背景 */
+body {
+  background: linear-gradient(135deg, #fafafa, #ffe9e3);
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* 页面顶部 */
+
+
 /* 外部容器，控制整体布局的宽度和居中 */
 .main-layout {
   max-width: 1200px;
@@ -344,27 +374,40 @@ export default {
 /* 推荐模块样式 */
 .recommend-section {
   display: flex;
-  gap: 20px;
-  margin: 20px auto;
-  padding: 20px;
+  gap: 0px;
+  margin: 10px auto;
+  padding: 0px;
   /* background-color: #f9f9f9; */
   background-color: #FFFFFF;
   box-shadow: 0 8px 16px rgba(223, 190, 190, 0.1);
   border-radius: 15px;
   flex-wrap: wrap;
 }
+.recommend-container {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  gap: 40px; /* 左侧导航与卡片之间的间距 */
+}
+
 
 /* 左侧推荐导航样式 */
 .recommend-sidebar {
-  width: 250px;
-  background-color: #F4F6F8;
+  width: 220px;
+  background-color:  #fafafa;
   border-radius: 8px;
-  padding: 30px 0;
+  padding: 20px 0;
+}
+.section-title {
+  font-size: 18px;
+  margin-bottom: 0px;
+  color: #7c73e6;
+  text-align: center;
 }
 
+
 .recommend-sidebar-item {
-  padding: 20px 20px;
-  font-size: 18px;
+  padding: 15px 20px;
+  font-size: 17px;
   color: #333333;
   cursor: pointer;
   text-align: center;
@@ -372,10 +415,13 @@ export default {
 }
 
 .recommend-sidebar-item:hover {
-  background-color: #E0E6F8;
+  background-color: #c4c1e0; /* 激活状态背景色 */
+  color: #7c73e6;
+  font-weight: bold;
+  /* background-color: #E0E6F8;
   border-left: 5px solid #5A67D8;
   color: #5A67D8;
-  font-weight: bold;
+  font-weight: bold; */
 }
 
 .recommend-sidebar-item.active {
@@ -401,17 +447,16 @@ export default {
 
 /* 单个推荐卡片样式 */
 .recommend-card {
-
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column; /* 使卡片内容垂直排列 */
+  align-items: center; /* 水平居中 */
   width: 250px;
-  height: 180px;
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease;
+  margin-bottom: 10px; /* 为卡片添加底部间距 */
 }
 
 .recommend-card:hover {
@@ -422,15 +467,20 @@ export default {
 .card-image {
   width: 250px;
   height: 170px;
-  /* 调整图片高度 */
   object-fit: cover;
   border-radius: 8px;
   transition: transform 0.3s ease;
 }
 
-.recommend-card:hover .card-image {
-  transform: scale(1.05);
+.card-title {
+  font-size: 14px;
+  color: #333;
+  padding: 5px 0;
+  text-align: center;
+  visibility: visible; /* 确保可见 */
+  opacity: 1; /* 确保不透明 */
 }
+
 
 
 
@@ -438,6 +488,7 @@ export default {
 /* 筛选条件样式 */
 .filters-section {
   justify-content: center;
+  flex-wrap: wrap;
   /* 水平居中 */
   align-items: center;
   /* 垂直居中 */
@@ -451,9 +502,15 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 30px;
   /* 添加圆角 */
+  position: relative; /* 相对定位 */
+  border-bottom: 3px solid #c4c1e0; /* 添加淡紫色下边框 */
 }
 
-
+.filters-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
 
 /* 搜索输入框和日期选择器样式 */
 .search-input {
@@ -553,6 +610,7 @@ export default {
 
 /* 展示卡片样式 */
 .cards-section {
+  background-color: #fff;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 15px;
@@ -602,5 +660,9 @@ export default {
 
 .rating {
   color: #5a67d8;
+}
+.status {
+  color: #5a67d8;
+  font-weight: bold;
 }
 </style>
