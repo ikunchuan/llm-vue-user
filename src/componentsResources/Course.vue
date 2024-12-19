@@ -1,5 +1,18 @@
 <template>
   <div class="main-layout">
+    <!-- 图片轮播 -->
+    <el-carousel :interval="5000" arrow="always" type="card" height="300px">
+      <el-carousel-item>
+        <img src="../assets/img/76.png" alt="轮播图1" style="width: 100%; height: 100%; object-fit: cover;">
+      </el-carousel-item>
+      <el-carousel-item>
+        <img src="../assets/img/53.png" alt="轮播图2" style="width: 100%; height: 100%; object-fit: cover;">
+      </el-carousel-item>
+      <el-carousel-item>
+        <img src="../assets/img/51.png" alt="轮播图3" style="width: 100%; height: 100%; object-fit: cover;">
+      </el-carousel-item>
+      <!-- 更多轮播图项目 -->
+    </el-carousel>
 
 
 
@@ -80,6 +93,7 @@ export default {
   name: "Navbar",
   data() {
     return {
+      
       iconCategories: [
         { id: 1, src: '../assets/img/1.png' },
         { id: 2, src: '../assets/img/2.png' },
@@ -209,6 +223,12 @@ export default {
 
 
 <style scoped>
+/* 图片轮播样式 */
+.el-carousel__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 /* 外部容器，控制整体布局的宽度和居中 */
 .main-layout {
   max-width: 1200px;
