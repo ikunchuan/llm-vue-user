@@ -1,5 +1,18 @@
 <template>
   <div class="main-layout">
+    <!-- 图片轮播 -->
+    <el-carousel :interval="5000" arrow="always" type="card" height="300px">
+      <el-carousel-item>
+        <img src="../assets/img/76.png" alt="轮播图1" style="width: 100%; height: 100%; object-fit: cover;">
+      </el-carousel-item>
+      <el-carousel-item>
+        <img src="../assets/img/53.png" alt="轮播图2" style="width: 100%; height: 100%; object-fit: cover;">
+      </el-carousel-item>
+      <el-carousel-item>
+        <img src="../assets/img/51.png" alt="轮播图3" style="width: 100%; height: 100%; object-fit: cover;">
+      </el-carousel-item>
+      <!-- 更多轮播图项目 -->
+    </el-carousel>
 
 
 
@@ -11,7 +24,7 @@
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
+        <el-button type="primary" v-model="searchName" @click="searchCompetitions" class="search-button">搜索</el-button>
       </div>
     </section>
 
@@ -74,12 +87,13 @@
 
 <script>
 import { fi } from 'element-plus/es/locales.mjs';
-
+import axios from 'axios';
 export default {
   name: "MainLayout",
   name: "Navbar",
   data() {
     return {
+      
       iconCategories: [
         { id: 1, src: '../assets/img/1.png' },
         { id: 2, src: '../assets/img/2.png' },
@@ -91,6 +105,7 @@ export default {
       cards: [],//存储获取后端课程数据
       searchQuery: '', //存储搜索条件
       filteredCards: [],//用于存储筛选后的卡片
+      searchName: '', // 确保这里初始化了 searchName
 
 
       activeDrawer: null, // 当前激活的抽屉
@@ -176,11 +191,25 @@ export default {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CourseDetail', params: { courseId: courseId } });
     },
-    searchCompetitions() {
-      this.filteredCards = this.searchName
-        ? this.cards.filter(card => card.courseName.includes(this.searchName))
-        : this.cards;
-    }
+    searchCourses() {
+      const payload = {
+        courseName: this.searchName, // 注意这里使用的是 searchName
+        // startDate: this.searchStartDate, // Course.vue 中没有这两个属性，所以注释掉
+        // endDate: this.searchEndDate,     // Course.vue 中没有这两个属性，所以注释掉
+      };
+      axios.post('crs/search', payload)
+        .then(response => {
+          if (response.data && Array.isArray(response.data.list)) {
+            this.cards = response.data.list; // 更新 cards 数组
+          } else {
+            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('查询失败:', error.response ? error.response.data : error.message);
+        });
+    },
+
 
   },
 
@@ -194,6 +223,12 @@ export default {
 
 
 <style scoped>
+/* 图片轮播样式 */
+.el-carousel__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 /* 外部容器，控制整体布局的宽度和居中 */
 .main-layout {
   max-width: 1200px;
