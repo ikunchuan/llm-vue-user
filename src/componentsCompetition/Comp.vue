@@ -46,24 +46,6 @@
           <el-date-picker v-model="searchEndDate" type="date" placeholder="选择结束日期"
             class="search-input"></el-date-picker>
         </div>
-        <!-- 参赛状态选择器 -->
-        <div class="filter-item">
-          <el-select v-model="searchStatus" placeholder="选择参赛状态" class="search-input">
-            <el-option label="全部" value=""></el-option>
-            <el-option label="报名中" value="报名中"></el-option>
-            <el-option label="进行中" value="进行中"></el-option>
-            <el-option label="已结束" value="已结束"></el-option>
-          </el-select>
-        </div>
-        <!-- 难度级别选择器 -->
-        <div class="filter-item">
-          <el-select v-model="searchLevel" placeholder="选择难度级别" class="search-input">
-            <el-option label="全部" value=""></el-option>
-            <el-option label="初级" value="初级"></el-option>
-            <el-option label="中级" value="中级"></el-option>
-            <el-option label="高级" value="高级"></el-option>
-          </el-select>
-        </div>
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item search-button-item">
@@ -508,9 +490,10 @@ body {
   /* 水平居中 */
   align-items: center;
   /* 垂直居中 */
+  justify-content: space-evenly;
   width: 100%;
   /* 占满整个宽度 */
-  padding: 20px 0;
+  padding: 25px 0;
   /* 增加上下内边距 */
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -527,12 +510,12 @@ body {
   /* 设置元素之间的间距 */
   justify-content: center;
   /* 水平居中 */
-  max-width: 800px;
+  max-width: 1000px;
   /* 限制最大宽度 */
 }
 
 .search-button-item {
-  margin-right: 25px;
+  margin-right: 10px;
   /* 将搜索按钮推到最右边 */
 }
 
