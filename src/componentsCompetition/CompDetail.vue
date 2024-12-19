@@ -349,10 +349,10 @@ export default {
     gotoCompDetail(compId) {
       console.log('跳转到竞赛详情页面:', compId);
       this.$router.push({ name: 'CompDetail', params: { compId } });
-      this.$nextTick(() => {
-        // 等到 Vue 完成路由跳转后刷新页面
-        this.$router.go(0);
-      });
+      // this.$nextTick(() => {
+      //   // 等到 Vue 完成路由跳转后刷新页面
+      //   this.$router.go(0);
+      // });
     },
 
     //跳转到帖子详情页
