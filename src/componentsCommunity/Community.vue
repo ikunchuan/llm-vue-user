@@ -25,17 +25,12 @@
                         <el-image style="width: 300px; height: 100px" :src="logoImage" fit="cover" />
 
                     </div> -->
-                    <el-carousel
-    height="260px"
-    direction="vertical"
-    motion-blur
-    :autoplay="false"
-  >
-  
-    <el-carousel-item v-for="(image, index) in images" :key="index">
-      <img :src="image" alt="carousel image"class="carousel-image" />
-    </el-carousel-item>
-  </el-carousel>
+                    <el-carousel height="260px" direction="vertical" motion-blur :autoplay="false">
+
+                        <el-carousel-item v-for="(image, index) in images" :key="index">
+                            <img :src="image" alt="carousel image" class="carousel-image" />
+                        </el-carousel-item>
+                    </el-carousel>
 
 
                     <!-- 搜索与分类筛选 -->
@@ -60,8 +55,10 @@
                         <el-card v-for="(item, index) in filteredContentItems" :key="index" shadow="hover"
                             class="post-card" @click="navigateToPostDetail(item)">
                             <div class="post-content">
-                                <!-- 左侧标签 -->
-                                <el-tag type="success" class="post-tag">{{ item.communityName }}</el-tag>
+                                <div class="post-header">
+                                    <!-- 左侧标签 -->
+                                    <el-tag type="success" class="post-tag">{{ item.communityName }}</el-tag>
+                                </div>
 
                                 <!-- 帖子标题 -->
                                 <h3 class="post-title">{{ item.postTitle }}</h3>
@@ -71,15 +68,12 @@
 
                                 <!-- 帖子互动信息 -->
                                 <div class="post-info">
-                                    <div class="post-info">
-                                        <span title="点赞数"><i class="el-icon-thumb" />👍 {{ item.likeCount || 0 }}</span>
-                                        <span title="收藏数"><i class="el-icon-star-off" />🌟 {{ item.favoriteCount ||
-                                            0 }}</span>
-                                        <span title="评论数"><i class="el-icon-chat-line-round" />💬 {{ item.commentCount
-                                            || 0 }}</span>
-                                        <span title="浏览量"><i class="el-icon-view" />👁️ {{ item.viewCount || 0 }}</span>
-                                    </div>
-
+                                    <span title="点赞数"><i class="el-icon-thumb" />👍 {{ item.likeCount || 0 }}</span>
+                                    <span title="收藏数"><i class="el-icon-star-off" />🌟 {{ item.favoriteCount || 0
+                                        }}</span>
+                                    <span title="评论数"><i class="el-icon-chat-line-round" />💬 {{ item.commentCount || 0
+                                        }}</span>
+                                    <span title="浏览量"><i class="el-icon-view" />👁️ {{ item.viewCount || 0 }}</span>
                                 </div>
                             </div>
                         </el-card>
@@ -182,7 +176,7 @@
 </template>
 
 <script>
-  import image54 from "../assets/img/54.png";
+import image54 from "../assets/img/54.png";
 import image55 from "../assets/img/55.png";
 import image56 from "../assets/img/56.png";
 
@@ -192,7 +186,7 @@ export default {
     name: "CompetitionCommunity",
     data() {
         return {
-            images: [image54, image55,image56],
+            images: [image54, image55, image56],
 
             guessLikeItems: [ // 猜你喜欢的内容
                 { title: "前端开发学习指南" },
@@ -485,29 +479,31 @@ export default {
 </script>
 
 <style scoped>
-.carousel-image{
+.carousel-image {
     width: 100%;
     height: 260px;
 }
+
 .demonstration {
-  color: var(--el-text-color-secondary);
+    color: var(--el-text-color-secondary);
 }
 
 .el-carousel__item h3 {
-  color: #475669;
-  opacity: 0.75;
-  line-height: 200px;
-  margin: 0;
-  text-align: center;
+    color: #475669;
+    opacity: 0.75;
+    line-height: 200px;
+    margin: 0;
+    text-align: center;
 }
 
 .el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
+    background-color: #99a9bf;
 }
 
 .el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
+    background-color: #d3dce6;
 }
+
 /* 页面整体布局 */
 .main-page {
     font-size: 14px;
@@ -582,6 +578,12 @@ export default {
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
+.post-header {
+    display: flex;
+    justify-content: flex-end;
+    /* 使内容靠右对齐 */
+}
+
 .post-tag {
     font-size: 12px;
     color: #ffffff;
@@ -593,8 +595,8 @@ export default {
 .post-title {
     font-size: 18px;
     /* 标题字体稍微缩小 */
-    margin: 8px 0;
-    /* 减少标题上下留白 */
+    margin: 0;
+    /* 标题上下留白0 */
     font-weight: 600;
     color: #333;
     transition: color 0.3s ease;
@@ -637,7 +639,6 @@ export default {
 .post-info i {
     color: #5a67d8;
 }
-
 /* 侧边栏推荐社区 */
 /* 卡片整体样式 */
 .recommend-card,

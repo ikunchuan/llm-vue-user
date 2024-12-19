@@ -38,7 +38,9 @@
               <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
                 @click="navigateToPostDetail(post.postId)">
                 <div class="post-content">
-                  <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
+                  <div class="post-header">
+                    <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
+                  </div>
                   <h3 class="post-title">{{ post.postTitle }}</h3>
                   <p class="post-summary">{{ stripHtmlTags(post.postContent) }}</p>
                 </div>
@@ -365,6 +367,11 @@ export default {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
+.post-header {
+  display: flex;
+  justify-content: flex-end;
+  /* 使内容靠右对齐 */
+}
 .post-tag {
   font-size: 12px;
   color: #ffffff;
@@ -376,8 +383,7 @@ export default {
 .post-title {
   font-size: 18px;
   /* 标题字体稍微缩小 */
-  margin: 8px 0;
-  /* 减少标题上下留白 */
+  margin: 0;
   font-weight: 600;
   color: #333;
   transition: color 0.3s ease;
