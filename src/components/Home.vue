@@ -1,19 +1,50 @@
 <template>
-  <el-container style="height: 100%;">
+  <el-container style="height: 100%">
     <el-header ref="header" class="navbar">
       <div class="navbar-container">
         <!-- 左侧 LOGO -->
         <div class="logo" @click="goToIndex">LOGO</div>
 
         <nav class="nav-menu">
-          <div class="nav-item" v-for="item in navItems" :key="item.name" @mouseenter="toggleDrawer(item)"
-            @mouseleave="toggleDrawer(item)" @click="navigate(item.path)">
+          <div
+            class="nav-item"
+            v-for="item in navItems"
+            :key="item.name"
+            @mouseenter="toggleDrawer(item)"
+            @mouseleave="toggleDrawer(item)"
+            @click="navigate(item.path)"
+          >
             <!-- 图片在左边 -->
-            <img v-if="item.name === '竞赛中心'" src="../assets/img/49.png" alt="icon" class="nav-item-icon">
-            <img v-if="item.name === '资源中心'" src="../assets/img/48.png" alt="icon" class="nav-item-icon">
-            <img v-if="item.name === '灵验知道'" src="../assets/img/47.png" alt="icon" class="nav-item-icon">
-            <img v-if="item.name === '社区'" src="../assets/img/50.png" alt="icon" class="nav-item-icon">
-            <img v-if="item.name === '个人中心'" src="../assets/img/46.png" alt="icon" class="nav-item-icon">
+            <img
+              v-if="item.name === '竞赛中心'"
+              src="../assets/img/49.png"
+              alt="icon"
+              class="nav-item-icon"
+            />
+            <img
+              v-if="item.name === '资源中心'"
+              src="../assets/img/48.png"
+              alt="icon"
+              class="nav-item-icon"
+            />
+            <img
+              v-if="item.name === '灵验知道'"
+              src="../assets/img/47.png"
+              alt="icon"
+              class="nav-item-icon"
+            />
+            <img
+              v-if="item.name === '社区'"
+              src="../assets/img/50.png"
+              alt="icon"
+              class="nav-item-icon"
+            />
+            <img
+              v-if="item.name === '个人中心'"
+              src="../assets/img/46.png"
+              alt="icon"
+              class="nav-item-icon"
+            />
             <!-- 文字在右边 -->
             <span>{{ item.name }}</span>
           </div>
@@ -21,23 +52,40 @@
 
         <!-- 右侧用户信息 -->
         <div class="user-info" @click="goToLogin">
-          <el-popover :width="55" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, 
-              rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+          <el-popover
+            :width="55"
+            popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, 
+              rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
+          >
             <template #reference>
               <!-- shape：square； border: 1px solid #007bff;-->
-              <img :src="getUserImg(userInfo.userProfilePicture)" alt="user" class="user-avatar" />
-
+              <img
+                :src="getUserImg(userInfo.userProfilePicture)"
+                alt="user"
+                class="user-avatar"
+              />
             </template>
             <template #default>
-              <div class="rich-conent" style="display: flex; gap: 16px; flex-direction: column">
-                <img :src="getUserImg(userInfo.userProfilePicture)" alt="user" class="user-avatar" />
+              <div
+                class="rich-conent"
+                style="display: flex; gap: 16px; flex-direction: column"
+              >
+                <img
+                  :src="getUserImg(userInfo.userProfilePicture)"
+                  alt="user"
+                  class="user-avatar"
+                />
 
                 <div>
-                  <p style="margin: 0; text-align: center;">{{ userName }}</p>
+                  <p style="margin: 0; text-align: center">{{ userName }}</p>
                 </div>
-                <el-divider style="margin: 0;" />
-                <p style="margin: 0; text-align: center; cursor: pointer;" @click="openOutDialog">
-                  退出登录</p>
+                <el-divider style="margin: 0" />
+                <p
+                  style="margin: 0; text-align: center; cursor: pointer"
+                  @click="openOutDialog"
+                >
+                  退出登录
+                </p>
               </div>
             </template>
           </el-popover>
@@ -47,43 +95,101 @@
         </div>
       </div>
 
-      <el-drawer v-model="isDrawerVisible" :title="activeDrawer?.name || ''" :show-close="false" size="40%"
-        direction="ttb" class="drawer" @close="toggleDrawer(null)" @mouseleave="toggleDrawer(null)" append-to-body>
+      <el-drawer
+        v-model="isDrawerVisible"
+        :title="activeDrawer?.name || ''"
+        :show-close="false"
+        size="40%"
+        direction="ttb"
+        class="drawer"
+        @close="toggleDrawer(null)"
+        @mouseleave="toggleDrawer(null)"
+        append-to-body
+      >
         <!-- append-to-body 是让组件回到body中，让z-index生效-->
         <transition name="fade">
           <div v-if="isDrawerVisible && activeDrawer">
-            <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
+            <div
+              v-if="activeDrawer?.name === '竞赛中心'"
+              class="resource-center"
+            >
               <div class="title-column">
                 <h3 class="drawer-title">竞赛中心</h3>
-                <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px;">
+                <img
+                  src="../assets/img/16.png"
+                  alt="竞赛中心图标"
+                  style="width: 45px; height: 45px"
+                />
               </div>
               <div class="content-column">
-                <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index"
-                  @click="goToCompetitionDetail(comp.competitionId)">
-                  <el-image :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" fit="cover"
-                    class="card-image"></el-image>
+                <div
+                  class="recommend-card"
+                  v-for="(comp, index) in popularCompetitions"
+                  :key="index"
+                  @click="goToCompetitionDetail(comp.competitionId)"
+                >
+                  <el-image
+                    :src="
+                      'http://localhost:10086/images/upload/' +
+                      comp.competitionImgUrl
+                    "
+                    fit="cover"
+                    class="card-image"
+                  ></el-image>
                   <div class="card-title">{{ comp.competitionName }}</div>
                 </div>
               </div>
             </div>
 
-            <div v-if="activeDrawer?.name === '资源中心'" class="resource-center">
+            <div
+              v-if="activeDrawer?.name === '资源中心'"
+              class="resource-center"
+            >
               <div class="right-column">
                 <!-- 第一列 -->
                 <div class="resource-column">
-                  <div class="resource-link" @click="navigateToPath('course')"><img src="../assets/img/72.png"
-                      alt="课程资源" style="width: 20px; height: 20px;">课程资源</div>
+                  <div class="resource-link" @click="navigateToPath('course')">
+                    <img
+                      src="../assets/img/72.png"
+                      alt="课程资源"
+                      style="width: 20px; height: 20px"
+                    />课程资源
+                  </div>
                   <h3 class="drawer-title">更多课程网站</h3>
-                  <a href="https://www.bilibili.com/" class="resource-item" target="_blank">
-                    <img src="../assets/img/65.png" alt="哔哩哔哩图标" style="width: 20px; height: 20px;">
+                  <a
+                    href="https://www.bilibili.com/"
+                    class="resource-item"
+                    target="_blank"
+                  >
+                    <img
+                      src="../assets/img/65.png"
+                      alt="哔哩哔哩图标"
+                      style="width: 20px; height: 20px"
+                    />
                     <span>哔哩哔哩 (Bilibili)</span>
                   </a>
-                  <a href="https://www.icourse163.org/" class="resource-item" target="_blank">
-                    <img src="../assets/img/66.png" alt="中国大学MOOC图标" style="width: 20px; height: 20px;">
+                  <a
+                    href="https://www.icourse163.org/"
+                    class="resource-item"
+                    target="_blank"
+                  >
+                    <img
+                      src="../assets/img/66.png"
+                      alt="中国大学MOOC图标"
+                      style="width: 20px; height: 20px"
+                    />
                     <span>中国大学MOOC</span>
                   </a>
-                  <a href="https://study.163.com/" class="resource-item" target="_blank">
-                    <img src="../assets/img/67.png" alt="网易云课堂图标" style="width: 20px; height: 20px;">
+                  <a
+                    href="https://study.163.com/"
+                    class="resource-item"
+                    target="_blank"
+                  >
+                    <img
+                      src="../assets/img/67.png"
+                      alt="网易云课堂图标"
+                      style="width: 20px; height: 20px"
+                    />
                     <span>网易云课堂</span>
                   </a>
                 </div>
@@ -91,95 +197,181 @@
                 <div class="divider"></div>
                 <!-- 第二列 -->
                 <div class="resource-column">
-                  <div class="resource-link" @click="navigateToPath('question')"><img src="../assets/img/73.png"
-                      alt="题库资源" style="width: 20px; height: 20px;">题库资源</div>
+                  <div
+                    class="resource-link"
+                    @click="navigateToPath('question')"
+                  >
+                    <img
+                      src="../assets/img/73.png"
+                      alt="题库资源"
+                      style="width: 20px; height: 20px"
+                    />题库资源
+                  </div>
                   <h3 class="drawer-title">更多题库网站</h3>
-                  <a href="https://leetcode-cn.com/" class="resource-item" target="_blank">
-                    <img src="../assets/img/68.png" alt="LeetCode图标" style="width: 20px; height: 20px;">
+                  <a
+                    href="https://leetcode-cn.com/"
+                    class="resource-item"
+                    target="_blank"
+                  >
+                    <img
+                      src="../assets/img/68.png"
+                      alt="LeetCode图标"
+                      style="width: 20px; height: 20px"
+                    />
                     <span>LeetCode (力扣)</span>
                   </a>
-                  <a href="http://www.chinauniversitymooc.org/" class="resource-item" target="_blank">
-                    <img src="../assets/img/69.png" alt="中国大学生在线图标" style="width: 20px; height: 20px;">
+                  <a
+                    href="http://www.chinauniversitymooc.org/"
+                    class="resource-item"
+                    target="_blank"
+                  >
+                    <img
+                      src="../assets/img/69.png"
+                      alt="中国大学生在线图标"
+                      style="width: 20px; height: 20px"
+                    />
                     <span>中国大学生在线</span>
                   </a>
-                  <a href="https://www.nowcoder.com/" class="resource-item" target="_blank">
-                    <img src="../assets/img/70.png" alt="牛客网图标" style="width: 20px; height: 20px;">
+                  <a
+                    href="https://www.nowcoder.com/"
+                    class="resource-item"
+                    target="_blank"
+                  >
+                    <img
+                      src="../assets/img/70.png"
+                      alt="牛客网图标"
+                      style="width: 20px; height: 20px"
+                    />
                     <span>牛客网</span>
                   </a>
                 </div>
               </div>
             </div>
 
-            <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
+            <div
+              v-if="activeDrawer?.name === '灵验知道'"
+              class="resource-center"
+            >
               <div class="title-section">
                 <h3 class="drawer-title">灵验知道</h3>
-                <p>灵验知道,以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。</p>
+                <p>
+                  灵验知道,以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。
+                </p>
               </div>
               <div class="content-section">
                 <div class="resource-box lingyan-know">
-
-                  <img src="../assets/img/71.png" alt="灵验知道图片" class="know-image">
+                  <img
+                    src="../assets/img/71.png"
+                    alt="灵验知道图片"
+                    class="know-image"
+                  />
                 </div>
               </div>
             </div>
             <div v-if="activeDrawer?.name === '社区'" class="community-section">
               <div class="community-images-text">
-                <img src="../assets/img/74.png" alt="社区图片1" class="community-image">
+                <img
+                  src="../assets/img/74.png"
+                  alt="社区图片1"
+                  class="community-image"
+                />
                 <p>创新设计官方社区</p>
                 <!-- <img src="../assets/img/75.png" alt="社区图片2" class="community-image">
               <p>这里是社区图片2的描述文本，也可以编辑大小。</p> -->
               </div>
               <div class="community-card">
                 <h3 class="drawer-title">更多竞赛社区网站</h3>
-                <a href="http://acm-icpc.org/" class="resource-item">
-                  <span><img src="../assets/img/70.png" alt="中国大学生程序设计竞赛网"
-                      style="width: 20px; height: 20px;">中国大学生程序设计竞赛网</span>
+                <a
+                  href="http://acm-icpc.org/"
+                  class="resource-item"
+                  target="_blank"
+                >
+                  <span
+                    ><img
+                      src="../assets/img/70.png"
+                      alt="中国大学生程序设计竞赛网"
+                      style="width: 20px; height: 20px"
+                    />中国大学生程序设计竞赛网</span
+                  >
                 </a>
-                <a href="https://tianchi.aliyun.com/" class="resource-item">
-                  <span><img src="../assets/img/68.png" alt="阿里云天池" style="width: 20px; height: 20px;">阿里云天池</span>
+                <a
+                  href="https://tianchi.aliyun.com/"
+                  class="resource-item"
+                  target="_blank"
+                >
+                  <span
+                    ><img
+                      src="../assets/img/68.png"
+                      alt="阿里云天池"
+                      style="width: 20px; height: 20px"
+                    />阿里云天池</span
+                  >
                 </a>
               </div>
             </div>
-            
           </div>
         </transition>
       </el-drawer>
-
     </el-header>
 
-    <el-main class="main-content"
-      :style="{ marginTop: headerHeight + 'px', height: `calc(100vh - ${headerHeight}px)` }">
+    <el-main
+      class="main-content"
+      :style="{
+        marginTop: headerHeight + 'px',
+        height: `calc(100vh - ${headerHeight}px)`,
+      }"
+    >
       <router-view></router-view>
     </el-main>
   </el-container>
 </template>
 
 <script>
-
 export default {
   data() {
     return {
       courseResources: [
-        { name: '课程资源1', icon: '../assets/icons/course1.png' },
-        { name: '课程资源2', icon: '../assets/icons/course2.png' },
+        { name: "课程资源1", icon: "../assets/icons/course1.png" },
+        { name: "课程资源2", icon: "../assets/icons/course2.png" },
         // 更多课程资源...
       ],
       questionResources: [
-        { name: '题库资源1', icon: '../assets/icons/question1.png' },
-        { name: '题库资源2', icon: '../assets/icons/question2.png' },
+        { name: "题库资源1", icon: "../assets/icons/question1.png" },
+        { name: "题库资源2", icon: "../assets/icons/question2.png" },
         // 更多题库资源...
       ],
       headerHeight: 0, // 保存 el-header 高度
-      navItems: [  // 导航项
-        { name: "竞赛中心", path: "comp", drawerContent: "这里是竞赛中心的详细介绍..." },
-        { name: "资源中心", path: "course", drawerContent: "这里是资源中心的详细介绍..." },
-        { name: "灵验知道", path: "lingyan", drawerContent: "这里是灵验知道的详细介绍..." },
-        { name: "社区", path: "community", drawerContent: "这里是社区的详细介绍..." },
-        { name: "个人中心", path: "me", drawerContent: "这里是个人中心的详细介绍..." },
+      navItems: [
+        // 导航项
+        {
+          name: "竞赛中心",
+          path: "comp",
+          drawerContent: "这里是竞赛中心的详细介绍...",
+        },
+        {
+          name: "资源中心",
+          path: "course",
+          drawerContent: "这里是资源中心的详细介绍...",
+        },
+        {
+          name: "灵验知道",
+          path: "lingyan",
+          drawerContent: "这里是灵验知道的详细介绍...",
+        },
+        {
+          name: "社区",
+          path: "community",
+          drawerContent: "这里是社区的详细介绍...",
+        },
+        {
+          name: "个人中心",
+          path: "me",
+          drawerContent: "这里是个人中心的详细介绍...",
+        },
       ],
       popularCompetitions: [],
       userAvatarUrl: "https://via.placeholder.com/32", //默认头像
-      userName: sessionStorage.getItem('userName') || "user",  // 从 sessionStorage 获取用户名
+      userName: sessionStorage.getItem("userName") || "user", // 从 sessionStorage 获取用户名
       activeDrawer: null,
       isDrawerVisible: false,
       isContentVisible: false,
@@ -208,69 +400,73 @@ export default {
     },
 
     getUserName() {
-      return this.userName === 'user' ? 'user' : this.userName;
+      return this.userName === "user" ? "user" : this.userName;
     },
 
     openOutDialog() {
-      this.$confirm('确定要退出登录吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // 用户点击确定，执行退出登录逻辑
-        this.handleLogOut();
-      }).catch(() => {
-        // 用户点击取消，取消退出登录操作
-        this.$message({
-          type: 'info',
-        })
+      this.$confirm("确定要退出登录吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
+        .then(() => {
+          // 用户点击确定，执行退出登录逻辑
+          this.handleLogOut();
+        })
+        .catch(() => {
+          // 用户点击取消，取消退出登录操作
+          this.$message({
+            type: "info",
+          });
+        });
     },
 
     handleLogOut() {
-      sessionStorage.removeItem('userId');
-      sessionStorage.removeItem('userName');
-      this.$router.push('/login');
+      sessionStorage.removeItem("userId");
+      sessionStorage.removeItem("userName");
+      this.$router.push("/login");
     },
     goToCompetitionDetail(competitionId) {
-      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+      this.$router.push({
+        name: "CompetitionDetail",
+        params: { competitionId },
+      });
     },
 
     goToIndex() {
-      this.$router.push({ path: '/homepage' });
+      this.$router.push({ path: "/homepage" });
     },
 
     goToLogin() {
       // 判断用户是否登录
-      if (this.userName === 'user') {
+      if (this.userName === "user") {
         // 如果用户未登录，跳转到登录页面
-        this.$router.push('/login');
+        this.$router.push("/login");
       } else {
         // 如果用户已登录，跳转到个人中心页面
-        this.$router.push('/home/me');
+        this.$router.push("/home/me");
       }
     },
 
     toggleDrawer(item) {
-    if (item) {
-      // 当点击的是“个人中心”，则不显示抽屉，而是直接跳转到个人中心页面
-      if (item.name === '个人中心') {
-        this.goToPersonalCenter(); // 假设这是跳转到个人中心的方法
+      if (item) {
+        // 当点击的是“个人中心”，则不显示抽屉，而是直接跳转到个人中心页面
+        if (item.name === "个人中心") {
+          this.goToPersonalCenter(); // 假设这是跳转到个人中心的方法
+        } else {
+          // 对于其他项，正常打开抽屉
+          this.activeDrawer = item;
+          this.isDrawerVisible = true;
+          this.fetchPopularCompetitions(); // 如果需要的话，获取热门竞赛数据
+        }
       } else {
-        // 对于其他项，正常打开抽屉
-        this.activeDrawer = item;
-        this.isDrawerVisible = true;
-        this.fetchPopularCompetitions(); // 如果需要的话，获取热门竞赛数据
+        // 等待内容淡出动画完成再关闭抽屉
+        setTimeout(() => {
+          this.isDrawerVisible = false;
+          this.activeDrawer = null;
+        }, 300); // 动画时长（与 CSS 保持一致）
       }
-    } else {
-      // 等待内容淡出动画完成再关闭抽屉
-      setTimeout(() => {
-        this.isDrawerVisible = false;
-        this.activeDrawer = null;
-      }, 300); // 动画时长（与 CSS 保持一致）
-    }
-  },
-
+    },
 
     navigateToPath(path) {
       this.$router.push({ path: `/home/${path}` });
@@ -293,61 +489,71 @@ export default {
     fetchPopularCompetitions() {
       const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
       this.$http
-        .post('comp/v1/search', competitionSearch)
-        .then(response => {
+        .post("comp/v1/search", competitionSearch)
+        .then((response) => {
           if (response.data && response.data.list) {
             // 截取前三条数据
             this.popularCompetitions = response.data.list.slice(0, 3);
           } else {
-            console.error('后端返回的数据格式不正确:', response.data);
+            console.error("后端返回的数据格式不正确:", response.data);
           }
         })
-        .catch(error => {
-          console.error('获取推荐竞赛失败:', error.response ? error.response.data : error.message);
+        .catch((error) => {
+          console.error(
+            "获取推荐竞赛失败:",
+            error.response ? error.response.data : error.message
+          );
         });
     },
 
     goToCompetitionDetail(competitionId) {
-      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+      this.$router.push({
+        name: "CompetitionDetail",
+        params: { competitionId },
+      });
     },
 
     goToCompetitionDetail(competitionId) {
-      this.$router.push({ name: 'CompetitionDetail', params: { competitionId } });
+      this.$router.push({
+        name: "CompetitionDetail",
+        params: { competitionId },
+      });
     },
-
   },
 
   mounted() {
     console.log(this.navItems); // 查看 navItems 数组的内容
     const userId = sessionStorage.userId;
 
-    if (!userId) {  //未登录重定向到注册
-     
+    if (!userId) {
+      //未登录重定向到注册
     }
 
-    this.$http.get(`/uis/v1/ui/${userId}`)
-      .then(response => {
-        console.log('User data:', response.data);
+    this.$http
+      .get(`/uis/v1/ui/${userId}`)
+      .then((response) => {
+        console.log("User data:", response.data);
         this.userInfo = response.data;
         this.loading = false;
-      }).catch(error => {
-        console.error('Error fetching user data:', error);
-      }).finally(() => {
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      })
+      .finally(() => {
         this.loading = false;
       });
 
-    this.$nextTick(() => {// 初次加载时计算高度
+    this.$nextTick(() => {
+      // 初次加载时计算高度
       this.updateHeaderHeight();
     });
 
-    window.addEventListener('resize', this.updateHeaderHeight);// 窗口变化时重新计算
+    window.addEventListener("resize", this.updateHeaderHeight); // 窗口变化时重新计算
   },
 
   beforeDestroy() {
     window.removeEventListener("resize", this.updateHeaderHeight); // 组件销毁时清除事件监听
   },
-
-
 };
 </script>
 
@@ -394,7 +600,6 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
-
 }
 
 /* LOGO 样式 */
@@ -478,7 +683,6 @@ export default {
   text-align: center;
   /* 调整这个值来改变与抽屉顶部的距离 */
   margin-top: 40px;
-
 }
 
 /* 当抽屉打开时，设置transform为0，显示抽屉 */
@@ -623,7 +827,6 @@ export default {
 .drawer-links a:hover {
   /* 鼠标悬停时改变链接颜色 */
   color: #4c51bf;
-
 }
 
 /* 社区图片样式 */
@@ -659,7 +862,6 @@ export default {
   margin-left: auto;
   /* 根据内容自动调整宽度 */
   width: fit-content;
-
 }
 
 .close-btn {
@@ -711,7 +913,6 @@ export default {
   align-items: center; /* 垂直居中 */
   justify-content: center; /* 水平居中 */
   width: 100%; /* 抽屉的总宽度 */
-
 }
 
 .title-column {
@@ -797,7 +998,6 @@ export default {
   /* 与图片区域的间隔 */
 }
 
-
 .title-section {
   margin-right: 20px; /* 与内容区的间距 */
   text-align: center; /* 文本居中 */
@@ -879,10 +1079,7 @@ export default {
   /* 字体颜色 */
   text-align: justify;
   /* 如果需要两端对齐 */
-
 }
-
-
 
 .resource-link {
   cursor: pointer;
@@ -896,7 +1093,7 @@ export default {
   font-size: 1.2em;
   /* 使字体更大 */
   transition: color 0.3s ease;
-  border: 0px solid #E0E0E0;
+  border: 0px solid #e0e0e0;
 }
 
 .recommend-card {
@@ -912,7 +1109,6 @@ export default {
   cursor: pointer;
   /* 鼠标悬停时显示手型 */
   padding: 40px;
-
 }
 
 .card-image {
