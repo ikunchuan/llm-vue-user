@@ -12,9 +12,10 @@
         <!-- 右侧按钮 -->
         <div class="header-buttons">
           <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
-          <el-button type="success" size="small" @click="joinCommunity">
+          <el-button type="success" size="small" @click="joinCommunity" :disabled="isMember">
             {{ isMember ? "已加入" : "+加入" }}
           </el-button>
+
         </div>
       </div>
     </div>
@@ -249,6 +250,13 @@ export default {
         this.$message.error('用户未登录或用户ID不存在');
         return;
       }
+
+      // 如果已经加入社区，则给出提示
+      if (this.isMember) {
+        this.$message.info('您已经是社区成员，无需再次加入');
+        return;
+      }
+
 
       // 调用后端接口发送加入社区请求
       axios.post('/ucmns/v1/ucmn', {

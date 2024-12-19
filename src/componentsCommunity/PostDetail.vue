@@ -74,10 +74,12 @@
               <p class="user-local">{{ author.userLocal }}</p>
               <p class="user-bio">{{ author.userBio || "暂无简介" }}</p>
               <div class="author-stats">
-                <p>粉丝数量: <strong>{{ author.fansCount || 0 }}</strong></p>
-                <p>发帖数量: <strong>{{ author.postCount || 0 }}</strong></p>
+                <p>粉丝数量: <strong>{{ this.fansInfo.length || 0 }}</strong></p>
+                <!-- <p>发帖数量: <strong>{{ author.postCount || 0 }}</strong></p> -->
               </div>
-              <el-button type="success" size="small" @click="followAuthor">关注作者</el-button>
+              <el-button type="success" size="small" @click="followAuthor" :disabled="isFollowing">
+                {{ isFollowing ? '已关注' : '关注作者' }}
+              </el-button>
             </div>
           </el-card>
 
@@ -85,10 +87,10 @@
           <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
             <h4 class="community-name">{{ community.communityName }}</h4>
             <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
-            <div class="community-stats">
+            <!-- <div class="community-stats">
               <p>帖子数量: <strong>{{ community.postCount || 0 }}</strong></p>
               <p>成员数量: <strong>{{ community.memberCount || 0 }}</strong></p>
-            </div>
+            </div> -->
             <el-button type="primary" size="small" @click="joinCommunity">
               {{ isMember ? "已加入社区" : "加入社区" }}
             </el-button>
@@ -126,6 +128,10 @@ export default {
       newComment: "", // 新评论内容
       sortOrder: "desc", // 排序方式（默认倒序）
       displayedComments: 3, // 控制显示的评论数量
+      isFollowing: false, // 初始状态假设为未关注
+      authorId : 0,       //该帖子作者的Id
+      currentUserId : 0,    //当前登录用户的Id
+      fansInfo : {},      //该作者的粉丝
     };
   },
   created() {
@@ -150,6 +156,91 @@ export default {
     },
   },
   methods: {
+
+    fetchAuthorDetails(userId) {          //获取该帖子作者的信息
+      this.authorId = userId
+      console.log("该作者的userId" + this.authorId)
+      // 获取作者的详细信息
+      axios.get(`/uis/v1/ui/${this.authorId}`)
+        .then((response) => {
+          console.log(response.data)
+          this.author = response.data;
+
+          //查找这个作者的粉丝数量
+          this.$http.get(`/uis/v1/user/fans/${userId}`)
+            .then(response => {
+                console.log('fans data:', response.data);
+                this.fansInfo = response.data;
+                console.log(this.fansInfo.length);
+                this.loading = false;
+            }).catch(error => {
+                console.error('Error fetching user data:', error);
+            }).finally(() => {
+                this.loading = false;
+            })
+
+
+          //查找这个作者的发帖数量
+
+          // console.log("作者的信息" + author)
+          // 获取当前用户关注的所有用户
+          this.currentUserId = sessionStorage.getItem("userId")
+          axios.get(`uis/v1/user/follower/${this.currentUserId}`)
+            .then((followerResponse) => {
+              // 检查是否已关注
+              const followers = followerResponse.data;
+              console.log("当前用户关注的人" + followers)
+              this.isFollowing = followers.some(follower => follower.userId === this.author.userId);
+
+              console.log('当前用户关注的用户列表:', followers);
+              console.log('是否已关注当前作者:', this.isFollowing);
+            })
+            .catch((error) => {
+              console.error("获取关注的用户失败:", error);
+            });
+        })
+        
+    },
+
+
+    //关注该作者的方法
+    followAuthor() {
+      // 获取当前用户ID
+      const currentUserId = sessionStorage.getItem('userId');
+      console.log(currentUserId)
+      if (!currentUserId) {
+        this.$message.error('用户未登录');
+        return;
+      }
+      // 获取作者的ID
+      // const authorId = this.author.userId;
+      // 检查是否已关注，假设服务器接口返回 isFollowing 来表示当前用户是否已经关注了该作者
+      if (this.isFollowing) {
+        this.$message.warning('你已经关注了该作者');
+        return;
+      }
+      // 调用后端接口进行关注操作
+      axios.get('/uis/v1/user/follow', {
+        params: {
+          userId: currentUserId,
+          followeeUserId: this.authorId
+        }
+      })
+      .then(response => {
+        if (response.data === 1) {  // 假设后端返回1表示成功
+          this.$message.success('关注成功');
+          this.isFollowing = true; // 更新关注状态
+        } else {
+          this.$message.error('关注失败');
+        }
+      })
+      .catch(error => {
+        console.error('关注操作失败:', error);
+        this.$message.error('关注操作失败');
+      });
+    },
+
+
     fetchPostDetails() {
       const postId = this.$route.params.postId;
       console.log("帖子ID:", postId);
@@ -161,9 +252,9 @@ export default {
           this.fetchCommunityDetails(this.post.communityId);
           this.getPostCounts(postId); // 获取帖子统计信息
         })
-        .catch((error) => {
-          console.error("获取帖子详情失败:", error);
-        });
+        // .catch((error) => {
+        //   console.error("获取帖子详情失败:", error);
+        // });
     },
     // 获取帖子的点赞数、评论数和收藏数
     getPostCounts(postId) {
@@ -184,15 +275,15 @@ export default {
     },
 
 
-    fetchAuthorDetails(userId) {
-      axios.get(`/uis/v1/ui/${userId}`)
-        .then((response) => {
-          this.author = response.data;
-        })
-        .catch((error) => {
-          console.error("获取作者信息失败:", error);
-        });
-    },
+    // fetchAuthorDetails(userId) {
+    //   axios.get(`/uis/v1/ui/${userId}`)
+    //     .then((response) => {
+    //       this.author = response.data;
+    //     })
+    //     .catch((error) => {
+    //       console.error("获取作者信息失败:", error);
+    //     });
+    // },
     fetchCommunityDetails(communityId) {
       axios.get(`/v1/cmns/cmn/${communityId}`)
         .then((response) => {
