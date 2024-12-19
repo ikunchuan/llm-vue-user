@@ -34,7 +34,7 @@
         <!-- <el-tab-pane label="介绍" name="intro">
           <p>{{ course.fullDescription }}</p>
         </el-tab-pane> -->
-        <el-tab-pane label="目录">
+        <el-tab-pane label="目录" name="category">
           <div class="card-container">
             <div class="card" v-for="(card, index) in chapterDetail" :key="index">
               <div class="card-info">{{ card.chapterName }}</div>
@@ -107,7 +107,7 @@ export default {
   },
   data() {
     return {
-      activeTab: 'intro',
+      activeTab: 'category',
       courseDetail: {}, // 存储课程详情数据
       chapterDetail: [],//存储章节详情数据
       loading: true,        // 加载状态

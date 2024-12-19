@@ -93,7 +93,7 @@ export default {
   name: "Navbar",
   data() {
     return {
-      
+
       iconCategories: [
         { id: 1, src: '../assets/img/1.png' },
         { id: 2, src: '../assets/img/2.png' },
@@ -188,7 +188,18 @@ export default {
         });
     },
     goToDetail(courseId) {
-      // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
+      // 使用路由跳转到CourseDetail页面，并传递ID作为参数
+      const userId = sessionStorage.userId
+
+      this.$http.get('crs/course/view', {
+        params: {
+          userId: userId,
+          courseId: courseId,
+        }
+      })
+        .then(response => {
+          console.log("添加浏览数据成", response.data)
+        });
       this.$router.push({ name: 'CourseDetail', params: { courseId: courseId } });
     },
     searchCourses() {
@@ -229,6 +240,7 @@ export default {
   height: 100%;
   object-fit: cover;
 }
+
 /* 外部容器，控制整体布局的宽度和居中 */
 .main-layout {
   max-width: 1200px;
