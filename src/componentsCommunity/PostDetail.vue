@@ -20,16 +20,16 @@
             <div class="post-content" v-html="post.postContent"></div>
           </el-card>
 
+
           <!-- 评论部分 -->
           <div class="comment-section">
             <h3 class="section-title">评论区</h3>
 
             <!-- 排序选项 -->
             <div class="comment-actions">
-              <el-select v-model="sortOrder" placeholder="排序方式" size="mini" @change="sortComments">
-                <el-option label="按时间正序" value="asc"></el-option>
-                <el-option label="按时间倒序" value="desc"></el-option>
-              </el-select>
+              <el-button type="text" size="mini" @click="sortComments('asc')">正序</el-button>
+              <span>/</span>
+              <el-button type="text" size="mini" @click="sortComments('desc')">倒序</el-button>
             </div>
 
             <!-- 添加评论 -->
@@ -58,9 +58,7 @@
             <div v-if="comments.length > displayedComments" class="more-comments">
               <el-button type="text" @click="displayAllComments">显示更多</el-button>
             </div>
-
           </div>
-
 
         </el-col>
 
@@ -70,30 +68,44 @@
           <el-card class="user-info-card" shadow="hover">
             <div class="user-info">
               <el-avatar :src="author.avatar" size="large" />
-              <h3 class="user-name">{{ author.userName }}</h3>
-              <p class="user-local">{{ author.userLocal }}</p>
-              <p class="user-bio">{{ author.userBio || "暂无简介" }}</p>
-              <div class="author-stats">
-                <p>粉丝数量: <strong>{{ this.fansInfo.length || 0 }}</strong></p>
-                <!-- <p>发帖数量: <strong>{{ author.postCount || 0 }}</strong></p> -->
+              <div class="action-buttons">
+                <el-button type="success" size="small" @click="followAuthor" :disabled="isFollowing">
+                  {{ isFollowing ? '已关注' : '关注作者' }}
+                </el-button>
               </div>
-              <el-button type="success" size="small" @click="followAuthor" :disabled="isFollowing">
-                {{ isFollowing ? '已关注' : '关注作者' }}
-              </el-button>
+              <h3 class="user-name">{{ author.userName }}</h3>
+
+              <p class="user-bio">{{ author.userBio || "暂无简介" }}</p>
+
+              <el-row justify="space-evenly" class="follow-fans">
+                <el-col :span="50" class="pointer">
+                  <el-space direction="horizonal" size="2">
+                    <div class="stat-text">粉丝</div>&nbsp;
+                    <div class="stat-number">{{ this.fansInfo.length || 0 }}</div>
+                  </el-space>
+                </el-col>&nbsp;
+                <el-col :span="50" class="pointer">
+                  <el-space direction="horizonal" size="2">
+                    <div class="stat-text">发帖数</div>&nbsp;
+                    <div class="stat-number">{{ author.postCount || 0 }}</div>
+                  </el-space>
+                </el-col>
+              </el-row>
+
             </div>
           </el-card>
 
           <!-- 社区信息模块 -->
-          <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
-            <h4 class="community-name">{{ community.communityName }}</h4>
-            <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
-            <!-- <div class="community-stats">
-              <p>帖子数量: <strong>{{ community.postCount || 0 }}</strong></p>
-              <p>成员数量: <strong>{{ community.memberCount || 0 }}</strong></p>
-            </div> -->
-            <el-button type="primary" size="small" @click="joinCommunity">
-              {{ isMember ? "已加入社区" : "加入社区" }}
-            </el-button>
+          <el-card class="community-info-card" shadow="hover">
+            <div class="community-info">
+              <h4 class="community-name">{{ community.communityName }}</h4>
+              <div class="action-buttons">
+                <el-button type="primary" size="small" @click="joinCommunity">
+                  {{ isMember ? "已加入社区" : "加入社区" }}
+                </el-button>
+              </div>
+              <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
+            </div>
           </el-card>
 
           <!-- 点赞按钮 -->
@@ -155,27 +167,31 @@ export default {
   created() {
     this.fetchPostDetails();
     this.fetchComments();
-
   },
 
   computed: {
+    // 根据搜索关键词过滤帖子列表
+    filteredContentItems() {
+      if (!this.searchQuery) return this.contentItems;
+      return this.contentItems.filter((item) =>
+        item.postTitle ? item.postTitle.includes(this.searchQuery) : false
+      );
+    },
+    // 添加一个计算属性，用于根据排序方式排序帖子
     sortedComments() {
-      const sorted = this.comments.slice().sort((a, b) => {
+      if (!this.comments.length) return []; // 确保 comments 已定义
+      return this.comments.slice().sort((a, b) => {
         const timeA = new Date(a.createdTime).getTime();
         const timeB = new Date(b.createdTime).getTime();
         return this.sortOrder === "asc" ? timeA - timeB : timeB - timeA;
       });
-      console.log("排序后的评论:", sorted);
-      return sorted;
     },
     visibleComments() {
-      const visible = this.sortedComments.slice(0, this.displayedComments);
-      console.log("当前显示的评论:", visible);
-      return visible;
+      const sorted = this.sortedComments; // 使用 sortedComments 计算属性
+      console.log("当前显示的评论:", sorted);
+      return sorted.slice(0, this.displayedComments);
     },
   },
-
-
   methods: {
 
     //用户点赞帖子
@@ -194,7 +210,7 @@ export default {
           if (response.data === 1) {
             this.$message.success('点赞成功');
 
-          } else {
+      } else {
             this.$message.error('点赞失败');
           }
         })
@@ -281,7 +297,11 @@ export default {
             }).finally(() => {
               this.loading = false;
             })
+
+
           //查找这个作者的发帖数量
+
+          // console.log("作者的信息" + author)
           // 获取当前用户关注的所有用户
           this.currentUserId = sessionStorage.getItem("userId")
           axios.get(`uis/v1/user/follower/${this.currentUserId}`)
@@ -293,9 +313,9 @@ export default {
               console.log('当前用户关注的用户列表:', followers);
               console.log('是否已关注当前作者:', this.isFollowing);
             })
-          // .catch((error) => {
-          //   console.error("获取关注的用户失败:", error);
-          // });
+            .catch((error) => {
+              console.error("获取关注的用户失败:", error);
+            });
         })
 
     },
@@ -310,6 +330,8 @@ export default {
         this.$message.error('用户未登录');
         return;
       }
+      // 获取作者的ID
+      // const authorId = this.author.userId;
       // 检查是否已关注，假设服务器接口返回 isFollowing 来表示当前用户是否已经关注了该作者
       if (this.isFollowing) {
         this.$message.warning('你已经关注了该作者');
@@ -540,10 +562,16 @@ export default {
   margin-top: 20px;
 }
 
-/* 样式调整 */
+/* 排序选项 */
 .comment-actions {
+  display: flex;
+  justify-content: flex-end;
   margin-bottom: 10px;
-  /* 调整按钮与评论列表的间距 */
+}
+
+.comment-actions .el-button {
+  margin-left: 10px;
+  /* 为按钮之间添加间隔 */
 }
 
 .el-select.el-input--mini {
@@ -609,5 +637,104 @@ export default {
 .more-comments {
   margin-top: 10px;
   text-align: center;
+}
+
+/* 美化按钮 */
+.action-buttons .el-button--success {
+  background-color: #4CAF50;
+  /* 绿色背景 */
+  border-color: #4CAF50;
+  /* 绿色边框 */
+  color: white;
+  /* 白色文字 */
+  border-radius: 20px;
+  /* 圆形按钮 */
+  text-transform: uppercase;
+  /* 首字母大写 */
+  font-weight: bold;
+  /* 加粗字体 */
+  letter-spacing: 1px;
+  /* 字母间距 */
+  transition: background-color 0.3s ease;
+  /* 过渡效果 */
+}
+
+.action-buttons .el-button--success:hover {
+  background-color: #45a049;
+  /* 深绿色背景，用于hover效果 */
+}
+
+.action-buttons .el-button--success:disabled {
+  background-color: #c0c4cc;
+  /* 灰色背景，用于禁用状态 */
+  border-color: #c0c4cc;
+  /* 灰色边框，用于禁用状态 */
+}
+
+/* 作者信息布局 */
+.user-info {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.user-info .action-buttons {
+  margin-top: auto;
+  /* 将按钮推到底部 */
+  display: flex;
+  justify-content: flex-end;
+  /* 使按钮靠右对齐 */
+  width: 100%;
+  /* 使容器占满整个宽度 */
+}
+
+/* 社区信息布局 */
+.community-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.community-info .action-buttons {
+  margin-top: auto;
+  /* 将按钮推到底部 */
+  display: flex;
+  justify-content: flex-end;
+  /* 使按钮靠右对齐 */
+  width: 100%;
+  /* 使容器占满整个宽度 */
+}
+
+/* 美化按钮 */
+.community-info .el-button--primary {
+  background-color: #409EFF;
+  /* 主题色背景 */
+  border-color: #409EFF;
+  /* 主题色边框 */
+  color: white;
+  /* 白色文字 */
+  border-radius: 20px;
+  /* 圆形按钮 */
+  text-transform: uppercase;
+  /* 首字母大写 */
+  font-weight: bold;
+  /* 加粗字体 */
+  letter-spacing: 1px;
+  /* 字母间距 */
+  transition: background-color 0.3s ease;
+  /* 过渡效果 */
+}
+
+.community-info .el-button--primary:hover {
+  background-color: #337ecc;
+  /* 深主题色背景，用于hover效果 */
+}
+
+.community-info .el-button--primary:disabled {
+  background-color: #c0c4cc;
+  /* 灰色背景，用于禁用状态 */
+  border-color: #c0c4cc;
+  /* 灰色边框，用于禁用状态 */
 }
 </style>
