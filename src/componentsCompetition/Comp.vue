@@ -54,7 +54,6 @@
     </section>
     <!-- 图标分类 -->
     <section class="icon-section">
-      <div class="icon-item">
         <div class="icon-container">
 
           <div class="icon-item">
@@ -85,9 +84,7 @@
             <el-icon class="icon"><img src="../assets/img/5.png" class="logo" @click="onIconClick(5)" /></el-icon>
             <p>语言与文化类</p>
           </div>
-
         </div>
-      </div>
     </section>
 
     <!-- 展示卡片 -->
@@ -560,16 +557,12 @@ body {
 /* 图标分类样式 */
 .icon-section {
   display: flex;
-  /* 使用 Flexbox 布局 */
   justify-content: center;
-  /* 水平居中 */
   align-items: center;
-  /* 垂直居中 */
   margin: 0px auto;
+  margin-bottom: 15px;
   max-width: 100%;
-  /* 限制宽度 */
-  padding: 2px 0px 10px 0px;
-  /* 内边距 */
+  padding: 2px 0px 15px 0px;
   background-color: #ffffff;
   /* 背景色 */
   border-radius: 10px;
@@ -590,14 +583,19 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  color: #5A67D8;
+  font-size: 12px;
+  transition: all 0.3s ease;
 }
 
 .icon-item p {
-  font-size: 12px;
-  color: #5A67D8;
-  /* 主色调 */
   font-weight: 500;
   margin: 0;
+}
+
+.icon-item:hover {
+  cursor: pointer;
+  transform: scale(1.15);
 }
 
 .icon-container {
@@ -645,7 +643,13 @@ body {
   text-align: center;
   padding: 10px;
   border-radius: 10px;
-  /* 添加圆角 */
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
 .card img {
