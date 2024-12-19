@@ -96,7 +96,7 @@
           </el-card>
 
           <!-- 社区信息模块 -->
-          <el-card class="community-info-card" shadow="hover">
+          <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
             <div class="community-info">
               <h4 class="community-name">{{ community.communityName }}</h4>
               <div class="action-buttons">
