@@ -11,14 +11,14 @@
       <div class="course-info">
         <h2 class="course-title">{{ courseDetail.courseName }}</h2>
         <p class="course-description">{{ courseDetail.courseDescription }}</p>
-        
+
         <div class="course-buttons">
           <el-button type="primary" @click="handleCollect" :disabled="isCollected">
             {{ isCollected ? '已收藏' : '收藏课程' }}
           </el-button>
           <el-button @click="onAnswerDetailClick">题目推荐</el-button>
         </div>
-        
+
         <div class="course-meta">
           <p style="padding: 2px;"><strong>用户评分:</strong> {{ courseDetail.courseRating }}</p>
           <p style="padding: 2px;"><strong>课程等级:</strong> {{ courseDetail.courseDifficultyLevel }}</p>
@@ -43,45 +43,40 @@
         </el-tab-pane>
 
         <el-tab-pane label="评价" name="reviews">
-      <!-- 显示评分 -->
-      <span>评分: {{ courseDetail.courseRating }}</span><br><br>
+          <!-- 显示评分 -->
+          <span>评分: {{ courseDetail.courseRating }}</span><br><br>
 
-      <span>评论:</span><br><br>
-      <!-- 遍历评论数据 -->
-    <div v-for="(comment, index) in courseComment" :key="comment.commentId" class="comment-item">
-      <div class="comment-header">
-        <strong>用户 {{ index + 1 }}:</strong> <!-- 从1开始自增 -->
-      </div>
-      <div class="comment-body">
-        <p>{{ comment.commentContent }}</p>
-      </div>
-      <!-- <div class="comment-footer">
+          <span>评论:</span><br><br>
+          <!-- 遍历评论数据 -->
+          <div v-for="(comment, index) in courseComment" :key="comment.commentId" class="comment-item">
+            <div class="comment-header">
+              <strong>用户 {{ index + 1 }}:</strong> <!-- 从1开始自增 -->
+            </div>
+            <div class="comment-body">
+              <p>{{ comment.commentContent }}</p>
+            </div>
+            <!-- <div class="comment-footer">
         <span>点赞数: {{ comment.courseLikes }}</span>
       </div> -->
-    </div>
-    </el-tab-pane>
+          </div>
+        </el-tab-pane>
       </el-tabs>
     </div>
 
     <div class="content-area">
       <!-- 左侧内容区，仅当章节内容加载完成且需要显示时才呈现 -->
 
-
       <!-- 右侧推荐课程区 -->
       <aside class="content-right">
         <h2>推荐课程</h2>
         <p>展示与本课程相关的推荐课程。</p>
-
         <div v-if="courseRelated && courseRelated.length > 0" class="courses-container">
           <div v-for="(course, index) in courseRelated" :key="course.courseId" class="recommended-course">
             <!-- 显示课程图片 -->
-            <el-image
-              style="width: 250px; height: 170px; border-radius: 8px; margin-bottom: 10px"
-              :src="'http://localhost:10086/images/upload/' + course.courseImgUrl"
-              fit="cover"
-              class="course-image"
-            ></el-image>
-            
+            <el-image style="width: 250px; height: 170px; border-radius: 8px; margin-bottom: 10px;cursor: pointer;"
+              :src="'http://localhost:10086/images/upload/' + course.courseImgUrl" fit="cover"
+              @click="goToCourseDetail(course.courseId)"></el-image>
+
             <p><strong>课程名称:</strong> {{ course.courseName }}</p>
             <p><strong>课程难度:</strong> {{ course.courseDifficultyLevel }}</p>
           </div>
@@ -126,46 +121,68 @@ export default {
       isCollected: false,
       // userId:'',
       // courseId:'',
-      courseComment:{},   //存储课程的评论
-      courseRelated:{},   //这个课程的相关课程
-      categoryId : '',
+      courseComment: {},   //存储课程的评论
+      courseRelated: {},   //这个课程的相关课程
+      categoryId: '',
     };
   },
   created() {
     this.fetchCourseDetail(); // 在组件创建时获取课程详情
     this.fetchChapter();
     this.getAllCourseComment();
-    
+
   },
   mounted() {
     const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
-
-
   },
   methods: {
-
-    getCourseWithCategory(){      //展示与本课程相关的课程
-      const parentId = this.courseDetail.categoryId;
-      this.$http.get(`crs/course/byParentId`,{
-        params : {parentId}
-      })
-      .then(response => {
-        if(response){
-          this.courseRelated = response.data;
-          console.log(this.courseRelated)
+    goToCourseDetail(courseId) {
+      const userId = sessionStorage.userId
+      this.$http.get('crs/course/view', {
+        params: {
+          userId: userId,
+          courseId: courseId,
         }
       })
-    },    
+        .then(response => {
+          console.log("添加浏览数据成", response.data)
+        });
+      // this.$router.push({name:'CourseDetail' , params: { courseId: courseId }});
+      this.$router.replace({ name: 'CourseDetail', params: { courseId } })
+        .then(() => {
+          // 通过修改路由跳转后，可以触发视图更新
+          this.$nextTick(() => {
+            // 强制刷新页面内容（通过改变数据或状态触发视图更新）
+            this.$router.go(0); // 强制刷新页面
+          });
+        })
+        .catch(err => {
+          console.error('跳转失败:', err);
+        });
+    },
 
-    getAllCourseComment(){      //获取当前课程的所有评论
+    getCourseWithCategory() {      //展示与本课程相关的课程
+      const parentId = this.courseDetail.categoryId;
+      this.$http.get(`crs/course/byParentId`, {
+        params: { parentId }
+      })
+        .then(response => {
+          if (response) {
+            this.courseRelated = response.data;
+            console.log(this.courseRelated)
+          }
+        })
+    },
+
+    getAllCourseComment() {      //获取当前课程的所有评论
       const courseId = this.$route.params.courseId;
       this.$http.get(`crs/course/comment/${courseId}`)
-      .then(response => {
-        if(response){
-          this.courseComment = response.data;
-          console.log(this.courseComment);
-        }
-      })
+        .then(response => {
+          if (response) {
+            this.courseComment = response.data;
+            console.log(this.courseComment);
+          }
+        })
     },
 
     handleCollect() {
@@ -218,7 +235,7 @@ export default {
           this.loading = false; // 关闭加载状态
           this.fetchBvid(courseId);  // 获取对应的 bvid
 
-          
+
         })
         .catch(error => {
           this.error = error.message; // 捕获错误信息并赋值给 error
@@ -290,41 +307,41 @@ export default {
 }
 
 .course-info {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    margin: 20px auto;
-  }
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 20px auto;
+}
 
-  .course-title {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333;
-  }
+.course-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
+}
 
-  .course-description {
-    font-size: 16px;
-    margin-bottom: 20px;
-    color: #555;
-  }
+.course-description {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #555;
+}
 
-  .course-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
+.course-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-  .course-meta p {
-    font-size: 14px;
-    color: #666;
-    margin: 5px 0;
-  }
+.course-meta p {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+}
 
-  .course-meta p strong {
-    color: #333;
-  }
+.course-meta p strong {
+  color: #333;
+}
 
 .bottom-section {
   background: #ffffff;
@@ -335,48 +352,74 @@ export default {
 
 .card-container {
   display: flex;
-  flex-direction: column; /* 垂直排列目录项 */
-  gap: 12px; /* 目录项之间的垂直间距 */
-  padding: 12px; /* 容器内边距 */
+  flex-direction: column;
+  /* 垂直排列目录项 */
+  gap: 12px;
+  /* 目录项之间的垂直间距 */
+  padding: 12px;
+  /* 容器内边距 */
 }
 
 .card {
-  background-color: #ffffff; /* 背景色 */
-  border: 1px solid #ddd; /* 边框颜色 */
-  border-radius: 6px; /* 边角圆角 */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-  padding: 10px; /* 内边距（减小） */
+  background-color: #ffffff;
+  /* 背景色 */
+  border: 1px solid #ddd;
+  /* 边框颜色 */
+  border-radius: 6px;
+  /* 边角圆角 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  /* 阴影效果 */
+  padding: 10px;
+  /* 内边距（减小） */
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease; /* 平滑过渡 */
-  font-size: 14px; /* 字体大小（减小） */
-  height: auto; /* 高度自适应内容 */
+  transition: all 0.3s ease;
+  /* 平滑过渡 */
+  font-size: 14px;
+  /* 字体大小（减小） */
+  height: auto;
+  /* 高度自适应内容 */
 }
 
 .card:hover {
-  background-color: #f5f5f5; /* 鼠标悬停时的背景颜色 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* 鼠标悬停时的阴影效果 */
+  background-color: #f5f5f5;
+  /* 鼠标悬停时的背景颜色 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* 鼠标悬停时的阴影效果 */
 }
 
 .card-info {
-  font-weight: 600; /* 字体加粗 */
-  text-align: center; /* 文字居中 */
-  color: #333; /* 字体颜色 */
+  font-weight: 600;
+  /* 字体加粗 */
+  text-align: center;
+  /* 文字居中 */
+  color: #333;
+  /* 字体颜色 */
 }
+
 .comment-item {
-  background-color: #ffffff; /* 背景色 */
-  border: 1px solid #ddd; /* 边框颜色 */
-  border-radius: 8px; /* 边角圆角 */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-  padding: 16px; /* 内边距 */
-  margin-bottom: 16px; /* 评论之间的间距 */
-  transition: all 0.3s ease; /* 平滑过渡 */
+  background-color: #ffffff;
+  /* 背景色 */
+  border: 1px solid #ddd;
+  /* 边框颜色 */
+  border-radius: 8px;
+  /* 边角圆角 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  /* 阴影效果 */
+  padding: 16px;
+  /* 内边距 */
+  margin-bottom: 16px;
+  /* 评论之间的间距 */
+  transition: all 0.3s ease;
+  /* 平滑过渡 */
 }
 
 .comment-item:hover {
-  background-color: #f9f9f9; /* 鼠标悬停时背景色 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* 鼠标悬停时阴影效果 */
+  background-color: #f9f9f9;
+  /* 鼠标悬停时背景色 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  /* 鼠标悬停时阴影效果 */
 }
 
 .comment-header {
@@ -401,18 +444,23 @@ export default {
 
 .comment-footer span {
   font-weight: 600;
-  color: #f56c6c; /* 点赞数的颜色 */
+  color: #f56c6c;
+  /* 点赞数的颜色 */
 }
-.courses-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* 控制课程之间的间距 */
-  }
 
-  .recommended-course {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* 控制内容的对齐方式 */
-    width: 250px; /* 确保每个课程块的宽度一致 */
-  }
+.courses-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  /* 控制课程之间的间距 */
+}
+
+.recommended-course {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* 控制内容的对齐方式 */
+  width: 250px;
+  /* 确保每个课程块的宽度一致 */
+}
 </style>
