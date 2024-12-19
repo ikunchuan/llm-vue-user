@@ -12,9 +12,10 @@
         <!-- 右侧按钮 -->
         <div class="header-buttons">
           <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
-          <el-button type="success" size="small" @click="joinCommunity">
+          <el-button type="success" size="small" @click="joinCommunity" :disabled="isMember">
             {{ isMember ? "已加入" : "+加入" }}
           </el-button>
+
         </div>
       </div>
     </div>
@@ -37,7 +38,9 @@
               <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
                 @click="navigateToPostDetail(post.postId)">
                 <div class="post-content">
-                  <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
+                  <div class="post-header">
+                    <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
+                  </div>
                   <h3 class="post-title">{{ post.postTitle }}</h3>
                   <p class="post-summary">{{ stripHtmlTags(post.postContent) }}</p>
                 </div>
@@ -250,6 +253,13 @@ export default {
         return;
       }
 
+      // 如果已经加入社区，则给出提示
+      if (this.isMember) {
+        this.$message.info('您已经是社区成员，无需再次加入');
+        return;
+      }
+
+
       // 调用后端接口发送加入社区请求
       axios.post('/ucmns/v1/ucmn', {
         userId: userId,
@@ -357,6 +367,11 @@ export default {
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
+.post-header {
+  display: flex;
+  justify-content: flex-end;
+  /* 使内容靠右对齐 */
+}
 .post-tag {
   font-size: 12px;
   color: #ffffff;
@@ -368,8 +383,7 @@ export default {
 .post-title {
   font-size: 18px;
   /* 标题字体稍微缩小 */
-  margin: 8px 0;
-  /* 减少标题上下留白 */
+  margin: 0;
   font-weight: 600;
   color: #333;
   transition: color 0.3s ease;

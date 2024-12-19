@@ -5,13 +5,13 @@
       <div class="history-header">课程浏览历史</div>
       <div v-for="(item, index) in sortedCourseHistory" :key="index" class="history-item">
         <div class="item-image">
-          <img :src="'http://localhost:10086/images/upload/' + item.courseImgUrl" alt="Course Image" />
+          <img :src="getImgUrl(item.courseImgUrl)" alt="Course Image" />
         </div>
         <div class="item-details">
           <div class="item-title">{{ item.courseName }}</div>
           <div class="update-time">最后浏览时间: {{ formatTime(item.updatedTime) }}</div>
         </div>
-        <el-button type="text" icon="el-icon-delete" @click="removeHistory(item.id)">删除</el-button>
+        <el-button text="true" style="font-size: larger;" v-if="1" @click="removeHistory(item.id)">×</el-button>
       </div>
     </div>
 
@@ -21,10 +21,10 @@
       <div v-for="(item, index) in sortedPostHistory" :key="index" class="history-item">
         <div class="item-details">
           <div class="item-title">{{ item.postTitle }}</div>
-          <div class="post-content">{{stripHtmlTags( item.postContent) }}</div>
+          <div class="post-content">{{ stripHtmlTags(item.postContent) }}</div>
           <div class="update-time">最后浏览时间: {{ formatTime(item.updatedTime) }}</div>
         </div>
-        <el-button type="text" icon="el-icon-delete" @click="removeHistory(item.id)">删除</el-button>
+        <el-button text="true" style="font-size: larger;" @click="removeHistory(item.id)">×</el-button>
       </div>
     </div>
 
@@ -48,6 +48,11 @@ export default {
     this.fetchHistory();
   },
   methods: {
+    getImgUrl(url) {
+      if (!url) return ''; // 返回默认图片路径或空字符串
+      return `http://localhost:10086/images/upload/${url}`;
+    },
+
     fetchHistory() {
       this.$http.get(`uis/v1/courseview/${this.userId}`)
         .then(response => {
@@ -90,14 +95,17 @@ export default {
         second: '2-digit'
       }).replace(/\//g, '-');
     },
-            stripHtmlTags(content) {
-            return content.replace(/<\/?[^>]+(>|$)/g, ""); // 使用正则表达式去除HTML标签
-        }
+
+    stripHtmlTags(content) {
+      return content.replace(/<\/?[^>]+(>|$)/g, ""); // 使用正则表达式去除HTML标签
+    }
   },
   computed: {
+
     sortedCourseHistory() {
       return this.coursehistory.sort((a, b) => new Date(b.updatedTime) - new Date(a.updatedTime));
     },
+
     sortedPostHistory() {
       return this.posthistory.sort((a, b) => new Date(b.updatedTime) - new Date(a.updatedTime));
     }
@@ -134,7 +142,8 @@ export default {
   background-color: #fff;
   border-radius: 6px;
   margin-bottom: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Reduced shadow for lightness */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  /* Reduced shadow for lightness */
   transition: background-color 0.3s;
 }
 
