@@ -95,6 +95,19 @@
               {{ isMember ? "已加入社区" : "加入社区" }}
             </el-button>
           </el-card>
+
+          <!-- 点赞按钮 -->
+          <el-button type="text" size="small" @click="likePost" :disabled="liked"
+            :icon="liked ? 'el-icon-thumb' : 'el-icon-thumb-solid'">
+            {{ liked ? '已点赞' : '点赞' }}
+          </el-button>
+
+          <!-- 收藏按钮 -->
+          <el-button type="text" size="small" @click="favoritePost" :disabled="favorited"
+            :icon="favorited ? 'el-icon-star-on' : 'el-icon-star-off'">
+            {{ favorited ? '已收藏' : '收藏' }}
+          </el-button>
+
         </el-col>
       </el-row>
     </div>
@@ -128,15 +141,21 @@ export default {
       newComment: "", // 新评论内容
       sortOrder: "desc", // 排序方式（默认倒序）
       displayedComments: 3, // 控制显示的评论数量
-      isFollowing: false, // 初始状态假设为未关注
-      authorId : 0,       //该帖子作者的Id
-      currentUserId : 0,    //当前登录用户的Id
-      fansInfo : {},      //该作者的粉丝
+      isFollowing: false,    // 初始状态假设为未关注
+      authorId: 0,       //该帖子作者的Id
+      currentUserId: 0,    //当前登录用户的Id
+      fansInfo: {},        //该作者的粉丝
+      liked: false,         // 是否点赞
+      favorited: false,     // 是否收藏
+      userFavoritePosts: {},     //当前用户收藏的所有帖子
+      userLikePosts: {},         //  当前用户喜欢的所有帖子
+
     };
   },
   created() {
     this.fetchPostDetails();
     this.fetchComments();
+
   },
 
   computed: {
@@ -155,9 +174,94 @@ export default {
       return visible;
     },
   },
+
+
   methods: {
 
-    fetchAuthorDetails(userId) {          //获取该帖子作者的信息
+    //用户点赞帖子
+    likePost() {
+      this.liked = true
+      const postId = this.$route.params.postId;
+      const userId = this.currentUserId;
+      // 调用点赞接口
+      axios.get('/v1/posts/post/like', {
+        params: {
+          userId: userId,
+          postId: postId
+        }
+      })
+        .then(response => {
+          if (response.data === 1) {
+            this.$message.success('点赞成功');
+
+          } else {
+            this.$message.error('点赞失败');
+          }
+        })
+        .catch(error => {
+          console.error('点赞失败:', error);
+          this.$message.error('点赞失败');
+        });
+    },
+
+
+    //用户收藏帖子
+    favoritePost() {
+      this.favorited = true;
+      const postId = this.$route.params.postId;
+      const userId = this.currentUserId;
+      // 调用收藏接口
+      axios.get('/v1/posts/post/favorite', {
+        params: {
+          userId: userId,
+          postId: postId
+        }
+      })
+        .then(response => {
+          if (response.data === 1) {
+            this.$message.success('收藏成功');
+            this.isFavorited = true; // 更新收藏状态
+            // this.post.favoriteCount += 1; // 更新收藏数量
+          } else {
+            this.$message.error('收藏失败');
+          }
+        })
+        .catch(error => {
+          console.error('收藏失败:', error);
+          this.$message.error('收藏失败');
+        });
+    },
+
+
+    // 获取当前用户的收藏帖子列表和喜欢帖子列表
+    fetchUserFavoriteLikePosts() {
+      this.currentUserId = sessionStorage.getItem("userId")
+      const userId = this.currentUserId; // 获取当前用户的ID
+
+      axios.get(`/v1/posts/userpost/${userId}`)
+        .then(response => {
+          this.userFavoritePosts = response.data; // 存储返回的收藏帖子
+          console.log('用户收藏的帖子:', this.userFavoritePosts);
+        })
+        .catch(error => {
+          console.error('获取用户收藏帖子失败:', error);
+        });
+
+      axios.get(`/v1/posts/userlike/${userId}`)
+        .then(response => {
+          this.userLikePosts = response.data; // 存储返回的喜欢帖子
+          console.log('用户点赞的帖子:', this.userLikePosts);
+        })
+        .catch(error => {
+          console.error('获取用户收藏帖子失败:', error);
+        });
+
+
+    },
+
+
+    //获取该帖子作者的信息
+    fetchAuthorDetails(userId) {
       this.authorId = userId
       console.log("该作者的userId" + this.authorId)
       // 获取作者的详细信息
@@ -165,24 +269,19 @@ export default {
         .then((response) => {
           console.log(response.data)
           this.author = response.data;
-
           //查找这个作者的粉丝数量
           this.$http.get(`/uis/v1/user/fans/${userId}`)
             .then(response => {
-                console.log('fans data:', response.data);
-                this.fansInfo = response.data;
-                console.log(this.fansInfo.length);
-                this.loading = false;
+              console.log('fans data:', response.data);
+              this.fansInfo = response.data;
+              console.log(this.fansInfo.length);
+              this.loading = false;
             }).catch(error => {
-                console.error('Error fetching user data:', error);
+              console.error('Error fetching user data:', error);
             }).finally(() => {
-                this.loading = false;
+              this.loading = false;
             })
-
-
           //查找这个作者的发帖数量
-
-          // console.log("作者的信息" + author)
           // 获取当前用户关注的所有用户
           this.currentUserId = sessionStorage.getItem("userId")
           axios.get(`uis/v1/user/follower/${this.currentUserId}`)
@@ -190,16 +289,15 @@ export default {
               // 检查是否已关注
               const followers = followerResponse.data;
               console.log("当前用户关注的人" + followers)
-              this.isFollowing = followers.some(follower => follower.userId === this.author.userId);
-
+              this.isFollowing = Array.isArray(followers) && followers.some(follower => follower.userId === this.author.userId);
               console.log('当前用户关注的用户列表:', followers);
               console.log('是否已关注当前作者:', this.isFollowing);
             })
-            .catch((error) => {
-              console.error("获取关注的用户失败:", error);
-            });
+          // .catch((error) => {
+          //   console.error("获取关注的用户失败:", error);
+          // });
         })
-        
+
     },
 
 
@@ -212,8 +310,6 @@ export default {
         this.$message.error('用户未登录');
         return;
       }
-      // 获取作者的ID
-      // const authorId = this.author.userId;
       // 检查是否已关注，假设服务器接口返回 isFollowing 来表示当前用户是否已经关注了该作者
       if (this.isFollowing) {
         this.$message.warning('你已经关注了该作者');
@@ -226,21 +322,22 @@ export default {
           followeeUserId: this.authorId
         }
       })
-      .then(response => {
-        if (response.data === 1) {  // 假设后端返回1表示成功
-          this.$message.success('关注成功');
-          this.isFollowing = true; // 更新关注状态
-        } else {
-          this.$message.error('关注失败');
-        }
-      })
-      .catch(error => {
-        console.error('关注操作失败:', error);
-        this.$message.error('关注操作失败');
-      });
+        .then(response => {
+          if (response.data === 1) {  // 假设后端返回1表示成功
+            this.$message.success('关注成功');
+            this.isFollowing = true; // 更新关注状态
+          } else {
+            this.$message.error('关注失败');
+          }
+        })
+        .catch(error => {
+          console.error('关注操作失败:', error);
+          this.$message.error('关注操作失败');
+        });
     },
 
 
+    //查看帖子的详情
     fetchPostDetails() {
       const postId = this.$route.params.postId;
       console.log("帖子ID:", postId);
@@ -248,14 +345,28 @@ export default {
         .then((response) => {
           console.log("帖子详情:", response.data);
           this.post = response.data;
+
+          this.fetchUserFavoriteLikePosts();
+
+          // 判断是否点赞过
+          this.liked = Array.isArray(this.userLikePosts) && this.userLikePosts.some(post => post.postId === postId);
+          // 判断是否收藏过
+          this.favorited = Array.isArray(this.userFavoritePosts) && this.userFavoritePosts.some(post => post.postId === postId);
+          console.log(this.liked, this.favorited)
+
+
           this.fetchAuthorDetails(this.post.userId);
           this.fetchCommunityDetails(this.post.communityId);
           this.getPostCounts(postId); // 获取帖子统计信息
+
+
         })
-        // .catch((error) => {
-        //   console.error("获取帖子详情失败:", error);
-        // });
+      // .catch((error) => {
+      //   console.error("获取帖子详情失败:", error);
+      // });
     },
+
+
     // 获取帖子的点赞数、评论数和收藏数
     getPostCounts(postId) {
       axios.get(`v1/posts/post/allcount/${postId}`)
@@ -337,10 +448,13 @@ export default {
       }
 
       // 调用后端接口发送评论
-      axios.post('/post/usercomment', {
-        postId: postId,
-        userId: userId,
-        comment: commentContent
+      axios.get('v1/posts/post/usercomment', {
+        params: {
+          postId: postId,
+          userId: userId,
+          comment: commentContent
+        }
+
       })
         .then(response => {
           // 评论成功后的处理
