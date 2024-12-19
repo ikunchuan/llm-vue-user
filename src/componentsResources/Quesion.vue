@@ -20,16 +20,16 @@
                       <el-tag size="small">总题数: {{ card.totalCount }}</el-tag>
                       <el-tag type="success" size="small">已做: {{ card.finishedCount }}</el-tag>
                     </div>
-                    <div class="question-history">
+                   <!-- <div class="question-history">
                       <div class="stats-row">
                         <span class="stats-label">浏览次数:</span>
                         <span class="stats-value">{{ card.viewCount || 0 }}</span>
                       </div>
-                      <!-- <div class="stats-row">
+                       <div class="stats-row">
                         <span class="stats-label">解答人数:</span>
                         <span class="stats-value">{{ card.solvedCount || 0 }}</span>
-                      </div> -->
-                    </div>
+                      </div>
+                    </div>-->
                     <div class="related-contests">
                       <span class="contest-title">相关竞赛:</span>
                       <el-tag v-for="(contest, index) in card.relatedContests" :key="index" type="warning" size="small"
@@ -83,7 +83,7 @@
                   <div class="carousel-item" v-if="item.relatedContests && item.relatedContests.length"
                     @click="goToComp(item.relatedContests[0].compId)">
 
-                    <img style=" height: 150px;" :src="getImageUrl(item.relatedContests[0]?.url)"
+                    <img style=" height: 150px;width: 280px;" :src="getImageUrl(item.relatedContests[0]?.url)"
                       :alt="item.relatedContests[0]?.name || '竞赛图片'" />
                   </div>
                   <div class="carousel-item" v-else>
@@ -105,7 +105,7 @@
                 <el-tooltip :content="item.relatedCourses[0]?.name || '暂无名称'" placement="top" effect="light">
                   <div class="carousel-item" v-if="item.relatedCourses && item.relatedCourses.length"
                     @click="goToCourse(item.relatedCourses[1].courseId)">
-                    <img style=" height: 150px;" :src="getImageUrl(item.relatedCourses[0]?.url)"
+                    <img style=" height: 150px;width: 300px;;" :src="getImageUrl(item.relatedCourses[0]?.url)"
                       :alt="item.relatedCourses[0]?.name || '课程图片'" />
                   </div>
                   <div class="image-overlay">
@@ -363,6 +363,7 @@ export default {
   margin-bottom: 15px;
   transition: all 0.3s ease;
   cursor: pointer;
+  height:210px;
 }
 
 .question-card:hover {
@@ -431,7 +432,7 @@ export default {
   font-weight: 500;
   text-align: center;
   cursor: pointer;
-  padding: 20px;
+  padding: 0px 10px 0px 10px;
   font-size: 14px;
 }
 

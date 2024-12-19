@@ -43,7 +43,7 @@
           <h3>查看竞赛相关帖子</h3>
           <ul>
             <li v-for="post in relatedPosts" :key="post.id" class="list-item">
-              <a @click="navigateToPostDetail(post.postId)" class="title">{{ post.postTitle }}</a>
+              <a @click="viewPost(post.id)" class="title">{{ post.postTitle }}</a>
               <p class="date">发布日期：{{ formatDateShort(post.updatedTime) }}</p>
             </li>
           </ul>
@@ -66,18 +66,13 @@
 
 
               <li>
-                <a class="hover-effect recommended-course-link" @click="goToCourseDetailb">{{ recommendedCourseNameb ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailc">{{ recommendedCourseNamec ||
-                  1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailb">{{ recommendedCourseNameb || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailc">{{ recommendedCourseNamec || 1 }}</a>
               </li>
               <li>
-                <a class="recommended-course-link" @click="goToCourseDetaild">{{ recommendedCourseNamed ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetaile">{{ recommendedCourseNamee ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailf">{{ recommendedCourseNamef ||
-                  1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaild">{{ recommendedCourseNamed || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaile">{{ recommendedCourseNamee || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailf">{{ recommendedCourseNamef || 1 }}</a>
               </li>
             </ul>
           </div>
@@ -91,17 +86,13 @@
 
               <li>
 
-                <a class="recommended-course-link" @click="goToCourseDetail">{{ recommendedCourseName || 1
-                  }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetaili">{{ recommendedCourseNamei ||
-                  1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetail">{{ recommendedCourseName || 1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetaili">{{ recommendedCourseNamei ||1  }}</a>
               </li>
 
               <li>
-                <a class="recommended-course-link" @click="goToCourseDetailg">{{ recommendedCourseNameg ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailh">{{ recommendedCourseNameh ||
-                  1 }}</a>
+                <a class="hover-effect" @click="goToCourseDetailg">{{ recommendedCourseNameg ||1  }}</a>
+                <a class="hover-effect" @click="goToCourseDetailh">{{ recommendedCourseNameh || 1 }}</a>
 
               </li>
             </ul>
@@ -122,7 +113,10 @@
           <div class="info-item">竞赛名称：<span class="info-content">{{ competitionDetail.competitionName }}</span></div>
 
           <!-- 竞赛描述 -->
-          <div class="info-item">竞赛描述：<span class="info-content">{{ competitionDetail.competitionDescription }}</span>
+          <div class="info-item">
+            <div class="info-label">竞赛描述：</div>
+            <div class="info-content">{{ competitionDetail.competitionDescription }}</div>
+         
           </div>
 
           <!-- 竞赛主办方 -->
@@ -179,6 +173,7 @@ export default {
         '5': 5,
         '6': 6,
         '24': 2,  // 竞赛ID 24 对应 课程ID 2
+        '31':5,  // 竞赛ID 24 对应 课程ID 2
         // 可以继续添加更多映射
       },
       courseMappingb: {     //上方左侧第一个
@@ -189,6 +184,7 @@ export default {
         '5': 5,
         '6': 6,
         '24': 3,  // 竞赛ID 24 对应 课程ID 2
+        '31': 25,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingc: {   //上方左侧第二个
         '1': 6,  // 竞赛ID 1 对应 课程ID 5
@@ -198,6 +194,7 @@ export default {
         '5': 6,
         '6': 7,
         '24': 4,  // 竞赛ID 24 对应 课程ID 2
+        '31': 24,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingd: {   //上方右侧第一个
         '1': 7,  // 竞赛ID 1 对应 课程ID 5
@@ -207,6 +204,7 @@ export default {
         '5': 7,
         '6': 8,
         '24': 9,  // 竞赛ID 24 对应 课程ID 2
+        '31': 16,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappinge: {    //上方右侧第二个
         '1': 8,  // 竞赛ID 1 对应 课程ID 5
@@ -216,6 +214,7 @@ export default {
         '5': 8,
         '6': 9,
         '24': 10,  // 竞赛ID 24 对应 课程ID 2
+        '31': 23,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingf: {    //上方右侧第三个
         '1': 9,  // 竞赛ID 1 对应 课程ID 5
@@ -225,6 +224,7 @@ export default {
         '5': 9,
         '6': 10,
         '24': 11,  // 竞赛ID 24 对应 课程ID 2
+        '31': 12,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingg: {//下方右侧第一个
         '1': 10,  // 竞赛ID 1 对应 课程ID 5
@@ -234,6 +234,7 @@ export default {
         '5': 10,
         '6': 11,
         '24': 12,  // 竞赛ID 24 对应 课程ID 2
+        '31': 17,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingh: {//下方右侧第二个
         '1': 11,  // 竞赛ID 1 对应 课程ID 5
@@ -243,6 +244,7 @@ export default {
         '5': 1,
         '6': 11,
         '24': 13,  // 竞赛ID 24 对应 课程ID 2
+        '31': 10,  // 竞赛ID 24 对应 课程ID 2
       },
       courseMappingi: {//下方左侧第二个
         '1': 11,  // 竞赛ID 1 对应 课程ID 5
@@ -252,6 +254,7 @@ export default {
         '5': 7,
         '6': 8,
         '24': 14,  // 竞赛ID 24 对应 课程ID 2
+        '31': 16,  // 竞赛ID 24 对应 课程ID 2
       },
 
 
@@ -316,41 +319,9 @@ export default {
     },
 
 
-    // // 跳转到竞赛详情页面
-    // gotoCompDetail(compId) {
-    //   // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-    //   console.log('跳转到竞赛详情页面:', compId);
-    //   this.$router.push({ name: 'CompDetail', params: { compId } });
-    //   this.$forceUpdate();
-    // // },
-    // // 跳转到竞赛详情页面，并通过设置一个唯一的key来强制刷新
-    // gotoCompDetail(compId) {
-    //   console.log('跳转到竞赛详情页面:', compId);
-    //   this.$router.push({ name: 'CompDetail', params: { compId }, query: { key: Date.now() } });
-    // },
-
-    // 跳转到竞赛详情页面，并强制刷新
+    // 跳转到竞赛详情页面
     gotoCompDetail(compId) {
-      console.log('跳转到竞赛详情页面:', compId);
-      this.$router.push({ name: 'CompDetail', params: { compId } });
-      this.$nextTick(() => {
-        // 等到 Vue 完成路由跳转后刷新页面
-        this.$router.go(0);
-      });
-    },
-
-    //跳转到帖子详情页
-    navigateToPostDetail(postId) {
-      console.log('跳转到帖子详情页面:', postId);
-      // 检查帖子对象是否有id属性
-      if (postId) {
-        this.$router.push({
-          name: 'PostDetail',
-          params: { postId: postId }
-        });
-      } else {
-        console.error('帖子ID不存在');
-      }
+      this.$router.push({ path: `/home/competitiondetail/${compId}` });
     },
 
     //跳转课程详情页
@@ -673,20 +644,20 @@ body {
 }
 
 .left-panel .box {
-  margin-bottom: 10px;
-  background-color: #fafafa;
-  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .left-panel .anchor-nav {
-  margin-top: 0px;
+  margin-top: 20px;
 }
 
 .left-panel .anchor-nav a {
   display: block;
-  padding: 5px 0;
+  padding: 8px 0;
   color: #7c73e6;
   /* 链接颜色统一 */
   text-decoration: none;
@@ -828,14 +799,23 @@ body {
   justify-content: space-between;
   padding: 10px;
   border-bottom: 1px solid #e0e0e0;
-  white-space: nowrap;
+  line-height: 1.5; /* 增加行高，提高阅读体验 */
+}
+
+.info-label {
+  flex-shrink: 0; /* 保持标签（如“竞赛描述：”）不缩放，始终可见 */
+  white-space: nowrap; /* 保持标签在一行显示 */
+  margin-right: 10px; /* 与内容部分保持一定间距 */
+  width: 70px;
+  
 }
 
 .info-content {
-  font-size: 14px;
-  color: #666;
+  flex-grow: 1; /* 内容部分占据剩余空间 */
+  white-space: normal; /* 允许换行 */
+  word-wrap: break-word; /* 长单词或URL可以被截断并换行 */
+  overflow-wrap: break-word; /* 确保长文本可以换行 */
 }
-
 .el-button {
   background-color: #7c73e6;
   color: #fff;
@@ -950,40 +930,16 @@ body {
   color: #fff;
 }
 
-
-/* 为所有推荐的课程链接添加默认样式 */
-.recommended-course-link {
-  display: inline-block;
-  /* 使链接占据整行 */
-  padding: 3px 8px;
-  /* 减少内边距 */
-  margin: 2px;
-  /* 减少外边距 */
-  border: 1px solid #ddd;
-  /* 添加边框而不是背景色 */
-  color: #fff200;
-  /* 文字颜色 */
-  text-decoration: none;
-  /* 去除下划线 */
-  border-radius: 4px;
-  /* 圆角边框 */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  /* 添加轻微阴影 */
-  transition: all 0.3s ease;
-  /* 平滑过渡效果 */
-  font-weight: 600;
+/* 添加悬停效果样式 */
+.hover-effect {
+  color: #fff;
+  text-decoration:
+    none;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
-/* 链接悬停时的效果 */
-.recommended-course-link:hover {
-  background-color: #0033fff8;
-  /* 悬停时的背景色，更接近白色 */
-  border-color: #4d2f2f;
-  /* 悬停时的边框颜色 */
-  color: #ffffff;
-  /* 悬停时的文字颜色 */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  /* 悬停时的阴影 */
-  cursor: pointer;
+.hover-effect:hover {
+  color: black;
+  text-decoration: underline;
 }
 </style>
