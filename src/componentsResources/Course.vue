@@ -24,7 +24,7 @@
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <el-button type="primary" v-model="searchName" @click="searchCompetitions" class="search-button">搜索</el-button>
+        <el-button type="primary" v-model="searchName" @click="searchCourses" class="search-button">搜索</el-button>
       </div>
     </section>
 
