@@ -74,15 +74,15 @@
                   <div class="resource-link" @click="navigateToPath('course')"><img src="../assets/img/72.png"
                       alt="课程资源" style="width: 20px; height: 20px;">课程资源</div>
                   <h3 class="drawer-title">更多课程网站</h3>
-                  <a href="https://www.bing.com/" class="resource-item">
+                  <a href="https://www.bilibili.com/" class="resource-item" target="_blank">
                     <img src="../assets/img/65.png" alt="哔哩哔哩图标" style="width: 20px; height: 20px;">
                     <span>哔哩哔哩 (Bilibili)</span>
                   </a>
-                  <a href="https://www.icourse163.org/" class="resource-item">
+                  <a href="https://www.icourse163.org/" class="resource-item" target="_blank">
                     <img src="../assets/img/66.png" alt="中国大学MOOC图标" style="width: 20px; height: 20px;">
                     <span>中国大学MOOC</span>
                   </a>
-                  <a href="https://study.163.com/" class="resource-item">
+                  <a href="https://study.163.com/" class="resource-item" target="_blank">
                     <img src="../assets/img/67.png" alt="网易云课堂图标" style="width: 20px; height: 20px;">
                     <span>网易云课堂</span>
                   </a>
@@ -94,15 +94,15 @@
                   <div class="resource-link" @click="navigateToPath('question')"><img src="../assets/img/73.png"
                       alt="题库资源" style="width: 20px; height: 20px;">题库资源</div>
                   <h3 class="drawer-title">更多题库网站</h3>
-                  <a href="https://leetcode-cn.com/" class="resource-item">
+                  <a href="https://leetcode-cn.com/" class="resource-item" target="_blank">
                     <img src="../assets/img/68.png" alt="LeetCode图标" style="width: 20px; height: 20px;">
                     <span>LeetCode (力扣)</span>
                   </a>
-                  <a href="http://www.chinauniversitymooc.org/" class="resource-item">
+                  <a href="http://www.chinauniversitymooc.org/" class="resource-item" target="_blank">
                     <img src="../assets/img/69.png" alt="中国大学生在线图标" style="width: 20px; height: 20px;">
                     <span>中国大学生在线</span>
                   </a>
-                  <a href="https://www.nowcoder.com/" class="resource-item">
+                  <a href="https://www.nowcoder.com/" class="resource-item" target="_blank">
                     <img src="../assets/img/70.png" alt="牛客网图标" style="width: 20px; height: 20px;">
                     <span>牛客网</span>
                   </a>
