@@ -8,12 +8,16 @@
                             <el-popover :width="300"
                                 popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
                                 <template #reference>
-                                    <el-avatar :size="80" :src="avatarUrl" style="margin-left: 10; " />
+                                    <el-avatar :size="80"
+                                        :src="'http://localhost:10086/images/upload/' + userInfo.userProfilePicture"
+                                        style="margin-left: 10; " />
                                 </template>
                                 <template #default>
                                     <div class="demo-rich-conent"
                                         style="display: flex; gap: 16px; flex-direction: column">
-                                        <el-avatar :size="80" :src="avatarUrl" style="margin-bottom: 5px" />
+                                        <el-avatar :size="80"
+                                            :src="'http://localhost:10086/images/upload/' + userInfo.userProfilePicture"
+                                            style="margin-bottom: 5px" />
                                         <div>
                                             <p style="margin: 0; font-weight: 500">
                                                 {{ userInfo.username }}
@@ -175,7 +179,72 @@
                 <el-button type="primary" @click="editProfile">确定</el-button>
             </div>
         </template>
+    </el-dialog> <!-- 编辑简介弹窗 -->
+    <el-dialog v-model="dialogFormVisible" title="简介编辑" width="500">
+        <el-form :model="form" label-position="left" label-width="80px" :rules="rules">
+            <el-row :gutter="24">
+                <el-col :span="14">
+                    <el-form-item v-show="false">
+                        <el-input v-model="form.userId" />
+                    </el-form-item>
+
+                    <el-form-item label="用户名">
+
+                        <el-input v-model="form.userName" maxlength="20" type="textarea" placeholder="请输入用户名"
+                            show-word-limit />
+                    </el-form-item>
+
+                    <el-form-item label="性别">
+                        <el-select v-model="form.userSex" placeholder="请选择性别">
+                            <el-option label="男" value="1" />
+                            <el-option label="女" value="2" />
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="年龄">
+                        <el-input v-model="form.userAge" type="number" placeholder="请选择年龄" :min="1" />
+                    </el-form-item>
+
+                    <el-form-item label="电话">
+                        <el-input v-model="form.userPhone" type="text" placeholder="请输入邮箱" />
+                    </el-form-item>
+
+                    <el-form-item label="邮箱">
+                        <el-input v-model="form.userEmail" type="email" placeholder="请输入邮箱" />
+                    </el-form-item>
+
+                    <el-form-item label="所在地">
+                        <el-input v-model="form.userLocal" maxlength="50" type="textarea" placeholder="请输入所在地"
+                            show-word-limit />
+                    </el-form-item>
+
+                    <el-form-item label="简介">
+                        <el-input v-model="form.userBio" maxlength="50" type="textarea" placeholder="请输入简介"
+                            show-word-limit />
+                    </el-form-item>
+                </el-col>
+                <el-col :span="1">
+                    <el-upload class="avatar-uploader" action="http://localhost:10086/uis/v1/upload"
+                        :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                        <img v-if="form.userProfilePicture"
+                            :src="'http://localhost:10086/images/upload/' + form.userProfilePicture" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon">
+                            <Plus />
+                        </i>
+                    </el-upload>
+                </el-col>
+            </el-row>
+
+        </el-form>
+
+        <template #footer>
+            <div>
+                <el-button @click="closeDialog">取消</el-button>
+                <el-button type="primary" @click="editProfile">确定</el-button>
+            </div>
+        </template>
     </el-dialog>
+
 
 </template>
 
@@ -183,6 +252,7 @@
 <script>
 import { h } from 'vue'
 import { ElDivider } from 'element-plus';
+import { Plus } from '@element-plus/icons-vue';
 import { RouterView } from 'vue-router';
 
 export default {
@@ -216,6 +286,12 @@ export default {
     },
 
     methods: {
+        //图片回调
+        handleAvatarSuccess() {
+            console.log(response);
+            this.form.userProfilePicture = response;
+        },
+
         goTo(itemPath) {
             this.$router.push('/home/me/' + itemPath);
         },
@@ -262,7 +338,9 @@ export default {
             }
         },
     },
-
+    components: {
+        Plus
+    },
     mounted() {
         const userId = sessionStorage.userId;
 
@@ -620,5 +698,4 @@ export default {
     margin-bottom: 16px;
     /* 模块之间的间距统一调整为 16px */
 }
-
 </style>
