@@ -465,10 +465,6 @@ export default {
     margin: 20px auto;
 }
 
-:deep(.el-card__body) {
-    height: 800px;
-
-}
 
 /* 左侧样式 */
 .profile {
@@ -479,7 +475,7 @@ export default {
 }
 
 .profile-container {
-    height: 800px;
+    height: auto;
     background: linear-gradient(to bottom, #ffffff, #f9fafb);
     border-radius: 8px;
     border: none;
@@ -572,7 +568,7 @@ export default {
 /* 右侧样式 */
 
 .right-box {
-    height: 800px;
+    height: auto;
     width: 75%;
     overflow: hidden;
 }
