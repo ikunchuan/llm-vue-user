@@ -255,11 +255,36 @@ export default {
         isCorrectId() {
             return this.catIdAndName.filter(item => item.categoryId === this.form.categoryId)[0].categoryName
         },
+
         navigateToPostDetail(item) {
-            console.log('跳转到详情页面:', item); // 检查 item 数据
-            // 跳转到 PostDetail 页面，传递 postId
             this.$router.push({ name: "PostDetail", params: { postId: item.id } });
+            console.log('跳转到详情页面:', item); // 检查 item 数据
+           
+        },      
+
+        // 点击进入帖子详情页面
+        navigateToPostDetail(item) {
+ console.log('跳转到详情页面:', item); // 检查 item 数据
+            console.log('点击的帖子ID:', item.postId);  // 确保社区ID能够正确获取
+            this.$router.push({
+                name: 'PostDetail',
+                params: {
+                    postId: item.postId,
+                }
+            });
+            const userId = sessionStorage.userId
+            // 跳转到 PostDetail 页面，传递 postId
+            this.$http.get('v1/posts/post/view',{
+                params:{
+                    userId : userId,
+                    postId :item.postId,
+                }
+            })
+            .then(response => {
+                    console.log("添加浏览数据成",response.data)
+            });
         },
+
         goToCommuSearch() {
             // 跳转到 CommuSearch 页面
             this.$router.push({ name: 'CommuSearch' });
@@ -277,17 +302,7 @@ export default {
                 }
             });
         },
-        // 点击进入帖子详情页面
-        navigateToPostDetail(item) {
-
-            console.log('点击的帖子ID:', item.postId);  // 确保社区ID能够正确获取
-            this.$router.push({
-                name: 'PostDetail',
-                params: {
-                    postId: item.postId,
-                }
-            });
-        },
+  
         // 点击标签页时触发的事件
         handleTabClick(tab) {
             console.log('Tab 数据:', tab.props.name); // 输出事件参数
