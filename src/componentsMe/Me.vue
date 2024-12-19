@@ -93,12 +93,12 @@
                     </div>
 
                     <div class="badges">
-                        <h4 class="section-title">徽章</h4>
+                        <h4 class="section-title"><img src="../assets/img/60.png" alt="解锁徽章" class="activity-icon">徽章</h4>
                         <p class="section-text">空空如也, 看看如何<a href="#" class="link">解锁徽章></a></p>
                     </div>
 
                     <div class="skills">
-                        <h4 class="section-title">技能</h4>
+                        <h4 class="section-title"><img src="../assets/img/技能树.png" alt="技能" class="activity-icon">技能</h4>
                         <p>技能树： <span>暂未开启</span>
                         </p>
                         <div class="skill-details">
