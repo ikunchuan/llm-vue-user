@@ -46,6 +46,12 @@
                   <document />
                 </el-icon>
                 <span>{{ index + 1 }}. {{ problem.questionTitle }}</span>
+
+                <!-- 如果题目已完成，显示 ✔ -->
+                <span v-if="userAnswers.find(ua => ua.questionId === problem.questionId)?.isCompleted"
+                  class="completed-icon">
+                  ✔
+                </span>
               </el-menu-item>
             </el-menu>
           </el-scrollbar>
@@ -134,32 +140,32 @@ export default {
           console.error('查询题目获取错误:', error);
         });
     },
-    // 提交答案
-    submitAnswer() {
-      const userAnswer = this.userAnswers.find(ua => ua.questionId === this.selectedQuestion.questionId);
-      if (userAnswer) {
-        // 标记为已完成
-        userAnswer.isCompleted = true;
-        userAnswer.answer = this.answer;
+    // // 提交答案
+    // submitAnswer() {
+    //   const userAnswer = this.userAnswers.find(ua => ua.questionId === this.selectedQuestion.questionId);
+    //   if (userAnswer) {
+    //     // 标记为已完成
+    //     userAnswer.isCompleted = true;
+    //     userAnswer.answer = this.answer;
 
-        // 调试输出
-        console.log(`Question ${userAnswer.questionId} isCompleted = ${userAnswer.isCompleted}`);
+    //     // 调试输出
+    //     console.log(`Question ${userAnswer.questionId} isCompleted = ${userAnswer.isCompleted}`);
 
-        // 更新已完成题目数量
-        this.completedQuestions = this.userAnswers.filter(ua => ua.isCompleted).length;
+    //     // 更新已完成题目数量
+    //     this.completedQuestions = this.userAnswers.filter(ua => ua.isCompleted).length;
 
-        // 显示反馈消息
-        if (this.answer === this.selectedQuestion.correctAnswer) {
-          ElMessageBox.alert('回答正确！', '成功', { confirmButtonText: '确定', type: 'success' });
-        } else {
-          ElMessageBox.alert('回答错误！', '错误', { confirmButtonText: '确定', type: 'error' });
-        }
+    //     // 显示反馈消息
+    //     if (this.answer === this.selectedQuestion.correctAnswer) {
+    //       ElMessageBox.alert('回答正确！', '成功', { confirmButtonText: '确定', type: 'success' });
+    //     } else {
+    //       ElMessageBox.alert('回答错误！', '错误', { confirmButtonText: '确定', type: 'error' });
+    //     }
 
-        // 重置输入框
-        this.answer = '';
-        this.isAnswered = true;
-      }
-    },
+    //     // 重置输入框
+    //     this.answer = '';
+    //     this.isAnswered = true;
+    //   }
+    // },
     initUserAnswers() {
       if (this.userAnswers.length === 0) { // 避免重复初始化
         this.answerDetail.forEach(question => {
@@ -185,37 +191,33 @@ export default {
         this.isAnswered = userAnswer.isCompleted; // 标记已完成状态
       }
     },
-
     // 提交答案并请求后端判断
     submitAnswer() {
       const userAnswer = this.userAnswers.find(ua => ua.questionId === this.selectedQuestion.questionId);
       if (userAnswer) {
         // 创建一个AnswerRecordDTO对象，包含用户答案和问题ID
         const answerRecordDTO = {
-          userId: sessionStorage.getItem('userId'),
-          questionId: this.selectedQuestion.questionId,
-          answerGiven: this.answer,
+          userId: sessionStorage.getItem('userId'), // 从sessionStorage中获取userId
+          questionId: this.selectedQuestion.questionId, // 当前选中题目的ID
+          answerGiven: this.answer, // 用户输入的答案
         };
-
+        console.log('发送给后端的AnswerRecordDTO对象:', answerRecordDTO);
         // 发送请求到后端进行答案判断
         this.$http.post('ans/judge', answerRecordDTO)
           .then(response => {
             console.log('后端返回的判断结果:', response.data);
-
             const result = response.data;
             // 更新前端用户答题记录的状态和分数
             userAnswer.isCompleted = true;
             userAnswer.answer = this.answer;
             userAnswer.score = result.score; // 假设后端返回的对象中包含分数
             this.completedQuestions = this.userAnswers.filter(ua => ua.isCompleted).length;
-
             // 显示反馈消息
             if (result.isCorrect) { // 假设后端返回的对象中包含是否正确的信息
               ElMessageBox.alert('回答正确！', '成功', { confirmButtonText: '确定', type: 'success' });
             } else {
               ElMessageBox.alert('回答错误！', '错误', { confirmButtonText: '确定', type: 'error' });
             }
-
             // 重置输入框
             this.answer = '';
             this.isAnswered = true;
@@ -391,9 +393,11 @@ export default {
   border-right: 1px solid #e6e6e6;
   padding-top: 20px;
 }
+
 .content-card {
   height: 800px;
 }
+
 /* 题目内容样式 */
 .question-content {
   font-size: 16px;
@@ -454,9 +458,16 @@ export default {
 }
 
 .active-problem {
-  color: #0016d8 !important;
+  color: #6f00ff !important;
   /* 点击后字体变为紫色 */
   font-weight: bold;
   /* 字体加粗 */
+}
+
+.completed-icon {
+  color: #17C964;
+  /* 使用绿色显示 ✔ 标记 */
+  margin-left: 100px;
+  font-size: 16px;
 }
 </style>
