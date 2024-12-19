@@ -48,7 +48,7 @@
                   <img :src="'http://localhost:10086/images/upload/' + course.courseImgUrl" class="course-img" />
                 </div>
                 <div class="item-details">
-                  <div class="course-description">{{ shortenText(course.courseDescription) }}</div>
+                  <!-- <div class="course-description">{{ shortenText(course.courseDescription) }}</div> -->
                   <div class="update-time">收藏时间: {{ formatTime(course.updatedTime) }}</div>
                   <el-button type="danger" icon="el-icon-delete"
                     @click="removeFavorite(course.courseId, 'course')">删除</el-button>
@@ -216,15 +216,21 @@ export default {
   padding: 10px;
   background-color: #fff;
   border-radius: 8px;
+  box-shadow: 0 2px 4px #faf9f9; /* 增加阴影 */
 }
 
 .favorite-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
+  font-size: 17px;
   color: #333;
   cursor: pointer;
+  padding: 10px 20px; /* 增加内边距 */
+  /* background-color: #e0a7a7;  */
+
+  /* border-radius: 8px; 
+  border-bottom: none;  */
   border-bottom: 2px solid #ddd;
 }
 
@@ -233,6 +239,7 @@ export default {
 }
 
 .favorite-items {
+  padding-top: 8px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
@@ -241,17 +248,24 @@ export default {
 .favorite-card {
   display: flex;
   flex-direction: column;
-  padding: 10px; /* 减少卡片内边距 */
-  background-color: #fff;
+  padding: 0px; /* 减少卡片内边距 */
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: none; /* 去掉阴影 */
   margin: 0; /* 去掉卡片之间的空隙 */
   height: auto; /* 根据内容自适应高度 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s;
+}
+
+.favorite-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .item-title,
 .course-description,
 .post-content {
+
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2; /* 限制为两行 */
@@ -271,10 +285,11 @@ export default {
   height: auto;
   object-fit: cover;
   border-radius: 8px;
+  padding-top: 8px;
 }
 
 .item-details {
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .update-time {
@@ -283,7 +298,7 @@ export default {
 }
 
 .el-button {
-  margin-top: 10px;
+  margin-top: 0px;
   color: #dc3545;
   background-color: transparent;
   border: none;
