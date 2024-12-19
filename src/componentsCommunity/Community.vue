@@ -411,13 +411,26 @@ export default {
                 return;
             }
             console.log(this.form); // 输出表单数据
-            // 向后端发送请求n
+            // 向后端发送请求
             axios.post('v1/cmns/cmn', this.form).then((response) => {
                 console.log("后端返回数据：", response.data);
                 if (response.data === 1) {
-                    ElMessage({ message: '社区创建成功！', type: 'success' });
-                    this.dialogFormVisible = false; // 关闭对话框
-                    this.getCommunityList(); // 刷新社区列表
+                    // 使用 ElMessageBox 弹窗提示用户
+                    ElMessageBox.confirm(
+                        '社区创建成功！管理员正在审核，预计1个工作日完成审核，请耐心等待。',
+                        '社区创建成功',
+                        {
+                            confirmButtonText: '确认',
+                            cancelButtonText: '取消',
+                            type: 'success'
+                        }
+                    ).then(() => {
+                        // 确认后关闭对话框
+                        this.dialogFormVisible = false;
+                    }).catch(() => {
+                        // 用户点击取消或关闭弹窗时的处理
+                        console.log('用户取消了');
+                    });
                 } else {
                     ElMessage({ message: '社区创建失败！', type: 'error' });
                 }
@@ -426,6 +439,7 @@ export default {
                 ElMessage({ message: '请求失败，请重试', type: 'error' });
             });
         },
+
 
 
         // 获取社区列表
