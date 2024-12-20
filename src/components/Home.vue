@@ -3,7 +3,7 @@
     <el-header ref="header" class="navbar">
       <div class="navbar-container">
         <!-- 左侧 LOGO -->
-        <div class="logo" @click="goToIndex">LOGO</div>
+        <div class="logo" @click="goToIndex">LINGYAN</div>
 
         <nav class="nav-menu">
           <div
@@ -711,7 +711,7 @@ export default {
   /* 根据内容自动调整大小，但允许缩小 */
   max-width: 45%;
   /* 设置最大宽度 */
-  min-width: 400px;
+  min-width: 450px;
   /* 设置最小宽度，防止卡片过窄 */
   margin: 0px;
   /* 外边距，确保卡片之间有间距 */
@@ -737,7 +737,7 @@ export default {
   /* 大标题字体大小 */
   color: #333;
   /* 字体颜色 */
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   /* 与内容之间的间距 */
 }
 
@@ -926,7 +926,7 @@ export default {
   flex-wrap: wrap; /* 允许内容换行 */
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
-  width: 66.67%; /* 根据需要调整宽度以容纳三个卡片 */
+  width: 70%; /* 根据需要调整宽度以容纳三个卡片 */
   padding: 0px;
 }
 
