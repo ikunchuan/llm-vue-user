@@ -19,20 +19,20 @@
         <div class="header-container">
           <!-- 左侧文字和表单部分 -->
           <div class="header-left">
-            <h1>灵验伴您一路学习成长</h1>
+            <h1>灵验,伴您一路学习成长!</h1>
             <div class="form-section">
               <div class="input-group">
                 <span class="icon">📍</span>
-                <input class="form-input" placeholder="请输入开始之初">
+                <input class="form-input" placeholder="请输入你的学业阶段">
 
                 </input>
               </div>
-              <div class="input-group">
+              <!-- <div class="input-group">
                 <span class="icon">📍</span>
-                <input class="form-input" placeholder="请输入目标人物">
+                <input class="form-input" placeholder="请输入目标人物"> -->
                 <!-- <option>目标人物</option> -->
-                </input>
-              </div>
+                <!-- </input>
+              </div> -->
               <div class="input-group">
                 <span class="icon">📅</span>
                 <input type="date" class="form-input" />
@@ -55,7 +55,7 @@
 
     <!-- 卡片区域 -->
     <div class="cards-section">
-      <h2>建议</h2>
+      <h2>“赛·学·练·研”一站式服务</h2>
       <div class="cards">
         <div class="card" @click="goToComp">
           <img src="../assets/img/37.png" alt="行程图标" />
@@ -157,7 +157,7 @@
         <p>
           <strong>500+</strong> 精选赛事，尽在掌握，专业竞赛，一键直达<br />
           <strong>200+</strong> 专业课程，为你的竞赛加码，<br />
-          <strong>100,000+</strong> 题目，助力你的每一次进步<br />
+          <strong>100,000+</strong> 题库资源，助力你的每一次进步<br />
           <strong>80%</strong> of Fortune 500 companies use Atlassian products
         </p>
       </div>
@@ -499,7 +499,7 @@ export default {
   align-items: center;
   justify-content: space-between;
   text-align: center;
-  padding: 20px 30px;
+  padding: 0px 20px;
 
 
 }
@@ -510,7 +510,7 @@ export default {
   font-size: 20px;
   font-weight: bold;
   color: #5a67d8;
-  margin-bottom: 10px;
+  /* margin-bottom: 500px; */
 }
 
 .section-subtitle {
@@ -535,8 +535,17 @@ export default {
   word-wrap: break-word;
   /* 自动换行 */
 }
+.header-left h1 {
+  font-size: 50px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 20px;
+  padding: 30px 45px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  writing-mode: horizontal-tb; /* 添加这一行，将文字排列方向改为水平 */
+}
 
-.header-left, .header-right {
+.header-right {
   display: flex;
   align-items: center;  
   flex: 1;
@@ -591,7 +600,7 @@ export default {
 }
 
 .primary-button {
-  background-color: #5a67d8;
+  background-color: #5740ff;
   color: #fff;
   padding: 10px 20px;
   border: none;
@@ -640,12 +649,18 @@ export default {
   text-align: center;
   margin: 40px 0;
 }
+.cards-section h2 {
+  font-size: 30px;
+  margin-bottom: 30px;
+  color: #5740ff;
+}
 
 .cards {
   display: flex;
   justify-content: center;
   gap: 30px;
   flex-wrap: wrap;
+  margin-bottom: 90px;
 }
 
 .card {

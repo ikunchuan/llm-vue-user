@@ -9,15 +9,26 @@
             <h1>{{ categoryInfo.categoryName }}</h1>
             <p>类别：{{ categoryInfo.categoryName }}</p>
             <div class="tags-section">
-              <p />配套课程：
-              <span v-for="course in courses" :key="course.courseId" @click="goToCourseDetail(course.courseId)"
-                class="clickable-text"> {{ course.courseName }}
+              <p />
+              配套课程：
+              <span
+                v-for="course in courses"
+                :key="course.courseId"
+                @click="goToCourseDetail(course.courseId)"
+                class="clickable-text"
+              >
+                {{ course.courseName }}
               </span>
             </div>
             <div class="tags-section">
-              <p />适用竞赛：
-              <span v-for="competition in competitions" :key="competition.competitionId"
-                @click="goToCompetitionDetail(competition.competitionId)" class="clickable-text">
+              <p />
+              适用竞赛：
+              <span
+                v-for="competition in competitions"
+                :key="competition.competitionId"
+                @click="goToCompetitionDetail(competition.competitionId)"
+                class="clickable-text"
+              >
                 {{ competition.competitionName || 暂无竞赛 }}
               </span>
             </div>
@@ -26,31 +37,72 @@
           <!-- 右侧完成进度 -->
           <div class="header-right">
             <p class="completion-status">
-              当前完成：<span class="large-text">{{ completedQuestions }}</span> /
+              当前完成：<span class="large-text">{{ completedQuestions }}</span>
+              /
               <span class="large-text">{{ totalQuestions }}</span>
             </p>
-            <p v-if="completedQuestions === totalQuestions" class="completed-tag">已完成</p>
+            <p
+              v-if="completedQuestions === totalQuestions"
+              class="completed-tag"
+            >
+              已完成
+            </p>
           </div>
         </div>
       </el-header>
-
 
       <el-container>
         <!-- 左侧导航 -->
         <el-aside width="250px" class="aside-menu">
           <el-scrollbar>
-            <el-menu :default-active="currentProblem" class="el-menu-vertical-demo" @select="selectQuestion">
-              <el-menu-item v-for="(problem, index) in answerDetail" :key="problem.questionId"
-                :index="problem.questionId" :class="{ 'active-problem': currentProblem === problem.questionId }">
+            <el-menu
+              :default-active="currentProblem"
+              class="el-menu-vertical-demo"
+              @select="selectQuestion"
+            >
+              <el-menu-item
+                v-for="(problem, index) in answerDetail"
+                :key="problem.questionId"
+                :index="problem.questionId"
+                :class="{
+                  'active-problem': currentProblem === problem.questionId,
+                }"
+              >
                 <el-icon>
                   <document />
                 </el-icon>
                 <span>{{ index + 1 }}. {{ problem.questionTitle }}</span>
 
-                <!-- 如果题目已完成，显示 ✔ -->
+                <!-- 如果题目已完成，显示 ✔
                 <span v-if="userAnswers.find(ua => ua.questionId === problem.questionId)?.isCompleted"
                   class="completed-icon">
                   ✔
+                </span> -->
+                <!-- 根据答案状态显示图标 -->
+                <span
+                  v-if="
+                    userAnswers.find(
+                      (ua) => ua.questionId === problem.questionId
+                    )?.isCompleted
+                  "
+                >
+                  <span
+                    v-if="
+                      userAnswers.find(
+                        (ua) => ua.questionId === problem.questionId
+                      )?.answer ===
+                      userAnswers.find(
+                        (ua) => ua.questionId === problem.questionId
+                      )?.correctAnswer
+                    "
+                  >
+                    ✔
+                    <!-- 正确答案 -->
+                  </span>
+                  <span v-else>
+                    ❌
+                    <!-- 错误答案 -->
+                  </span>
                 </span>
               </el-menu-item>
             </el-menu>
@@ -64,10 +116,28 @@
               <!-- 题目部分 -->
               <el-tab-pane label="题目" name="question">
                 <div class="question-content">
-                  <h3 class="large-title">{{ selectedQuestion.questionTitle }}</h3>
+                  <h3 class="large-title">
+                    {{ selectedQuestion.questionTitle }}
+                  </h3>
                   <p>{{ selectedQuestion.questionText }}</p>
-                  <el-input v-model="answer" :disabled="isAnswered" placeholder="请输入答案"></el-input>
-                  <el-button type="success" @click="submitAnswer" :disabled="isAnswered">提交答案</el-button>
+                  <!-- <el-input v-model="answer" :disabled="isAnswered" placeholder="请输入答案"></el-input> -->
+                  <!-- 替换输入框为ABCD选项按钮 -->
+                  <div class="options-container">
+                    <el-button
+                      v-for="(option, index) in ['A', 'B', 'C', 'D']"
+                      :key="index"
+                      :class="['option-btn', { selected: answer === option }]"
+                      @click="answer = option"
+                    >
+                      {{ option }}. {{ selectedQuestion[`option${option}`] }}
+                    </el-button>
+                  </div>
+                  <el-button
+                    type="success"
+                    @click="submitAnswer"
+                    :disabled="isAnswered"
+                    >提交答案</el-button
+                  >
                   <el-button @click="goBack" type="danger">返回</el-button>
                 </div>
               </el-tab-pane>
@@ -75,13 +145,16 @@
               <el-tab-pane label="答案解析" name="analysis">
                 <div class="answer-analysis">
                   <h3>答案解析</h3>
-                  <p v-if="isAnswered">{{ selectedQuestion.answerAnalysis || '暂无答案解析' }}</p>
-                  <p v-if="isAnswered">正确答案：{{ selectedQuestion.correctAnswer }}</p>
+                  <p v-if="isAnswered">
+                    {{ selectedQuestion.answerAnalysis || "暂无答案解析" }}
+                  </p>
+                  <p v-if="isAnswered">
+                    正确答案：{{ selectedQuestion.correctAnswer }}
+                  </p>
                   <p v-if="isAnswered">您的答案：{{ selectedAnswer }}</p>
                   <p v-if="!isAnswered">请先提交答案，再查看解析。</p>
                 </div>
               </el-tab-pane>
-
             </el-tabs>
           </el-card>
         </el-main>
@@ -99,7 +172,7 @@ export default {
     this.fetchAnswerDetail(); // 获取题目信息
     this.fetchCompetitionsByCategoryId(); // 获取竞赛信息
     this.fetchCoursesByCategoryId(); // 获取课程信息
-    this.activeTab = 'question'; // 设置默认选择题目分页标签
+    this.activeTab = "question"; // 设置默认选择题目分页标签
   },
 
   data() {
@@ -114,7 +187,7 @@ export default {
       totalQuestions: 0, // 总题目数量
       userAnswers: [], // 用户答题记录
       isAnswered: false, // 是否已答题
-      activeTab: 'question', // 默认选择题目标签
+      activeTab: "question", // 默认选择题目标签
       competitions: [], // 存储竞赛数据
       courses: [], // 存储课程数据
     };
@@ -123,123 +196,135 @@ export default {
     this.fetchAnswerDetail(); // 在组件创建时获取题目信息
   },
   methods: {
-
-
-
     // 获取题目信息
     fetchAnswerDetail() {
       const categoryId = this.$route.params.answerId;
-      this.$http.get(`/qst/v1/cate/${categoryId}`)
-        .then(response => {
+      this.$http
+        .get(`/qst/v1/cate/${categoryId}`)
+        .then((response) => {
           this.answerDetail = response.data;
           this.totalQuestions = this.answerDetail.length; // 获取总题数
           this.initUserAnswers(); // 初始化用户答题记录
           this.selectQuestion(this.answerDetail[0].questionId); // 默认选择第一道题目
         })
-        .catch(error => {
-          console.error('查询题目获取错误:', error);
+        .catch((error) => {
+          console.error("查询题目获取错误:", error);
         });
     },
-    // // 提交答案
-    // submitAnswer() {
-    //   const userAnswer = this.userAnswers.find(ua => ua.questionId === this.selectedQuestion.questionId);
-    //   if (userAnswer) {
-    //     // 标记为已完成
-    //     userAnswer.isCompleted = true;
-    //     userAnswer.answer = this.answer;
 
-    //     // 调试输出
-    //     console.log(`Question ${userAnswer.questionId} isCompleted = ${userAnswer.isCompleted}`);
-
-    //     // 更新已完成题目数量
-    //     this.completedQuestions = this.userAnswers.filter(ua => ua.isCompleted).length;
-
-    //     // 显示反馈消息
-    //     if (this.answer === this.selectedQuestion.correctAnswer) {
-    //       ElMessageBox.alert('回答正确！', '成功', { confirmButtonText: '确定', type: 'success' });
-    //     } else {
-    //       ElMessageBox.alert('回答错误！', '错误', { confirmButtonText: '确定', type: 'error' });
-    //     }
-
-    //     // 重置输入框
-    //     this.answer = '';
-    //     this.isAnswered = true;
-    //   }
-    // },
     initUserAnswers() {
-      if (this.userAnswers.length === 0) { // 避免重复初始化
-        this.answerDetail.forEach(question => {
+      if (this.userAnswers.length === 0) {
+        // 避免重复初始化
+        this.answerDetail.forEach((question) => {
           this.userAnswers.push({
             questionId: question.questionId,
             questionTitle: question.questionTitle,
             questionText: question.questionText,
             correctAnswer: question.correctAnswer,
             isCompleted: false,
-            answer: null
+            answer: null,
           });
         });
       }
     },
-
     selectQuestion(questionId) {
-      const userAnswer = this.userAnswers.find(ua => ua.questionId === questionId);
+      const userAnswer = this.userAnswers.find(
+        (ua) => ua.questionId === questionId
+      );
       if (userAnswer) {
-        console.log(`Selecting question ${questionId}, isCompleted = ${userAnswer.isCompleted}`);
+        console.log(
+          `Selecting question ${questionId}, isCompleted = ${userAnswer.isCompleted}`
+        );
         this.currentProblem = questionId;
         this.selectedQuestion = { ...userAnswer }; // 确保不会直接修改引用
-        this.selectedAnswer = userAnswer.answer || ''; // 保留之前的用户答案
+        this.selectedAnswer = userAnswer.answer || ""; // 保留之前的用户答案
         this.isAnswered = userAnswer.isCompleted; // 标记已完成状态
       }
     },
+
     // 提交答案并请求后端判断
     submitAnswer() {
-      const userAnswer = this.userAnswers.find(ua => ua.questionId === this.selectedQuestion.questionId);
+      if (!this.answer) {
+        // 如果没有选择答案，弹出提示
+        ElMessageBox.alert("请先选择一个答案！", "提示", {
+          confirmButtonText: "确定",
+          type: "warning",
+        });
+        return; // 不执行后续的提交操作
+      }
+
+      const userAnswer = this.userAnswers.find(
+        (ua) => ua.questionId === this.selectedQuestion.questionId
+      );
       if (userAnswer) {
         // 创建一个AnswerRecordDTO对象，包含用户答案和问题ID
         const answerRecordDTO = {
-          userId: sessionStorage.getItem('userId'), // 从sessionStorage中获取userId
+          userId: sessionStorage.getItem("userId"), // 从sessionStorage中获取userId
           questionId: this.selectedQuestion.questionId, // 当前选中题目的ID
           answerGiven: this.answer, // 用户输入的答案
         };
-        console.log('发送给后端的AnswerRecordDTO对象:', answerRecordDTO);
+
+        console.log("发送给后端的AnswerRecordDTO对象:", answerRecordDTO);
         // 发送请求到后端进行答案判断
-        this.$http.post('ans/judge', answerRecordDTO)
-          .then(response => {
-            console.log('后端返回的判断结果:', response.data);
+        this.$http
+          .post("ans/judge", answerRecordDTO)
+          .then((response) => {
+            console.log("后端返回的判断结果:", response.data);
             const result = response.data;
-            // 更新前端用户答题记录的状态和分数
+
+            // 更新前端用户答题记录的状态
             userAnswer.isCompleted = true;
-            userAnswer.answer = this.answer;
-            userAnswer.score = result.score; // 假设后端返回的对象中包含分数
-            this.completedQuestions = this.userAnswers.filter(ua => ua.isCompleted).length;
-            // 显示反馈消息
-            if (result.isCorrect) { // 假设后端返回的对象中包含是否正确的信息
-              ElMessageBox.alert('回答正确！', '成功', { confirmButtonText: '确定', type: 'success' });
+            userAnswer.answer = this.answer; // 更新用户答案
+            userAnswer.correctAnswer = result.correctAnswer; // 更新正确答案
+
+            // 更新 selectedAnswer 和 selectedQuestion.correctAnswer
+            this.selectedAnswer = this.answer; // 用户输入的答案
+            this.selectedQuestion.correctAnswer = result.correctAnswer; // 后端返回的正确答案
+
+            this.completedQuestions = this.userAnswers.filter(
+              (ua) => ua.isCompleted
+            ).length;
+
+            // 判断答案是否正确，显示反馈消息
+            if (this.answer === result.correctAnswer) {
+              ElMessageBox.alert("回答正确！", "成功", {
+                confirmButtonText: "确定",
+                type: "success",
+              });
             } else {
-              ElMessageBox.alert('回答错误！', '错误', { confirmButtonText: '确定', type: 'error' });
+              ElMessageBox.alert("回答错误！", "错误", {
+                confirmButtonText: "确定",
+                type: "error",
+              });
             }
+
             // 重置输入框
-            this.answer = '';
+            this.answer = "";
             this.isAnswered = true;
           })
-          .catch(error => {
-            console.error('提交答案错误:', error);
-            ElMessageBox.alert('提交答案失败，请重试。', '错误', { confirmButtonText: '确定', type: 'error' });
+          .catch((error) => {
+            console.error("提交答案错误:", error);
+            ElMessageBox.alert("提交答案失败，请重试。", "错误", {
+              confirmButtonText: "确定",
+              type: "error",
+            });
           });
       }
     },
 
     goBack() {
       if (this.isAnswered) {
-        ElMessageBox.confirm('确定要放弃本次答题记录吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.$router.go(-1); // 返回上一页
-        }).catch(() => {
-          // 用户取消操作，不做任何处理
-        });
+        ElMessageBox.confirm("确定要放弃本次答题记录吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            this.$router.go(-1); // 返回上一页
+          })
+          .catch(() => {
+            // 用户取消操作，不做任何处理
+          });
       } else {
         this.$router.go(-1); // 直接返回上一页
       }
@@ -247,31 +332,33 @@ export default {
 
     fetchCategoryDetail() {
       const categoryId = this.$route.params.answerId;
-      this.$http.get(`http://localhost:10086/cat/v1/${categoryId}`)
-        .then(response => {
+      this.$http
+        .get(`http://localhost:10086/cat/v1/${categoryId}`)
+        .then((response) => {
           this.categoryInfo = response.data;
         })
-        .catch(error => {
-          console.error('类别数据获取错误:', error);
+        .catch((error) => {
+          console.error("类别数据获取错误:", error);
         });
     },
 
     // 查询竞赛
     fetchCompetitionsByCategoryId() {
       const categoryId = this.$route.params.answerId;
-      this.$http.get(`comp/v1/comp/byParentId?parentId=${categoryId}`)
-        .then(response => {
-          console.log('竞赛数据:', response.data);
+      this.$http
+        .get(`comp/v1/comp/byParentId?parentId=${categoryId}`)
+        .then((response) => {
+          console.log("竞赛数据:", response.data);
           if (Array.isArray(response.data)) {
             this.competitions = response.data;
-            console.log('处理后的竞赛数据:', this.competitions);
+            console.log("处理后的竞赛数据:", this.competitions);
           } else {
-            console.warn('未获取到课程数据或数据格式不正确');
+            console.warn("未获取到课程数据或数据格式不正确");
             this.competitions = [];
           }
         })
-        .catch(error => {
-          console.error('查询竞赛错误:', error);
+        .catch((error) => {
+          console.error("查询竞赛错误:", error);
           this.competitions = [];
         });
     },
@@ -279,33 +366,36 @@ export default {
     // 查询课程
     fetchCoursesByCategoryId() {
       const categoryId = this.$route.params.answerId;
-      this.$http.get(`crs/course/byParentId?parentId=${categoryId}`)
-        .then(response => {
-          console.log('课程数据:', response.data);
+      this.$http
+        .get(`crs/course/byParentId?parentId=${categoryId}`)
+        .then((response) => {
+          console.log("课程数据:", response.data);
           if (Array.isArray(response.data)) {
             // 直接使用数组数据
             this.courses = response.data;
-            console.log('处理后的课程数据:', this.courses);
+            console.log("处理后的课程数据:", this.courses);
           } else {
-            console.warn('未获取到课程数据或数据格式不正确');
+            console.warn("未获取到课程数据或数据格式不正确");
             this.courses = [];
           }
         })
-        .catch(error => {
-          console.error('查询课程错误:', error);
+        .catch((error) => {
+          console.error("查询课程错误:", error);
           this.courses = [];
         });
-    },  // 跳转到竞赛详情页面
+    }, // 跳转到竞赛详情页面
     goToCompetitionDetail(compId) {
-      this.$router.push({ name: 'CompDetail', params: { compId: compId } });
+      this.$router.push({ name: "CompDetail", params: { compId: compId } });
     },
 
     // 跳转到课程详情页面
     goToCourseDetail(courseId) {
-      this.$router.push({ name: 'CourseDetail', params: { courseId: courseId } });
+      this.$router.push({
+        name: "CourseDetail",
+        params: { courseId: courseId },
+      });
     },
   },
-
 };
 </script>
 
@@ -368,7 +458,6 @@ export default {
   font-weight: bold;
 }
 
-
 /* 头部样式 */
 .fixed-header {
   background-color: #5a67d8;
@@ -425,7 +514,21 @@ export default {
   /* 已完成题目字体颜色 */
 }
 
+.option-btn {
+  margin: 5px;
+}
 
+.option-btn.selected {
+  background-color: #5a67d8;
+  /* 选中时的背景色 */
+  color: white;
+}
+
+.options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .clickable-text {
   display: inline-block;
@@ -465,9 +568,9 @@ export default {
 }
 
 .completed-icon {
-  color: #17C964;
+  color: #17c964;
   /* 使用绿色显示 ✔ 标记 */
-  margin-left: 100px;
+  margin-right: 30px;
   font-size: 16px;
 }
 </style>
