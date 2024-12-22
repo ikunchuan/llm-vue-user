@@ -1,17 +1,24 @@
 <template>
   <!-- 根模板，包含整个布局 -->
   <div class="container">
-
     <!-- 主内容区域 -->
     <div class="main">
       <!-- 左侧内容区 -->
       <aside class="left-panel">
         <!-- 标题区块：标题变大，图片放在标题下方 -->
         <div class="title-block">
-          <h1 class="large-title">{{ competitionBasicInfo.competitionName }}</h1>
-          <el-image style="width: 330px; height: 170px; border-radius: 8px"
-            :src="'http://localhost:10086/images/upload/' + competitionBasicInfo.competitionImgUrl" fit="cover"
-            class="card-image"></el-image>
+          <h1 class="large-title">
+            {{ competitionBasicInfo.competitionName }}
+          </h1>
+          <el-image
+            style="width: 330px; height: 170px; border-radius: 8px"
+            :src="
+              'http://localhost:10086/images/upload/' +
+              competitionBasicInfo.competitionImgUrl
+            "
+            fit="cover"
+            class="card-image"
+          ></el-image>
         </div>
 
         <!-- 原有竞赛时间和链接区域 -->
@@ -31,9 +38,19 @@
         <div class="box related-competitions">
           <h3>相关竞赛</h3>
           <ul>
-            <li v-for="competition in competitionRecommends" :key="competition.competitionId" class="list-item">
-              <a @click="gotoCompDetail(competition.competitionId)" class="title">{{ competition.competitionName }}</a>
-              <p class="date">上线日期：{{ formatDateShort(competition.updatedTime) }}</p>
+            <li
+              v-for="competition in competitionRecommends"
+              :key="competition.competitionId"
+              class="list-item"
+            >
+              <a
+                @click="gotoCompDetail(competition.competitionId)"
+                class="title"
+                >{{ competition.competitionName }}</a
+              >
+              <p class="date">
+                上线日期：{{ formatDateShort(competition.updatedTime) }}
+              </p>
             </li>
           </ul>
         </div>
@@ -43,8 +60,12 @@
           <h3>查看竞赛相关帖子</h3>
           <ul>
             <li v-for="post in relatedPosts" :key="post.id" class="list-item">
-              <a @click="navigateToPostDetail(post.postId)" class="title">{{ post.postTitle }}</a>
-              <p class="date">发布日期：{{ formatDateShort(post.updatedTime) }}</p>
+              <a @click="navigateToPostDetail(post.postId)" class="title">{{
+                post.postTitle
+              }}</a>
+              <p class="date">
+                发布日期：{{ formatDateShort(post.updatedTime) }}
+              </p>
             </li>
           </ul>
         </div>
@@ -63,51 +84,54 @@
           </div>
           <div class="right-up">
             <ul class="three-parts">
-
-
               <li>
-                <a class="hover-effect recommended-course-link" @click="goToCourseDetailb">{{ recommendedCourseNameb ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailc">{{ recommendedCourseNamec ||
-                  1 }}</a>
+                <a
+                  class="hover-effect recommended-course-link"
+                  @click="goToCourseDetailb"
+                  >{{ recommendedCourseNameb || 无 }}</a
+                >
+                <a class="recommended-course-link" @click="goToCourseDetailc">{{
+                  recommendedCourseNamec || 无
+                }}</a>
               </li>
               <li>
-                <a class="recommended-course-link" @click="goToCourseDetaild">{{ recommendedCourseNamed ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetaile">{{ recommendedCourseNamee ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailf">{{ recommendedCourseNamef ||
-                  1 }}</a>
+                <a class="recommended-course-link" @click="goToCourseDetaild">{{
+                  recommendedCourseNamed || 无
+                }}</a>
+                <a class="recommended-course-link" @click="goToCourseDetaile">{{
+                  recommendedCourseNamee || 无
+                }}</a>
+                <a class="recommended-course-link" @click="goToCourseDetailf">{{
+                  recommendedCourseNamef || 无
+                }}</a>
               </li>
             </ul>
           </div>
 
-          <div class="line">
-          </div>
-
+          <div class="line"></div>
 
           <div class="right-down">
             <ul class="three-columns">
-
               <li>
-
-                <a class="recommended-course-link" @click="goToCourseDetail">{{ recommendedCourseName || 1
-                  }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetaili">{{ recommendedCourseNamei ||
-                  1 }}</a>
+                <a class="recommended-course-link" @click="goToCourseDetail">{{
+                  recommendedCourseName || 无
+                }}</a>
+                <a class="recommended-course-link" @click="goToCourseDetaili">{{
+                  recommendedCourseNamei || 无
+                }}</a>
               </li>
 
               <li>
-                <a class="recommended-course-link" @click="goToCourseDetailg">{{ recommendedCourseNameg ||
-                  1 }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailh">{{ recommendedCourseNameh ||
-                  1 }}</a>
-
+                <a class="recommended-course-link" @click="goToCourseDetailg">{{
+                  recommendedCourseNameg || 无
+                }}</a>
+                <a class="recommended-course-link" @click="goToCourseDetailh">{{
+                  recommendedCourseNameh || 无
+                }}</a>
               </li>
             </ul>
           </div>
         </div>
-
 
         <div class="content">
           <div class="steps-container">
@@ -119,7 +143,11 @@
           </div>
 
           <!-- 竞赛名称 -->
-          <div class="info-item">竞赛名称：<span class="info-content">{{ competitionDetail.competitionName }}</span></div>
+          <div class="info-item">
+            竞赛名称：<span class="info-content">{{
+              competitionDetail.competitionName
+            }}</span>
+          </div>
 
           <!-- 竞赛描述 -->
           <!-- <div class="info-item">竞赛描述：<span class="info-content">{{ competitionDetail.competitionDescription }}</span>
@@ -127,177 +155,216 @@
           <!-- 竞赛描述 -->
           <div class="info-item">
             <div class="info-label">竞赛描述：</div>
-            <div class="info-content">{{ competitionDetail.competitionDescription }}</div>
-
+            <div class="info-content">
+              {{ competitionDetail.competitionDescription }}
+            </div>
           </div>
 
-
           <!-- 竞赛主办方 -->
-          <div class="info-item">竞赛主办方：<span class="info-content">{{ competitionDetail.competitionOrganizer }}</span>
+          <div class="info-item">
+            竞赛主办方：<span class="info-content">{{
+              competitionDetail.competitionOrganizer
+            }}</span>
           </div>
 
           <!-- 截止日期 -->
-          <div class="info-item">截止日期：<span class="info-content">{{ formatDate(competitionDetail.registrationDeadline)
-              }}</span>
+          <div class="info-item">
+            截止日期：<span class="info-content">{{
+              formatDate(competitionDetail.registrationDeadline)
+            }}</span>
           </div>
 
           <!-- 竞赛日程安排 -->
-          <div class="info-item" id="schedule">竞赛日程安排：<span class="info-content">{{
-            competitionDetail.competitionSchedule }}</span></div>
+          <div class="info-item" id="schedule">
+            竞赛日程安排：<span class="info-content">{{
+              competitionDetail.competitionSchedule
+            }}</span>
+          </div>
 
           <!-- 竞赛详情 -->
-          <div class="info-item" id="details">
+          <div class="competition-detail-text" id="details">
             <div v-html="competitionDetail.detail"></div>
           </div>
         </div>
-
       </section>
     </div>
   </div>
 </template>
 
 <script>
-import { ElMessage } from 'element-plus';
+import { ElMessage } from "element-plus";
 export default {
-  name: 'CompDetail',
+  name: "CompDetail",
   data() {
     return {
       competitionBasicInfo: {}, // 存储竞赛基本信息
       competitionDetail: {}, // 存储竞赛详情数据
-      competitionRecommends: {},// 存储竞赛推荐数据
+      competitionRecommends: {}, // 存储竞赛推荐数据
       relatedPosts: [], // 存储相关帖子数据
-      loading: true,        // 加载状态
-      error: null,           // 错误信息
-      headerImageUrl: '',// 后端传入的图片URL
-      recommendedCourseName: '', // 存储推荐课程的名称
-      recommendedCourseNameb: '', // 存储推荐课程的名称b
-      recommendedCourseNamec: '',
-      recommendedCourseNamed: '',
-      recommendedCourseNamee: '',
-      recommendedCourseNamef: '',
-      recommendedCourseNameg: '',
-      recommendedCourseNameh: '',
-      recommendedCourseNamei: '',
-      courseMapping: {           //下方左侧第一个
-        '1': 2,  // 竞赛ID 1 对应 课程ID2
-        '2': 1,  // 竞赛ID 2 对应 课程ID 1
-        '3': 3,
-        '4': 4,
-        '5': 5,
-        '6': 6,
-        '24': 2,  // 竞赛ID 24 对应 课程ID 
-        '31': 5,
+      loading: true, // 加载状态
+      error: null, // 错误信息
+      headerImageUrl: "", // 后端传入的图片URL
+      recommendedCourseName: "", // 存储推荐课程的名称
+      recommendedCourseNameb: "", // 存储推荐课程的名称b
+      recommendedCourseNamec: "",
+      recommendedCourseNamed: "",
+      recommendedCourseNamee: "",
+      recommendedCourseNamef: "",
+      recommendedCourseNameg: "",
+      recommendedCourseNameh: "",
+      recommendedCourseNamei: "",
+      courseMapping: {
+        //下方左侧第一个
+        1: 2, // 竞赛ID 1 对应 课程ID2
+        2: 1, // 竞赛ID 2 对应 课程ID 1
+        3: 3,
+        4: 4,
+        5: 5,
+        6: 6,
+        24: 2, // 竞赛ID 24 对应 课程ID
+        31: 5,
         // 可以继续添加更多映射
       },
-      courseMappingb: {     //上方左侧第一个
-        '1': 5,  // 竞赛ID 1 对应 课程ID 5
-        '2': 2,  // 竞赛ID 2 对应 课程ID 1
-        '3': 3,
-        '4': 4,
-        '5': 5,
-        '6': 6,
-        '24': 3,  // 竞赛ID 24 对应 课程ID 2
-        '31': 25,
+      courseMappingb: {
+        //上方左侧第一个
+        1: 5, // 竞赛ID 1 对应 课程ID 5
+        2: 2, // 竞赛ID 2 对应 课程ID 1
+        3: 3,
+        4: 4,
+        5: 5,
+        6: 6,
+        24: 3, // 竞赛ID 24 对应 课程ID 2
+        31: 25,
       },
-      courseMappingc: {   //上方左侧第二个
-        '1': 6,  // 竞赛ID 1 对应 课程ID 5
-        '2': 4,  // 竞赛ID 2 对应 课程ID 1
-        '3': 4,
-        '4': 5,
-        '5': 6,
-        '6': 7,
-        '24': 4,  // 竞赛ID 24 对应 课程ID 2
-        '31': 24,
+      courseMappingc: {
+        //上方左侧第二个
+        1: 6, // 竞赛ID 1 对应 课程ID 5
+        2: 4, // 竞赛ID 2 对应 课程ID 1
+        3: 4,
+        4: 5,
+        5: 6,
+        6: 7,
+        24: 4, // 竞赛ID 24 对应 课程ID 2
+        31: 24,
       },
-      courseMappingd: {   //上方右侧第一个
-        '1': 7,  // 竞赛ID 1 对应 课程ID 5
-        '2': 5,  // 竞赛ID 2 对应 课程ID 1
-        '3': 5,
-        '4': 6,
-        '5': 7,
-        '6': 8,
-        '24': 9,  // 竞赛ID 24 对应 课程ID 2
-        '31': 16,
+      courseMappingd: {
+        //上方右侧第一个
+        1: 7, // 竞赛ID 1 对应 课程ID 5
+        2: 5, // 竞赛ID 2 对应 课程ID 1
+        3: 5,
+        4: 6,
+        5: 7,
+        6: 8,
+        24: 9, // 竞赛ID 24 对应 课程ID 2
+        31: 16,
       },
-      courseMappinge: {    //上方右侧第二个
-        '1': 8,  // 竞赛ID 1 对应 课程ID 5
-        '2': 9,  // 竞赛ID 2 对应 课程ID 1
-        '3': 1,
-        '4': 7,
-        '5': 8,
-        '6': 9,
-        '24': 10,  // 竞赛ID 24 对应 课程ID 2
-        '31': 23,
+      courseMappinge: {
+        //上方右侧第二个
+        1: 8, // 竞赛ID 1 对应 课程ID 5
+        2: 9, // 竞赛ID 2 对应 课程ID 1
+        3: 1,
+        4: 7,
+        5: 8,
+        6: 9,
+        24: 10, // 竞赛ID 24 对应 课程ID 2
+        31: 23,
       },
-      courseMappingf: {    //上方右侧第三个
-        '1': 9,  // 竞赛ID 1 对应 课程ID 5
-        '2': 10,  // 竞赛ID 2 对应 课程ID 1
-        '3': 8,
-        '4': 8,
-        '5': 9,
-        '6': 10,
-        '24': 11,  // 竞赛ID 24 对应 课程ID 2
-        '31': 12,
+      courseMappingf: {
+        //上方右侧第三个
+        1: 9, // 竞赛ID 1 对应 课程ID 5
+        2: 10, // 竞赛ID 2 对应 课程ID 1
+        3: 8,
+        4: 8,
+        5: 9,
+        6: 10,
+        24: 11, // 竞赛ID 24 对应 课程ID 2
+        31: 12,
       },
-      courseMappingg: {//下方右侧第一个
-        '1': 10,  // 竞赛ID 1 对应 课程ID 5
-        '2': 11,  // 竞赛ID 2 对应 课程ID 1
-        '3': 9,
-        '4': 9,
-        '5': 10,
-        '6': 11,
-        '24': 12,  // 竞赛ID 24 对应 课程ID 2
-        '31': 17,
+      courseMappingg: {
+        //下方右侧第一个
+        1: 10, // 竞赛ID 1 对应 课程ID 5
+        2: 11, // 竞赛ID 2 对应 课程ID 1
+        3: 9,
+        4: 9,
+        5: 10,
+        6: 11,
+        24: 12, // 竞赛ID 24 对应 课程ID 2
+        31: 17,
       },
-      courseMappingh: {//下方右侧第二个
-        '1': 11,  // 竞赛ID 1 对应 课程ID 5
-        '2': 12,  // 竞赛ID 2 对应 课程ID 1
-        '3': 10,
-        '4': 10,
-        '5': 1,
-        '6': 11,
-        '24': 13,  // 竞赛ID 24 对应 课程ID 2
-        '31': 10,
+      courseMappingh: {
+        //下方右侧第二个
+        1: 11, // 竞赛ID 1 对应 课程ID 5
+        2: 12, // 竞赛ID 2 对应 课程ID 1
+        3: 10,
+        4: 10,
+        5: 1,
+        6: 11,
+        24: 13, // 竞赛ID 24 对应 课程ID 2
+        31: 10,
       },
-      courseMappingi: {//下方左侧第二个
-        '1': 11,  // 竞赛ID 1 对应 课程ID 5
-        '2': 12,  // 竞赛ID 2 对应 课程ID 1
-        '3': 6,
-        '4': 4,
-        '5': 7,
-        '6': 8,
-        '24': 14,  // 竞赛ID 24 对应 课程ID 2
-        '31': 16,
+      courseMappingi: {
+        //下方左侧第二个
+        1: 11, // 竞赛ID 1 对应 课程ID 5
+        2: 12, // 竞赛ID 2 对应 课程ID 1
+        3: 6,
+        4: 4,
+        5: 7,
+        6: 8,
+        24: 14, // 竞赛ID 24 对应 课程ID 2
+        31: 16,
       },
-
-
     };
   },
   created() {
     this.fetchCompetitionDetail(this.$route.params.compId); // 获取竞赛详情
     this.fetchCompetitionBasicInfo(this.$route.params.compId); // 获取竞赛基本信息
 
-
     this.fetchCourse();
   },
   methods: {
-
-
     // 获取课程信息
     fetchCourse() {
-      this.$http.get(`http://localhost:10086/crs/v1`)
-        .then(response => {
+      this.$http
+        .get(`http://localhost:10086/crs/v1`)
+        .then((response) => {
           this.courseinfo = response.data;
           //  courseinfo 是一个数组，每个元素都是一个课程对象
-          const course = this.courseinfo.find(course => course.courseId === this.courseMapping[this.$route.params.compId]);
-          const courseb = this.courseinfo.find(course => course.courseId === this.courseMappingb[this.$route.params.compId]);
-          const coursec = this.courseinfo.find(course => course.courseId === this.courseMappingc[this.$route.params.compId]);
-          const coursed = this.courseinfo.find(course => course.courseId === this.courseMappingd[this.$route.params.compId]);
-          const coursee = this.courseinfo.find(course => course.courseId === this.courseMappinge[this.$route.params.compId]);
-          const coursef = this.courseinfo.find(course => course.courseId === this.courseMappingf[this.$route.params.compId]);
-          const courseg = this.courseinfo.find(course => course.courseId === this.courseMappingg[this.$route.params.compId]);
-          const courseh = this.courseinfo.find(course => course.courseId === this.courseMappingh[this.$route.params.compId]);
-          const coursei = this.courseinfo.find(course => course.courseId === this.courseMappingi[this.$route.params.compId]);
+          const course = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMapping[this.$route.params.compId]
+          );
+          const courseb = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingb[this.$route.params.compId]
+          );
+          const coursec = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingc[this.$route.params.compId]
+          );
+          const coursed = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingd[this.$route.params.compId]
+          );
+          const coursee = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappinge[this.$route.params.compId]
+          );
+          const coursef = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingf[this.$route.params.compId]
+          );
+          const courseg = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingg[this.$route.params.compId]
+          );
+          const courseh = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingh[this.$route.params.compId]
+          );
+          const coursei = this.courseinfo.find(
+            (course) =>
+              course.courseId === this.courseMappingi[this.$route.params.compId]
+          );
           if (courseb) {
             this.recommendedCourseNameb = courseb.courseName;
           }
@@ -326,11 +393,10 @@ export default {
             this.recommendedCourseNamei = coursei.courseName;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // 处理错误
         });
     },
-
 
     // // 跳转到竞赛详情页面
     // gotoCompDetail(compId) {
@@ -347,27 +413,28 @@ export default {
 
     // 跳转到竞赛详情页面，并强制刷新
     gotoCompDetail(compId) {
-      console.log('跳转到竞赛详情页面:', compId);
-      this.$router.replace({ name: 'CompDetail', params: { compId } }).then(()=>{
-        this.$nextTick(() => {
-        // 等到 Vue 完成路由跳转后刷新页面
-        this.$router.go(0);
-      });
-      })
-     
+      console.log("跳转到竞赛详情页面:", compId);
+      this.$router
+        .replace({ name: "CompDetail", params: { compId } })
+        .then(() => {
+          this.$nextTick(() => {
+            // 等到 Vue 完成路由跳转后刷新页面
+            this.$router.go(0);
+          });
+        });
     },
 
     //跳转到帖子详情页
     navigateToPostDetail(postId) {
-      console.log('跳转到帖子详情页面:', postId);
+      console.log("跳转到帖子详情页面:", postId);
       // 检查帖子对象是否有id属性
       if (postId) {
         this.$router.push({
-          name: 'PostDetail',
-          params: { postId: postId }
+          name: "PostDetail",
+          params: { postId: postId },
         });
       } else {
-        console.error('帖子ID不存在');
+        console.error("帖子ID不存在");
       }
     },
 
@@ -381,7 +448,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
@@ -393,7 +460,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
     // 跳转推荐课程c
@@ -404,7 +471,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
     // 跳转推荐课程d
@@ -415,7 +482,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
@@ -427,7 +494,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
@@ -439,7 +506,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
@@ -451,7 +518,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
@@ -463,7 +530,7 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
@@ -475,28 +542,29 @@ export default {
         this.$router.push({ path: `/home/coursedetail/${courseId}` });
       } else {
         // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error('没有找到对应的课程推荐');
+        this.$message.error("没有找到对应的课程推荐");
       }
     },
 
-
     // 获取竞赛详情
     fetchCompetitionDetail(compId) {
-      this.$http.get(`comdetail/v1/detail/${compId}`)
-        .then(response => {
+      this.$http
+        .get(`comdetail/v1/detail/${compId}`)
+        .then((response) => {
           this.competitionDetail = response.data; // 假设后端返回的数据格式正确
           this.loading = false;
         })
-        .catch(error => {
-          this.error = '加载竞赛详情失败，请稍后再试。';
-          console.error('获取竞赛详情时发生错误:', error);
+        .catch((error) => {
+          this.error = "加载竞赛详情失败，请稍后再试。";
+          console.error("获取竞赛详情时发生错误:", error);
           this.loading = false;
         });
     },
     // 获取竞赛基本信息
     fetchCompetitionBasicInfo(compId) {
-      this.$http.get(`comp/v1/compe/${compId}`) // 注意这里的URL可能需要根据后端实际接口调整
-        .then(response => {
+      this.$http
+        .get(`comp/v1/compe/${compId}`) // 注意这里的URL可能需要根据后端实际接口调整
+        .then((response) => {
           console.log("competitionBasicInfo", response.data);
 
           this.competitionBasicInfo = response.data;
@@ -505,19 +573,18 @@ export default {
           this.fetchCompetitionsByCategoryId(this.categoryId); // 获取相关竞赛
           this.fetchCommunitiesByCategoryId(this.categoryId); // 获取社区
         })
-        .catch(error => {
-          this.error = '加载竞赛基本信息失败，请稍后再试。';
-          console.error('获取竞赛基本信息时发生错误:', error);
+        .catch((error) => {
+          this.error = "加载竞赛基本信息失败，请稍后再试。";
+          console.error("获取竞赛基本信息时发生错误:", error);
           this.loading = false;
         });
     },
     scrollTo(anchor) {
       const element = document.getElementById(anchor);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: "smooth" });
       }
     },
-
 
     //收藏竞赛
     toggleFavorite() {
@@ -525,123 +592,131 @@ export default {
       const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
 
       if (!userId) {
-        this.$message.error('请先登录');
+        this.$message.error("请先登录");
         return;
       }
-      this.$http.post(`http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`)
-        .then(response => {
+      this.$http
+        .post(
+          `http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`
+        )
+        .then((response) => {
           // 假设后端返回 表示收藏成功
           if (response.data == 1) {
-            ElMessage({ message: '收藏成功！', type: "success" });
+            ElMessage({ message: "收藏成功！", type: "success" });
           } else {
-            ElMessage({ message: '收藏失败！', type: "error" });
+            ElMessage({ message: "收藏失败！", type: "error" });
           }
         })
         .catch((err) => {
-          ElMessage({ message: '请求失败，请重试', type: "error" });
+          ElMessage({ message: "请求失败，请重试", type: "error" });
         });
     },
 
     // 根据categoryId获取竞赛
     fetchCompetitionsByCategoryId() {
       if (this.categoryId === null) {
-        console.error('categoryId is not defined');
+        console.error("categoryId is not defined");
         return;
       }
-      this.$http.get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
-        .then(response => {
-          console.log('相关的竞赛数据:', response.data);
+      this.$http
+        .get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
+        .then((response) => {
+          console.log("相关的竞赛数据:", response.data);
           if (Array.isArray(response.data)) {
             this.competitionRecommends = response.data;
-            console.log('处理后的竞赛数据:', this.competitionRecommends);
+            console.log("处理后的竞赛数据:", this.competitionRecommends);
           } else {
-            console.warn('未获取到相关的竞赛或数据格式不正确');
+            console.warn("未获取到相关的竞赛或数据格式不正确");
             this.competitionRecommends = [];
           }
         })
-        .catch(error => {
-          console.error('查询相关的竞赛错误:', error);
+        .catch((error) => {
+          console.error("查询相关的竞赛错误:", error);
           this.competitionRecommends = [];
         });
     },
     // 根据categoryId获取社区
     fetchCommunitiesByCategoryId() {
-      this.$http.get(`v1/cmns/cmn/byParentId`, { params: { parentId: this.categoryId } })
-        .then(response => {
-          console.log('根据categoryId社区数据:', response.data);
+      this.$http
+        .get(`v1/cmns/cmn/byParentId`, {
+          params: { parentId: this.categoryId },
+        })
+        .then((response) => {
+          console.log("根据categoryId社区数据:", response.data);
           this.communities = response.data;
           if (this.communities.length > 0) {
             this.communityName = this.communities[0].communityId;
-            console.log('communityName:', this.communityName);
+            console.log("communityName:", this.communityName);
             this.fetchRelatedPosts(this.communityName);
           }
         })
-        .catch(error => {
-          console.error('获取社区时发生错误:', error);
+        .catch((error) => {
+          console.error("获取社区时发生错误:", error);
         });
     },
 
     // 根据communityId获取相关帖子
     fetchRelatedPosts(communityName) {
-      this.$http.post(`v1/posts/search`, { params: { communityName } })
-        .then(response => {
-          console.log('获取相关帖子的响应:', response.data);
+      this.$http
+        .post(`v1/posts/search`, { params: { communityName } })
+        .then((response) => {
+          console.log("获取相关帖子的响应:", response.data);
           // 检查 response.data.list 是否存在且不是 undefined
-          if (response.data && response.data.list && Array.isArray(response.data.list)) {
+          if (
+            response.data &&
+            response.data.list &&
+            Array.isArray(response.data.list)
+          ) {
             const posts = response.data.list;
-            this.relatedPosts = posts.map(post => ({
+            this.relatedPosts = posts.map((post) => ({
               postId: post.postId,
               postTitle: post.postTitle, // 确保这里使用正确的字段名
-              updatedTime: post.updatedTime
+              updatedTime: post.updatedTime,
             }));
           } else {
-            console.error('帖子列表未定义或不是数组:', response.data.list);
+            console.error("帖子列表未定义或不是数组:", response.data.list);
             this.relatedPosts = []; // 确保相关帖子数组被设置为空数组
           }
         })
-        .catch(error => {
-          console.error('获取相关帖子时发生错误:', error);
+        .catch((error) => {
+          console.error("获取相关帖子时发生错误:", error);
           this.relatedPosts = []; // 确保相关帖子数组被设置为空数组
         });
     },
 
     // 假设你有一个获取当前用户ID的方法
     getCurrentUserId() {
-      console.log('sessionStorage.userId:', sessionStorage.userId);
+      console.log("sessionStorage.userId:", sessionStorage.userId);
       return sessionStorage.userId;
     },
     // 时间格式化方法
     formatDate(date) {
-      if (!date) return '-';
+      if (!date) return "-";
       const d = new Date(date);
-      return d.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
+      return d.toLocaleDateString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
       });
     },
     formatDateShort(date) {
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Date(date).toLocaleDateString('zh-CN', options); // 格式化为 "YYYY-MM-DD"
-    }
+      const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+      return new Date(date).toLocaleDateString("zh-CN", options); // 格式化为 "YYYY-MM-DD"
+    },
   },
-
-
 };
-
 </script>
 
-
 <style scoped>
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap");
 
 body {
   margin: 0;
-  font-family: 'Roboto', Arial, sans-serif;
-  background-color: #F4F6F8;
+  font-family: "Roboto", Arial, sans-serif;
+  background-color: #f4f6f8;
   color: #333;
 }
 
@@ -659,7 +734,6 @@ body {
   flex-wrap: wrap;
   gap: 20px;
 }
-
 
 /* 左侧内容区样式 */
 .left-panel {
@@ -817,7 +891,6 @@ body {
   /* 防止日期被压缩 */
 }
 
-
 /* 右侧内容区样式 */
 .right-panel {
   flex: 1;
@@ -955,7 +1028,6 @@ body {
   padding: 0;
   margin: 0;
   height: 100%;
-
 }
 
 .three-columns li {
@@ -967,7 +1039,6 @@ body {
   text-align: center;
   color: #fff;
 }
-
 
 /* 为所有推荐的课程链接添加默认样式 */
 .recommended-course-link {
@@ -1005,7 +1076,6 @@ body {
   cursor: pointer;
 }
 
-
 .info-item {
   display: flex;
   justify-content: space-between;
@@ -1023,7 +1093,6 @@ body {
   margin-right: 10px;
   /* 与内容部分保持一定间距 */
   width: 70px;
-
 }
 
 .info-content {
@@ -1035,5 +1104,16 @@ body {
   /* 长单词或URL可以被截断并换行 */
   overflow-wrap: break-word;
   /* 确保长文本可以换行 */
+}
+.competition-detail-text {
+  width: 100%; /* 设置宽度为100%，占据整个容器 */
+  max-width: 800px; /* 设置最大宽度，可以根据需要调整 */
+  margin: 20px auto; /* 居中显示 */
+  padding: 10px;
+  border-radius: 8px; /* 圆角边框 */
+  word-wrap: break-word; /* 允许在单词内换行 */
+  overflow-wrap: break-word; /* 允许在单词内换行 */
+  font-size: 16px;
+  color: #666;
 }
 </style>

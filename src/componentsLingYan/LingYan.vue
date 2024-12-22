@@ -3,12 +3,23 @@
     <el-container>
       <el-header class="lingyantitle">
         灵验领航,伴您一路成长
-        <el-button type="primary" round @click="openIframe" style="margin-left: 20px;">开启会话</el-button>
+        <el-button
+          type="primary"
+          round
+          @click="openIframe"
+          style="margin-left: 20px"
+          >开启会话</el-button
+        >
       </el-header>
 
       <el-main>
-        <iframe src="http://192.168.103.145/chatbot/YsfCrau3h9HVXv8e" v-show="iframeVisible"
-          style="width: 100%; height: 95%; min-height: 830px" frameborder="0" allow="microphone">
+        <iframe
+          src="http://172.20.10.5/chatbot/YsfCrau3h9HVXv8e"
+          v-show="iframeVisible"
+          style="width: 100%; height: 95%; min-height: 830px"
+          frameborder="0"
+          allow="microphone"
+        >
         </iframe>
       </el-main>
     </el-container>
@@ -16,7 +27,7 @@
 </template>
 
 <script>
-import { Loading } from '@element-plus/icons-vue';
+import { Loading } from "@element-plus/icons-vue";
 
 export default {
   data() {
@@ -25,13 +36,12 @@ export default {
       inputMessage: "", // 用户输入
       messages: [{ role: "", content: "", avatar: "" }], //存储整个用户的对话文本//AI的对话文本
       eventSource: null, //保存ES对象
-      isTyping: false,// 是否显示“AI 正在输入”
+      isTyping: false, // 是否显示“AI 正在输入”
       iframeVisible: false,
     };
   },
 
   methods: {
-
     openIframe() {
       this.iframeVisible = !this.iframeVisible;
     },
@@ -51,29 +61,34 @@ export default {
         avatar: "https://via.placeholder.com/32", // 设置头像链接
       });
 
-
       // 向服务器发送消息
       if (this.eventSource) {
         this.eventSource.close();
       }
 
-      const url = `http://localhost:10086/chat/stream?message=${encodeURIComponent(this.inputMessage)}`
+      const url = `http://localhost:10086/chat/stream?message=${encodeURIComponent(
+        this.inputMessage
+      )}`;
       this.eventSource = new EventSource(url);
 
       // 设置“AI 正在输入”状态
       this.isTyping = true;
 
       // 接收服务器消息流
-      let aiMessage = { role: "ai", content: "", avatar: "https://via.placeholder.com/32" };
+      let aiMessage = {
+        role: "ai",
+        content: "",
+        avatar: "https://via.placeholder.com/32",
+      };
       this.messages.push(aiMessage); // 预留一条消息，动态更新内容
 
       this.eventSource.onmessage = (event) => {
-        aiMessage.content += event.data.replace(/\n/g, "<br/>") // 更新 AI 消息内容
+        aiMessage.content += event.data.replace(/\n/g, "<br/>"); // 更新 AI 消息内容
         this.scrollToBottom(); // 每次消息更新后滚动到最底部
       };
 
       this.eventSource.onerror = () => {
-        console.error('连接出错');
+        console.error("连接出错");
         this.eventSource.close();
         this.isTyping = false; // 移除“AI 正在输入”
       };
@@ -90,13 +105,12 @@ export default {
 
       // 清空输入框
       this.inputMessage = "";
-
     },
 
     // 自动滚动到最底部
     scrollToBottom() {
       this.$nextTick(() => {
-        const chatContainer = this.$el.querySelector('.chat-container');
+        const chatContainer = this.$el.querySelector(".chat-container");
         chatContainer.scrollTop = chatContainer.scrollHeight;
       });
     },
@@ -107,7 +121,8 @@ export default {
     // },
   },
 
-  beforeUnmount() { // 组件销毁时关闭 SSE 连接
+  beforeUnmount() {
+    // 组件销毁时关闭 SSE 连接
     if (this.eventSource) {
       this.eventSource.close();
     }
@@ -125,14 +140,14 @@ export default {
 
 <style scoped>
 :root {
-  --primary-color: #409EFF; /* Element UI 的主题色 */
-  --background-color: #F5F5F5;
+  --primary-color: #409eff; /* Element UI 的主题色 */
+  --background-color: #f5f5f5;
   --text-color: #333;
-  --border-color: #EAEAEA;
+  --border-color: #eaeaea;
 }
 
 body {
-  font-family: 'Arial', sans-serif; /* 使用更现代的字体 */
+  font-family: "Arial", sans-serif; /* 使用更现代的字体 */
   color: var(--text-color);
   background-color: var(--background-color);
 }
@@ -250,7 +265,9 @@ body {
   padding: 20px;
 }
 .el-button {
-  background-color: var(--primary-color) !important; /* 覆盖Element UI按钮的背景色 */
+  background-color: var(
+    --primary-color
+  ) !important; /* 覆盖Element UI按钮的背景色 */
   border-color: var(--primary-color) !important;
   color: white !important;
   font-weight: bold;
@@ -266,7 +283,6 @@ body {
   transition: background-color 0.3s, border-color 0.3s; /* 添加过渡效果 */
 }
 @keyframes typing {
-
   0%,
   80%,
   100% {

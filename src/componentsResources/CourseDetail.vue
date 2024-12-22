@@ -5,7 +5,7 @@
       <!-- Video Section -->
       <div class="video-container">
         <!-- <video controls :src="bvid" class="video-player"></video> -->
-        <BilibiliPlayer bvid="BV1Eb411u7Fw" />
+        <BilibiliPlayer bvid="BV1dh411e7F7" />
       </div>
       <!-- Course Info -->
       <div class="course-info">
@@ -13,17 +13,29 @@
         <p class="course-description">{{ courseDetail.courseDescription }}</p>
 
         <div class="course-buttons">
-          <el-button type="primary" @click="handleCollect" :disabled="isCollected">
-            {{ isCollected ? '已收藏' : '收藏课程' }}
+          <el-button
+            type="primary"
+            @click="handleCollect"
+            :disabled="isCollected"
+          >
+            {{ isCollected ? "已收藏" : "收藏课程" }}
           </el-button>
           <el-button @click="onAnswerDetailClick">题目推荐</el-button>
         </div>
 
         <div class="course-meta">
-          <p style="padding: 2px;"><strong>用户评分:</strong> {{ courseDetail.courseRating }}</p>
-          <p style="padding: 2px;"><strong>课程等级:</strong> {{ courseDetail.courseDifficultyLevel }}</p>
-          <p style="padding: 2px;"><strong>预计学习时长:</strong> {{ courseDetail.courseDuration }}</p>
-          <p style="padding: 2px;"><strong>课程价格:</strong> {{ courseDetail.coursePrice }}</p>
+          <p style="padding: 2px">
+            <strong>用户评分:</strong> {{ courseDetail.courseRating }}
+          </p>
+          <p style="padding: 2px">
+            <strong>课程等级:</strong> {{ courseDetail.courseDifficultyLevel }}
+          </p>
+          <p style="padding: 2px">
+            <strong>预计学习时长:</strong> {{ courseDetail.courseDuration }}
+          </p>
+          <p style="padding: 2px">
+            <strong>课程价格:</strong> {{ courseDetail.coursePrice }}
+          </p>
         </div>
       </div>
     </div>
@@ -36,7 +48,11 @@
         </el-tab-pane> -->
         <el-tab-pane label="目录" name="category">
           <div class="card-container">
-            <div class="card" v-for="(card, index) in chapterDetail" :key="index">
+            <div
+              class="card"
+              v-for="(card, index) in chapterDetail"
+              :key="index"
+            >
               <div class="card-info">{{ card.chapterName }}</div>
             </div>
           </div>
@@ -44,13 +60,19 @@
 
         <el-tab-pane label="评价" name="reviews">
           <!-- 显示评分 -->
-          <span>评分: {{ courseDetail.courseRating }}</span><br><br>
+          <span>评分: {{ courseDetail.courseRating }}</span
+          ><br /><br />
 
-          <span>评论:</span><br><br>
+          <span>评论:</span><br /><br />
           <!-- 遍历评论数据 -->
-          <div v-for="(comment, index) in courseComment" :key="comment.commentId" class="comment-item">
+          <div
+            v-for="(comment, index) in courseComment"
+            :key="comment.commentId"
+            class="comment-item"
+          >
             <div class="comment-header">
-              <strong>用户 {{ index + 1 }}:</strong> <!-- 从1开始自增 -->
+              <strong>用户 {{ index + 1 }}:</strong>
+              <!-- 从1开始自增 -->
             </div>
             <div class="comment-body">
               <p>{{ comment.commentContent }}</p>
@@ -70,12 +92,30 @@
       <aside class="content-right">
         <h2>推荐课程</h2>
         <p>展示与本课程相关的推荐课程。</p>
-        <div v-if="courseRelated && courseRelated.length > 0" class="courses-container">
-          <div v-for="(course, index) in courseRelated" :key="course.courseId" class="recommended-course">
+        <div
+          v-if="courseRelated && courseRelated.length > 0"
+          class="courses-container"
+        >
+          <div
+            v-for="(course, index) in courseRelated"
+            :key="course.courseId"
+            class="recommended-course"
+          >
             <!-- 显示课程图片 -->
-            <el-image style="width: 250px; height: 170px; border-radius: 8px; margin-bottom: 10px;cursor: pointer;"
-              :src="'http://localhost:10086/images/upload/' + course.courseImgUrl" fit="cover"
-              @click="goToCourseDetail(course.courseId)"></el-image>
+            <el-image
+              style="
+                width: 250px;
+                height: 170px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                cursor: pointer;
+              "
+              :src="
+                'http://localhost:10086/images/upload/' + course.courseImgUrl
+              "
+              fit="cover"
+              @click="goToCourseDetail(course.courseId)"
+            ></el-image>
 
             <p><strong>课程名称:</strong> {{ course.courseName }}</p>
             <p><strong>课程难度:</strong> {{ course.courseDifficultyLevel }}</p>
@@ -85,11 +125,7 @@
         <!-- 如果没有推荐课程，则显示提示信息 -->
         <p v-else>暂无推荐课程。</p>
       </aside>
-
     </div>
-
-
-
   </div>
 </template>
 
@@ -102,53 +138,54 @@ export default {
   },
   data() {
     return {
-      activeTab: 'category',
+      activeTab: "category",
       courseDetail: {}, // 存储课程详情数据
-      chapterDetail: [],//存储章节详情数据
-      loading: true,        // 加载状态
-      error: null,      // 错误信息
+      chapterDetail: [], //存储章节详情数据
+      loading: true, // 加载状态
+      error: null, // 错误信息
       showChapterContent: false, // 控制章节内容的显示状态
-      loadingChapter: false,     // 控制章节内容的加载状态
+      loadingChapter: false, // 控制章节内容的加载状态
       courseToCategoryMapping: {
-        '1': '13', // 假设课程ID 1 对应 题目类别ID 13
-        '2': '14', // 假设课程ID 2 对应 题目类别ID 14
-        '23': '20',
-        '24': '20',
-        '25': '20',
+        1: "13", // 假设课程ID 1 对应 题目类别ID 13
+        2: "14", // 假设课程ID 2 对应 题目类别ID 14
+        23: "20",
+        24: "20",
+        25: "20",
         // 添加更多映射
       },
       courseFavorite: {},
       isCollected: false,
       // userId:'',
       // courseId:'',
-      courseComment: {},   //存储课程的评论
-      courseRelated: {},   //这个课程的相关课程
-      categoryId: '',
+      courseComment: {}, //存储课程的评论
+      courseRelated: {}, //这个课程的相关课程
+      categoryId: "",
     };
   },
   created() {
     this.fetchCourseDetail(); // 在组件创建时获取课程详情
     this.fetchChapter();
     this.getAllCourseComment();
-
   },
   mounted() {
-    const courseId = this.$route.params.courseId;  // 获取传递的课程 ID
+    const courseId = this.$route.params.courseId; // 获取传递的课程 ID
   },
   methods: {
     goToCourseDetail(courseId) {
-      const userId = sessionStorage.userId
-      this.$http.get('crs/course/view', {
-        params: {
-          userId: userId,
-          courseId: courseId,
-        }
-      })
-        .then(response => {
-          console.log("添加浏览数据成", response.data)
+      const userId = sessionStorage.userId;
+      this.$http
+        .get("crs/course/view", {
+          params: {
+            userId: userId,
+            courseId: courseId,
+          },
+        })
+        .then((response) => {
+          console.log("添加浏览数据成", response.data);
         });
       // this.$router.push({name:'CourseDetail' , params: { courseId: courseId }});
-      this.$router.replace({ name: 'CourseDetail', params: { courseId } })
+      this.$router
+        .replace({ name: "CourseDetail", params: { courseId } })
         .then(() => {
           // 通过修改路由跳转后，可以触发视图更新
           this.$nextTick(() => {
@@ -156,59 +193,62 @@ export default {
             this.$router.go(0); // 强制刷新页面
           });
         })
-        .catch(err => {
-          console.error('跳转失败:', err);
+        .catch((err) => {
+          console.error("跳转失败:", err);
         });
     },
 
-    getCourseWithCategory() {      //展示与本课程相关的课程
+    getCourseWithCategory() {
+      //展示与本课程相关的课程
       const parentId = this.courseDetail.categoryId;
-      this.$http.get(`crs/course/byParentId`, {
-        params: { parentId }
-      })
-        .then(response => {
+      this.$http
+        .get(`crs/course/byParentId`, {
+          params: { parentId },
+        })
+        .then((response) => {
           if (response) {
             this.courseRelated = response.data;
-            console.log(this.courseRelated)
+            console.log(this.courseRelated);
           }
-        })
+        });
     },
 
-    getAllCourseComment() {      //获取当前课程的所有评论
+    getAllCourseComment() {
+      //获取当前课程的所有评论
       const courseId = this.$route.params.courseId;
-      this.$http.get(`crs/course/comment/${courseId}`)
-        .then(response => {
-          if (response) {
-            this.courseComment = response.data;
-            console.log(this.courseComment);
-          }
-        })
+      this.$http.get(`crs/course/comment/${courseId}`).then((response) => {
+        if (response) {
+          this.courseComment = response.data;
+          console.log(this.courseComment);
+        }
+      });
     },
 
     handleCollect() {
-      this.$message.success('课程已收藏');
+      this.$message.success("课程已收藏");
       const userId = sessionStorage.getItem("userId");
       const courseId = this.$route.params.courseId;
       this.courseFavorite = {
         userId: userId,
-        courseId: courseId
+        courseId: courseId,
       };
-      console.log(this.courseFavorite)
-      this.$http.post('crs/v1/favorite', this.courseFavorite)
-        .then(response => {
+      console.log(this.courseFavorite);
+      this.$http
+        .post("crs/v1/favorite", this.courseFavorite)
+        .then((response) => {
           if (response.data == 1) {
-            console.log("课程收藏成功")
+            console.log("课程收藏成功");
             this.isCollected = true; // 收藏成功后设置为已收藏状态
-            this.$message.success('收藏成功');
+            this.$message.success("收藏成功");
           }
         })
-        .catch(error => {
-          this.$message.error('收藏失败，请重试');
-          console.error('收藏失败:', error);
-        })
+        .catch((error) => {
+          this.$message.error("收藏失败，请重试");
+          console.error("收藏失败:", error);
+        });
     },
     handleRecommend() {
-      this.$message.info('推荐的题目已展示');
+      this.$message.info("推荐的题目已展示");
     },
     //跳转题目详情
     onAnswerDetailClick() {
@@ -219,31 +259,29 @@ export default {
         this.$router.push({ path: `/home/answerdetail/${categoryId}` });
       } else {
         // 如果没有找到对应的categoryId，可以给出提示或者跳转到默认页面
-        this.$message.error('没有找到对应的题目推荐');
+        this.$message.error("没有找到对应的题目推荐");
       }
     },
 
     // 获取课程详情数据
     fetchCourseDetail() {
-      const courseId = this.$route.params.courseId; // 从路由参数中获取 
-      this.$http.get(`http://localhost:10086/crs/v1/${courseId}`)
-        .then(response => {
-          this.courseDetail = response.data; // 将获取到的数据赋值给 courseDetail  
+      const courseId = this.$route.params.courseId; // 从路由参数中获取
+      this.$http
+        .get(`http://localhost:10086/crs/v1/${courseId}`)
+        .then((response) => {
+          this.courseDetail = response.data; // 将获取到的数据赋值给 courseDetail
           this.getCourseWithCategory();
 
-
           this.loading = false; // 关闭加载状态
-          this.fetchBvid(courseId);  // 获取对应的 bvid
-
-
+          this.fetchBvid(courseId); // 获取对应的 bvid
         })
-        .catch(error => {
+        .catch((error) => {
           this.error = error.message; // 捕获错误信息并赋值给 error
           this.loading = false; // 关闭加载状态
         });
     },
     onTabClick(tab) {
-      if (tab === 'chapter' && !this.showChapterContent) {
+      if (tab === "chapter" && !this.showChapterContent) {
         this.fetchChapter(); // 当点击目录标签且章节内容未显示时，加载章节数据
       }
       // 可以根据需要添加其他标签的处理逻辑
@@ -252,20 +290,17 @@ export default {
     fetchChapter() {
       this.loadingChapter = true; // 开始加载章节内容
       const courseId = this.$route.params.courseId;
-      this.$http.get(`http://localhost:10086/chap/v1/${courseId}`)
-        .then(response => {
+      this.$http
+        .get(`http://localhost:10086/chap/v1/${courseId}`)
+        .then((response) => {
           this.chapterDetail = response.data;
         })
-        .catch(error => {
+        .catch((error) => {
           this.error = error.message;
         });
     },
-
-  }
-
+  },
 };
-
-
 </script>
 
 <style scoped>
@@ -277,12 +312,10 @@ export default {
   padding: 20px;
   background-color: #f4f6f8;
 
-
   max-width: 1200px;
   /* 限制页面的最大宽度 */
   margin: 0 auto;
   /* 居中对齐 */
-
 
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   /* 可选：添加阴影效果 */

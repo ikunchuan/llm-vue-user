@@ -47,6 +47,7 @@
             >
               已完成
             </p>
+            <el-button @click="goBack" type="danger">返回</el-button>
           </div>
         </div>
       </el-header>
@@ -138,7 +139,6 @@
                     :disabled="isAnswered"
                     >提交答案</el-button
                   >
-                  <el-button @click="goBack" type="danger">返回</el-button>
                 </div>
               </el-tab-pane>
 

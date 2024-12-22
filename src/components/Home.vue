@@ -675,6 +675,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 20px;
+  transform: translateY(0);
 }
 
 .drawer-content {
@@ -686,8 +687,8 @@ export default {
 }
 
 /* 当抽屉打开时，设置transform为0，显示抽屉 */
-.drawer {
-  transform: translateY(0);
+:deep(.el-drawer__body) {
+  padding: 10px 20px;
 }
 
 .right-column {

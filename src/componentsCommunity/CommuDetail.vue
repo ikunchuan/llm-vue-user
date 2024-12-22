@@ -6,16 +6,28 @@
         <!-- 左侧社区信息 -->
         <div class="header-info">
           <h2 class="community-name">{{ communityName }}</h2>
-          <p class="community-description">描述：{{ communityInfo.communityDescription }}</p>
-          <p class="community-created">创建人：{{ communityInfo.createdBy }} | 创建时间：{{ communityInfo.createdTime }}</p>
+          <p class="community-description">
+            描述：{{ communityInfo.communityDescription }}
+          </p>
+          <p class="community-created">
+            创建人：{{ communityInfo.createdBy }} | 创建时间：{{
+              communityInfo.createdTime
+            }}
+          </p>
         </div>
         <!-- 右侧按钮 -->
         <div class="header-buttons">
-          <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
-          <el-button type="success" size="small" @click="joinCommunity" :disabled="isMember">
+          <el-button type="primary" size="small" @click="goToPostCreat()"
+            >发帖</el-button
+          >
+          <el-button
+            type="success"
+            size="small"
+            @click="joinCommunity"
+            :disabled="isMember"
+          >
             {{ isMember ? "已加入" : "+加入" }}
           </el-button>
-
         </div>
       </div>
     </div>
@@ -30,25 +42,53 @@
             <el-tab-pane label="帖子" name="all">
               <!-- 搜索框 -->
               <div class="search-bar">
-                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search"
-                  class="search-input" />
+                <el-input
+                  v-model="searchQuery"
+                  placeholder="搜索帖子关键字"
+                  prefix-icon="el-icon-search"
+                  class="search-input"
+                />
               </div>
 
               <!-- 帖子列表 -->
-              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
-                @click="navigateToPostDetail(post.postId)">
+              <el-card
+                v-for="(post, index) in filteredPostsList"
+                :key="index"
+                shadow="hover"
+                class="post-card"
+                @click="navigateToPostDetail(post.postId)"
+              >
                 <div class="post-content">
                   <div class="post-header">
-                    <el-tag type="success" class="post-tag">{{ post.communityName }}</el-tag>
+                    <el-tag type="success" class="post-tag">{{
+                      post.communityName
+                    }}</el-tag>
                   </div>
                   <h3 class="post-title">{{ post.postTitle }}</h3>
-                  <p class="post-summary">{{ stripHtmlTags(post.postContent) }}</p>
+                  <p class="post-summary">
+                    {{ stripHtmlTags(post.postContent) }}
+                  </p>
                 </div>
                 <div class="post-info">
-                  <span><i class="el-icon-thumb" /> 👍{{ post.likeCount || 0 }}</span>
-                  <span><i class="el-icon-star-off" /> 🌟{{ post.favoriteCount || 0 }}</span>
-                  <span><i class="el-icon-chat-line-round" /> 💬{{ post.commentCount || 0 }}</span>
-                  <span><i class="el-icon-view" />👁️ {{ post.viewCount || 0 }}</span>
+                  <span
+                    ><i class="el-icon-thumb" /> 👍{{
+                      post.likeCount || 0
+                    }}</span
+                  >
+                  <span
+                    ><i class="el-icon-star-off" /> 🌟{{
+                      post.favoriteCount || 0
+                    }}</span
+                  >
+                  <span
+                    ><i class="el-icon-chat-line-round" /> 💬{{
+                      post.commentCount || 0
+                    }}</span
+                  >
+                  <span
+                    ><i class="el-icon-view" />👁️
+                    {{ post.viewCount || 0 }}</span
+                  >
                 </div>
               </el-card>
             </el-tab-pane>
@@ -56,7 +96,11 @@
             <!-- 社区成员 Tab -->
             <el-tab-pane label="社区成员" name="members">
               <div class="community-members" v-if="communityUsers.length">
-                <div class="member-item" v-for="(user, index) in communityUsers" :key="index">
+                <div
+                  class="member-item"
+                  v-for="(user, index) in communityUsers"
+                  :key="index"
+                >
                   <el-avatar :src="user.avatarUrl" size="medium" />
                   <span class="member-name">{{ user.userName }}</span>
                 </div>
@@ -69,9 +113,13 @@
         <!-- 右侧积分排行 -->
         <el-col :span="6">
           <el-card class="ranking-card" shadow="hover">
-            <h3 class="ranking-title">积分排行</h3>
+            <h3 class="ranking-title">👁️👁️👁️</h3>
             <div class="ranking-list">
-              <div class="ranking-item" v-for="(user, index) in rankings" :key="index">
+              <div
+                class="ranking-item"
+                v-for="(user, index) in rankings"
+                :key="index"
+              >
                 <span class="ranking-number">{{ index + 1 }}</span>
                 <el-avatar :src="user.avatarUrl" size="small" />
                 <span class="ranking-username">{{ user.name }}</span>
@@ -80,14 +128,34 @@
             </div>
 
             <div class="active-users">
-              <h3>本周活跃用户</h3>
-              <div v-for="user in activeUsersList" :key="user.id" class="user-item">
+              <h3>本周活跃</h3>
+              <div
+                v-for="user in activeUsersList"
+                :key="user.id"
+                class="user-item"
+              >
                 <el-avatar :src="user.avatar" />
                 <span>{{ user.name }}</span>
                 <el-tag>{{ user.rank }}</el-tag>
               </div>
             </div>
-
+            <div class="image-list">
+              <img
+                src="../assets/img/77.png"
+                alt="Image 1"
+                class="image-item"
+              />
+              <img
+                src="../assets/img/78.png"
+                alt="Image 2"
+                class="image-item"
+              />
+              <img
+                src="../assets/img/79.png"
+                alt="Image 3"
+                class="image-item"
+              />
+            </div>
           </el-card>
         </el-col>
       </el-row>
@@ -95,11 +163,9 @@
   </div>
 </template>
 
-
 <script>
-import axios from 'axios';
-import { ElMessage } from 'element-plus';
-
+import axios from "axios";
+import { ElMessage } from "element-plus";
 
 export default {
   name: "CommuDetail",
@@ -115,11 +181,12 @@ export default {
       communityId: this.$route.params.communityId,
       communityName: this.$route.params.communityName,
       communityInfo: {}, // 存储社区信息
-      communityUsers: {},  // 用于存储社区成员信息
+      communityUsers: {}, // 用于存储社区成员信息
       activeTab: "all",
       searchQuery: "", // 搜索关键词
       posts: [], // 帖子列表
-      rankings: [ // 积分排行列表
+      rankings: [
+        // 积分排行列表
         // ...用户数据
       ],
       isMember: false, // 用户是否已加入社区
@@ -129,8 +196,10 @@ export default {
     // 根据搜索关键词过滤帖子列表
     filteredPostsList() {
       if (!this.searchQuery) return this.posts;
-      return this.posts.filter((post) =>
-        post.postTitle.includes(this.searchQuery) || post.postContent.includes(this.searchQuery)
+      return this.posts.filter(
+        (post) =>
+          post.postTitle.includes(this.searchQuery) ||
+          post.postContent.includes(this.searchQuery)
       );
     },
   },
@@ -140,25 +209,27 @@ export default {
     fetchCommunityInfo() {
       // 获取从路由传递过来的社区ID
       console.log("测试获取到的社区ID：", this.communityId);
-      axios.get(`/v1/cmns/cmn/${this.communityId}`)
-        .then(response => {
+      axios
+        .get(`/v1/cmns/cmn/${this.communityId}`)
+        .then((response) => {
           console.log("获取到的社区数据：", response.data);
           // 设置获取到的社区信息
           this.communityInfo = response.data;
           // 检查用户是否已经加入社区
           this.checkMemberStatus();
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("获取社区信息失败：", error);
         });
     },
     checkMemberStatus() {
       // 假设后端提供了一个接口来检查用户是否已经加入社区
-      axios.get(`/ucmns/v1/ucmn/check/${this.communityId}`)
-        .then(response => {
+      axios
+        .get(`/ucmns/v1/ucmn/check/${this.communityId}`)
+        .then((response) => {
           this.isMember = response.data.isMember;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("检查成员状态失败：", error);
         });
     },
@@ -166,21 +237,22 @@ export default {
     fetchPosts() {
       if (this.communityName) {
         // 请求后端获取特定社区的帖子
-        axios.post(`v1/posts/search`, {
-          communityName: this.communityName,
-          query: this.searchQuery, // 搜索关键词
-        })
-          .then(response => {
+        axios
+          .post(`v1/posts/search`, {
+            communityName: this.communityName,
+            query: this.searchQuery, // 搜索关键词
+          })
+          .then((response) => {
             console.log("获取到的帖子数据：", response.data);
             // 确保后端返回的数据结构中包含 list，并且只包含特定社区的帖子
             this.posts = response.data.list || response.data;
 
             // 为每个帖子获取统计信息
-            this.posts.forEach(post => {
+            this.posts.forEach((post) => {
               this.getPostCounts(post.postId);
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("获取帖子失败：", error);
           });
       }
@@ -188,114 +260,116 @@ export default {
 
     // 获取帖子的点赞数、评论数和收藏数
     getPostCounts(postId) {
-      axios.get(`v1/posts/post/allcount/${postId}`)
-        .then(response => {
-          console.log('帖子统计信息:', response.data);
+      axios
+        .get(`v1/posts/post/allcount/${postId}`)
+        .then((response) => {
+          console.log("帖子统计信息:", response.data);
           const postDTO = response.data;
           this.updatePostCounts(postDTO);
         })
-        .catch(error => {
-          console.error('获取帖子统计信息失败:', error);
-          ElMessage.error('获取帖子统计信息失败');
+        .catch((error) => {
+          console.error("获取帖子统计信息失败:", error);
+          ElMessage.error("获取帖子统计信息失败");
         });
     },
-
 
     // 更新帖子统计信息的方法
     updatePostCounts(postDTO) {
       console.log("更新帖子统计信息:", postDTO);
-      const index = this.posts.findIndex(item => item.postId === postDTO.postId);
+      const index = this.posts.findIndex(
+        (item) => item.postId === postDTO.postId
+      );
       if (index !== -1) {
         this.posts[index] = {
           ...this.posts[index],
           likeCount: postDTO.likeCount,
           commentCount: postDTO.commentCount,
-          favoriteCount: postDTO.favoriteCount
+          favoriteCount: postDTO.favoriteCount,
         };
       }
     },
     fetchCommunityUsers() {
       // this.$http.get(`/ucmns/v1/ucmn/user/${this.communityId}`)
-      this.$http.get(`/v1/cmns/cmnpostuser/${this.communityId}`)
+      this.$http
+        .get(`/v1/cmns/cmnpostuser/${this.communityId}`)
 
         .then((response) => {
           console.log("获取到的用户数据：", response.data);
           if (response.data && response.data.length) {
             this.communityUsers = response.data;
           } else {
-            ElMessage.warning('该社区暂无用户数据');
+            ElMessage.warning("该社区暂无用户数据");
           }
         })
         .catch((error) => {
           console.error("获取用户列表失败:", error);
-          ElMessage.error('获取用户数据失败，请稍后重试');
+          ElMessage.error("获取用户数据失败，请稍后重试");
         });
     },
     //跳转到帖子详情页
     navigateToPostDetail(postId) {
-      console.log('跳转到帖子详情页面:', postId);
+      console.log("跳转到帖子详情页面:", postId);
       // 检查帖子对象是否有id属性
       if (postId) {
         this.$router.push({
-          name: 'PostDetail',
-          params: { postId: postId }
+          name: "PostDetail",
+          params: { postId: postId },
         });
       } else {
-        console.error('帖子ID不存在');
+        console.error("帖子ID不存在");
       }
     },
     // 加入社区
     joinCommunity() {
       // 从sessionStorage中获取用户ID
-      const userId = sessionStorage.getItem('userId');
+      const userId = sessionStorage.getItem("userId");
       if (!userId) {
-        this.$message.error('用户未登录或用户ID不存在');
+        this.$message.error("用户未登录或用户ID不存在");
         return;
       }
 
       // 如果已经加入社区，则给出提示
       if (this.isMember) {
-        this.$message.info('您已经是社区成员，无需再次加入');
+        this.$message.info("您已经是社区成员，无需再次加入");
         return;
       }
 
-
       // 调用后端接口发送加入社区请求
-      axios.post('/ucmns/v1/ucmn', {
-        userId: userId,
-        communityId: this.communityId
-      })
-        .then(response => {
+      axios
+        .post("/ucmns/v1/ucmn", {
+          userId: userId,
+          communityId: this.communityId,
+        })
+        .then((response) => {
           // 根据后端的响应来处理
-          if (response.data === 1) { // 假设后端返回1表示加入成功
-            this.$message.success('加入社区成功');
+          if (response.data === 1) {
+            // 假设后端返回1表示加入成功
+            this.$message.success("加入社区成功");
             this.isMember = true; // 更新社区成员状态
           } else {
-            this.$message.error('加入社区失败');
+            this.$message.error("加入社区失败");
           }
         })
-        .catch(error => {
-          console.error('加入社区失败:', error);
-          this.$message.error('加入社区失败');
+        .catch((error) => {
+          console.error("加入社区失败:", error);
+          this.$message.error("加入社区失败");
         });
     },
     goToPostCreat() {
       this.$router.push({
-        name: 'PostCreat',
+        name: "PostCreat",
         params: {
           communityId: this.communityId,
           communityName: this.communityName,
-          userId: sessionStorage.getItem("userId")
-        }
+          userId: sessionStorage.getItem("userId"),
+        },
       });
       console.log(this.communityId, sessionStorage.getItem("userId"));
-
     },
     stripHtmlTags(content) {
       return content.replace(/<\/?[^>]+(>|$)/g, ""); // 使用正则表达式去除HTML标签
-    }
-
-  }
+    },
+  },
 };
 </script>
 
@@ -494,5 +568,18 @@ export default {
 .post-info i {
   color: #5a67d8;
 }
+/* 图片列表样式 */
+.image-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px; /* 根据需要调整图片与上方内容的间距 */
+}
 
+/* 图片项样式 */
+.image-item {
+  width: 100%; /* 可以根据需要调整图片的宽度 */
+  max-width: 200px; /* 设置图片的最大宽度 */
+  margin-bottom: 10px; /* 图片之间的间距 */
+}
 </style>
