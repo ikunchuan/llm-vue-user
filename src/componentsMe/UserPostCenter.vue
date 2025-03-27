@@ -18,22 +18,13 @@
   <div class="content">
     <div v-for="post in postData" :key="post.postId" class="post-card">
       <h3 class="post-title">{{ post.postTitle }}</h3>
-      <div
-        class="post-content"
-        v-html="truncateContent(post.postContent)"
-      ></div>
+      <div class="post-content" v-html="truncateContent(post.postContent)"></div>
       <div class="post-footer">
         <span class="post-time">{{ formatDate(post.updatedTime) }}</span>
         <div class="post-actions">
-          <el-button type="primary" size="small" @click="editPost(post.postId)"
-            >编辑</el-button
-          >
-          <el-button type="info" size="small" @click="viewDetail(post.postId)"
-            >详细</el-button
-          >
-          <el-button type="danger" size="small" @click="deletePost(post.postId)"
-            >删除</el-button
-          >
+          <el-button type="primary" size="small" @click="editPost(post.postId)">编辑</el-button>
+          <el-button type="info" size="small" @click="viewDetail(post.postId)">详细</el-button>
+          <el-button type="danger" size="small" @click="deletePost(post.postId)">删除</el-button>
         </div>
       </div>
     </div>
@@ -41,6 +32,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -58,7 +50,7 @@ export default {
   methods: {
     getUserPostsInfo() {
       console.log("userId", this.userId);
-      this.$http.get(`/v1/posts/user/${this.userId}`).then((response) => {
+      axios.get(`/v1/posts/user/${this.userId}`).then((response) => {
         if (response) {
           console.log("查询出用户所有的帖子");
           console.log(response);
@@ -101,7 +93,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        this.$http
+        axios
           .delete(`/v1/posts/post/${postId}`)
           .then(() => {
             this.$message.success("删除成功");
@@ -134,39 +126,52 @@ export default {
 
 <style scoped>
 .content {
-  padding: 30px 20px; /* 增加内容区域的内边距 */
+  padding: 30px 20px;
+  /* 增加内容区域的内边距 */
 }
 
 .post-card {
-  position: relative; /* 新增，为伪元素定位 */
+  position: relative;
+  /* 新增，为伪元素定位 */
   border: 1px solid #eaeaea;
-  border-radius: 12px; /* 增加圆角 */
+  border-radius: 12px;
+  /* 增加圆角 */
   padding: 16px;
   margin-bottom: 10px;
-  background-color: #f9f9f9; /* 轻微的背景色 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 增加阴影 */
-  transition: transform 0.3s, box-shadow 0.3s; /* 添加悬停效果的过渡 */
+  background-color: #f9f9f9;
+  /* 轻微的背景色 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* 增加阴影 */
+  transition: transform 0.3s, box-shadow 0.3s;
+  /* 添加悬停效果的过渡 */
 }
+
 .post-card::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
-  width: 5px; /* 三角形的宽度 */
+  width: 5px;
+  /* 三角形的宽度 */
   height: 100%;
-  background-color: #7c73e6; /* 三角形的颜色 */
-  border-radius: 12px 0 0 12px; /* 圆角仅在左侧 */
+  background-color: #7c73e6;
+  /* 三角形的颜色 */
+  border-radius: 12px 0 0 12px;
+  /* 圆角仅在左侧 */
 }
 
 .post-card:hover {
-  transform: translateY(-5px); /* 悬停时上移 */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 悬停时增加阴影 */
+  transform: translateY(-5px);
+  /* 悬停时上移 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  /* 悬停时增加阴影 */
 }
 
 .post-title {
   font-size: 15px;
   margin-top: 0;
-  color: #333; /* 标题颜色 */
+  color: #333;
+  /* 标题颜色 */
 }
 
 .post-content {
@@ -174,7 +179,8 @@ export default {
   font-size: 13px;
   max-height: 150px;
   overflow-y: auto;
-  color: #666; /* 内容颜色 */
+  color: #666;
+  /* 内容颜色 */
 }
 
 .post-footer {
@@ -182,7 +188,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.9em; /* 缩小字体大小 */
+  font-size: 0.9em;
+  /* 缩小字体大小 */
 }
 
 .post-time {
@@ -192,10 +199,12 @@ export default {
 
 .post-actions {
   display: flex;
-  gap: 8px; /* 使用gap替代margin-left */
+  gap: 8px;
+  /* 使用gap替代margin-left */
 }
 
 .post-actions .el-button {
-  margin: 0; /* 重置外边距 */
+  margin: 0;
+  /* 重置外边距 */
 }
 </style>

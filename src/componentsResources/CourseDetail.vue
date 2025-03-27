@@ -13,11 +13,7 @@
         <p class="course-description">{{ courseDetail.courseDescription }}</p>
 
         <div class="course-buttons">
-          <el-button
-            type="primary"
-            @click="handleCollect"
-            :disabled="isCollected"
-          >
+          <el-button type="primary" @click="handleCollect" :disabled="isCollected">
             {{ isCollected ? "已收藏" : "收藏课程" }}
           </el-button>
           <el-button @click="onAnswerDetailClick">题目推荐</el-button>
@@ -48,11 +44,7 @@
         </el-tab-pane> -->
         <el-tab-pane label="目录" name="category">
           <div class="card-container">
-            <div
-              class="card"
-              v-for="(card, index) in chapterDetail"
-              :key="index"
-            >
+            <div class="card" v-for="(card, index) in chapterDetail" :key="index">
               <div class="card-info">{{ card.chapterName }}</div>
             </div>
           </div>
@@ -60,16 +52,11 @@
 
         <el-tab-pane label="评价" name="reviews">
           <!-- 显示评分 -->
-          <span>评分: {{ courseDetail.courseRating }}</span
-          ><br /><br />
+          <span>评分: {{ courseDetail.courseRating }}</span><br /><br />
 
           <span>评论:</span><br /><br />
           <!-- 遍历评论数据 -->
-          <div
-            v-for="(comment, index) in courseComment"
-            :key="comment.commentId"
-            class="comment-item"
-          >
+          <div v-for="(comment, index) in courseComment" :key="comment.commentId" class="comment-item">
             <div class="comment-header">
               <strong>用户 {{ index + 1 }}:</strong>
               <!-- 从1开始自增 -->
@@ -92,30 +79,17 @@
       <aside class="content-right">
         <h2>推荐课程</h2>
         <p>展示与本课程相关的推荐课程。</p>
-        <div
-          v-if="courseRelated && courseRelated.length > 0"
-          class="courses-container"
-        >
-          <div
-            v-for="(course, index) in courseRelated"
-            :key="course.courseId"
-            class="recommended-course"
-          >
+        <div v-if="courseRelated && courseRelated.length > 0" class="courses-container">
+          <div v-for="(course, index) in courseRelated" :key="course.courseId" class="recommended-course">
             <!-- 显示课程图片 -->
-            <el-image
-              style="
+            <el-image style="
                 width: 250px;
                 height: 170px;
                 border-radius: 8px;
                 margin-bottom: 10px;
                 cursor: pointer;
-              "
-              :src="
-                'http://localhost:10086/images/upload/' + course.courseImgUrl
-              "
-              fit="cover"
-              @click="goToCourseDetail(course.courseId)"
-            ></el-image>
+              " :src="'http://localhost:10086/images/upload/' + course.courseImgUrl
+                " fit="cover" @click="goToCourseDetail(course.courseId)"></el-image>
 
             <p><strong>课程名称:</strong> {{ course.courseName }}</p>
             <p><strong>课程难度:</strong> {{ course.courseDifficultyLevel }}</p>
@@ -131,6 +105,7 @@
 
 <script>
 import BilibiliPlayer from "../components/BilibiliPlayer.vue";
+import axios from 'axios';
 export default {
   name: "CoursePage", // 组件名称
   components: {
@@ -173,7 +148,7 @@ export default {
   methods: {
     goToCourseDetail(courseId) {
       const userId = sessionStorage.userId;
-      this.$http
+      axios
         .get("crs/course/view", {
           params: {
             userId: userId,
@@ -201,7 +176,7 @@ export default {
     getCourseWithCategory() {
       //展示与本课程相关的课程
       const parentId = this.courseDetail.categoryId;
-      this.$http
+      axios
         .get(`crs/course/byParentId`, {
           params: { parentId },
         })
@@ -216,7 +191,7 @@ export default {
     getAllCourseComment() {
       //获取当前课程的所有评论
       const courseId = this.$route.params.courseId;
-      this.$http.get(`crs/course/comment/${courseId}`).then((response) => {
+      axios.get(`crs/course/comment/${courseId}`).then((response) => {
         if (response) {
           this.courseComment = response.data;
           console.log(this.courseComment);
@@ -233,7 +208,7 @@ export default {
         courseId: courseId,
       };
       console.log(this.courseFavorite);
-      this.$http
+      axios
         .post("crs/v1/favorite", this.courseFavorite)
         .then((response) => {
           if (response.data == 1) {
@@ -266,8 +241,8 @@ export default {
     // 获取课程详情数据
     fetchCourseDetail() {
       const courseId = this.$route.params.courseId; // 从路由参数中获取
-      this.$http
-        .get(`http://localhost:10086/crs/v1/${courseId}`)
+      axios
+        .get(`/crs/v1/${courseId}`)
         .then((response) => {
           this.courseDetail = response.data; // 将获取到的数据赋值给 courseDetail
           this.getCourseWithCategory();
@@ -290,8 +265,8 @@ export default {
     fetchChapter() {
       this.loadingChapter = true; // 开始加载章节内容
       const courseId = this.$route.params.courseId;
-      this.$http
-        .get(`http://localhost:10086/chap/v1/${courseId}`)
+      axios
+        .get(`/chap/v1/${courseId}`)
         .then((response) => {
           this.chapterDetail = response.data;
         })

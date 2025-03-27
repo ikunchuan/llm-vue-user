@@ -30,8 +30,8 @@
               <!-- <div class="input-group">
                 <span class="icon">📍</span>
                 <input class="form-input" placeholder="请输入目标人物"> -->
-                <!-- <option>目标人物</option> -->
-                <!-- </input>
+              <!-- <option>目标人物</option> -->
+              <!-- </input>
               </div> -->
               <div class="input-group">
                 <span class="icon">📅</span>
@@ -303,7 +303,7 @@ import image2 from "../assets/img/42.png";
 import image3 from "../assets/img/40.png";
 import image4 from "../assets/img/43.png";
 import image5 from "../assets/img/44.png";
-
+import axios from 'axios';
 import { ref } from 'vue'
 import { useTransition } from '@vueuse/core'
 import { ChatLineRound, Male } from '@element-plus/icons-vue'
@@ -494,7 +494,7 @@ export default {
 
 /* Header 主容器 */
 .header-container {
-  
+
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -535,6 +535,7 @@ export default {
   word-wrap: break-word;
   /* 自动换行 */
 }
+
 .header-left h1 {
   font-size: 50px;
   font-weight: bold;
@@ -542,14 +543,16 @@ export default {
   margin-bottom: 20px;
   padding: 30px 45px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  writing-mode: horizontal-tb; /* 添加这一行，将文字排列方向改为水平 */
+  writing-mode: horizontal-tb;
+  /* 添加这一行，将文字排列方向改为水平 */
 }
 
 .header-right {
   display: flex;
-  align-items: center;  
+  align-items: center;
   flex: 1;
-  text-align: center; /* Ensure text is centered */
+  text-align: center;
+  /* Ensure text is centered */
 }
 
 .header-left h1 {
@@ -649,6 +652,7 @@ export default {
   text-align: center;
   margin: 40px 0;
 }
+
 .cards-section h2 {
   font-size: 30px;
   margin-bottom: 30px;

@@ -11,24 +11,16 @@
             <div class="tags-section">
               <p />
               配套课程：
-              <span
-                v-for="course in courses"
-                :key="course.courseId"
-                @click="goToCourseDetail(course.courseId)"
-                class="clickable-text"
-              >
+              <span v-for="course in courses" :key="course.courseId" @click="goToCourseDetail(course.courseId)"
+                class="clickable-text">
                 {{ course.courseName }}
               </span>
             </div>
             <div class="tags-section">
               <p />
               适用竞赛：
-              <span
-                v-for="competition in competitions"
-                :key="competition.competitionId"
-                @click="goToCompetitionDetail(competition.competitionId)"
-                class="clickable-text"
-              >
+              <span v-for="competition in competitions" :key="competition.competitionId"
+                @click="goToCompetitionDetail(competition.competitionId)" class="clickable-text">
                 {{ competition.competitionName || 暂无竞赛 }}
               </span>
             </div>
@@ -41,10 +33,7 @@
               /
               <span class="large-text">{{ totalQuestions }}</span>
             </p>
-            <p
-              v-if="completedQuestions === totalQuestions"
-              class="completed-tag"
-            >
+            <p v-if="completedQuestions === totalQuestions" class="completed-tag">
               已完成
             </p>
             <el-button @click="goBack" type="danger">返回</el-button>
@@ -56,19 +45,11 @@
         <!-- 左侧导航 -->
         <el-aside width="250px" class="aside-menu">
           <el-scrollbar>
-            <el-menu
-              :default-active="currentProblem"
-              class="el-menu-vertical-demo"
-              @select="selectQuestion"
-            >
-              <el-menu-item
-                v-for="(problem, index) in answerDetail"
-                :key="problem.questionId"
-                :index="problem.questionId"
-                :class="{
+            <el-menu :default-active="currentProblem" class="el-menu-vertical-demo" @select="selectQuestion">
+              <el-menu-item v-for="(problem, index) in answerDetail" :key="problem.questionId"
+                :index="problem.questionId" :class="{
                   'active-problem': currentProblem === problem.questionId,
-                }"
-              >
+                }">
                 <el-icon>
                   <document />
                 </el-icon>
@@ -80,23 +61,19 @@
                   ✔
                 </span> -->
                 <!-- 根据答案状态显示图标 -->
-                <span
-                  v-if="
+                <span v-if="
+                  userAnswers.find(
+                    (ua) => ua.questionId === problem.questionId
+                  )?.isCompleted
+                ">
+                  <span v-if="
                     userAnswers.find(
                       (ua) => ua.questionId === problem.questionId
-                    )?.isCompleted
-                  "
-                >
-                  <span
-                    v-if="
-                      userAnswers.find(
-                        (ua) => ua.questionId === problem.questionId
-                      )?.answer ===
-                      userAnswers.find(
-                        (ua) => ua.questionId === problem.questionId
-                      )?.correctAnswer
-                    "
-                  >
+                    )?.answer ===
+                    userAnswers.find(
+                      (ua) => ua.questionId === problem.questionId
+                    )?.correctAnswer
+                  ">
                     ✔
                     <!-- 正确答案 -->
                   </span>
@@ -124,21 +101,12 @@
                   <!-- <el-input v-model="answer" :disabled="isAnswered" placeholder="请输入答案"></el-input> -->
                   <!-- 替换输入框为ABCD选项按钮 -->
                   <div class="options-container">
-                    <el-button
-                      v-for="(option, index) in ['A', 'B', 'C', 'D']"
-                      :key="index"
-                      :class="['option-btn', { selected: answer === option }]"
-                      @click="answer = option"
-                    >
+                    <el-button v-for="(option, index) in ['A', 'B', 'C', 'D']" :key="index"
+                      :class="['option-btn', { selected: answer === option }]" @click="answer = option">
                       {{ option }}. {{ selectedQuestion[`option${option}`] }}
                     </el-button>
                   </div>
-                  <el-button
-                    type="success"
-                    @click="submitAnswer"
-                    :disabled="isAnswered"
-                    >提交答案</el-button
-                  >
+                  <el-button type="success" @click="submitAnswer" :disabled="isAnswered">提交答案</el-button>
                 </div>
               </el-tab-pane>
 
@@ -165,6 +133,7 @@
 
 <script>
 import { ElMessageBox } from "element-plus";
+import axios from 'axios';
 
 export default {
   mounted() {
@@ -199,7 +168,7 @@ export default {
     // 获取题目信息
     fetchAnswerDetail() {
       const categoryId = this.$route.params.answerId;
-      this.$http
+      axios
         .get(`/qst/v1/cate/${categoryId}`)
         .then((response) => {
           this.answerDetail = response.data;
@@ -332,8 +301,8 @@ export default {
 
     fetchCategoryDetail() {
       const categoryId = this.$route.params.answerId;
-      this.$http
-        .get(`http://localhost:10086/cat/v1/${categoryId}`)
+      axios
+        .get(`/cat/v1/${categoryId}`)
         .then((response) => {
           this.categoryInfo = response.data;
         })
@@ -345,7 +314,7 @@ export default {
     // 查询竞赛
     fetchCompetitionsByCategoryId() {
       const categoryId = this.$route.params.answerId;
-      this.$http
+      axios
         .get(`comp/v1/comp/byParentId?parentId=${categoryId}`)
         .then((response) => {
           console.log("竞赛数据:", response.data);
@@ -366,7 +335,7 @@ export default {
     // 查询课程
     fetchCoursesByCategoryId() {
       const categoryId = this.$route.params.answerId;
-      this.$http
+      axios
         .get(`crs/course/byParentId?parentId=${categoryId}`)
         .then((response) => {
           console.log("课程数据:", response.data);

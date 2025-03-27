@@ -21,47 +21,30 @@
         <el-row :gutter="10">
           <!-- 搜索输入框 -->
           <el-col :span="20">
-            <el-input
-              v-model="searchQuery"
-              placeholder="搜索社区"
-              prefix-icon="el-icon-search"
-              clearable
-            />
+            <el-input v-model="searchQuery" placeholder="搜索社区" prefix-icon="el-icon-search" clearable />
           </el-col>
         </el-row>
       </div>
 
       <!-- 社区列表 -->
       <el-row :gutter="20">
-        <el-col
-          v-for="community in filteredCommunities"
-          :key="community.communityId"
-          :span="6"
+        <el-col v-for="community in filteredCommunities" :key="community.communityId" :span="6"
           @mouseenter="() => (joinButtonVisible[community.communityId] = true)"
           @mouseleave="() => (joinButtonVisible[community.communityId] = false)"
-          @click="navigateToCommuDetail(community)"
-        >
+          @click="navigateToCommuDetail(community)">
           <el-card class="community-card" shadow="hover">
             <div class="card-content">
               <div class="icon-container">
-                <img
-                  :src="communityIcons[community.communityName]"
-                  alt="Community Icon"
-                  class="community-icon"
-                  :style="{ width: iconSize + 'px', height: iconSize + 'px' }"
-                />
+                <img :src="communityIcons[community.communityName]" alt="Community Icon" class="community-icon"
+                  :style="{ width: iconSize + 'px', height: iconSize + 'px' }" />
               </div>
               <div class="text-container">
                 <h3>{{ community.communityName }}</h3>
-                <el-button
-                  v-if="
-                    joinButtonVisible[community.communityId] &&
-                    !community.joined
-                  "
-                  type="primary"
-                  @click="joinCommunity(community.communityId, community)"
-                  :disabled="community.joined"
-                >
+                <el-button v-if="
+                  joinButtonVisible[community.communityId] &&
+                  !community.joined
+                " type="primary" @click="joinCommunity(community.communityId, community)"
+                  :disabled="community.joined">
                   {{ community.joined ? "已加入" : "加入" }}
                 </el-button>
               </div>
@@ -264,24 +247,30 @@ export default {
 .community-card {
   padding: 20px;
   display: flex;
-  align-items: flex-start; /* 确保内容从顶部开始 */
-  flex-direction: row; /* 水平布局 */
+  align-items: flex-start;
+  /* 确保内容从顶部开始 */
+  flex-direction: row;
+  /* 水平布局 */
   transition: transform 0.3s ease;
 }
 
 .icon-container {
-  margin-right: 20px; /* 图片和文本之间的间距 */
+  margin-right: 20px;
+  /* 图片和文本之间的间距 */
 }
 
 .community-icon {
-  width: 40px; /* 图标大小 */
+  width: 40px;
+  /* 图标大小 */
   height: 40px;
 }
 
 .text-container {
   display: flex;
-  flex-direction: column; /* 文本和按钮垂直排列 */
-  justify-content: center; /* 垂直居中对齐 */
+  flex-direction: column;
+  /* 文本和按钮垂直排列 */
+  justify-content: center;
+  /* 垂直居中对齐 */
 }
 
 .text-container h3 {
@@ -326,7 +315,8 @@ export default {
   margin: 0 auto;
   max-width: 1200px;
   padding: 10px 15px;
-  background-color: var(--secondary-color); /* 修改背景颜色 */
+  background-color: var(--secondary-color);
+  /* 修改背景颜色 */
   margin-top: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -340,7 +330,8 @@ export default {
   transition: all 0.3s ease;
   padding: 3px;
   margin-bottom: 10px;
-  border-left: 5px solid var(--primary-color); /* 修改左侧配色条颜色 */
+  border-left: 5px solid var(--primary-color);
+  /* 修改左侧配色条颜色 */
 }
 
 .post-card:hover {
@@ -392,7 +383,8 @@ export default {
   padding: 5px 5px;
   margin-bottom: 10px;
   border-radius: 8px;
-  background-color: var(--accent-color); /* 修改背景颜色 */
+  background-color: var(--accent-color);
+  /* 修改背景颜色 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
@@ -404,7 +396,8 @@ export default {
   text-align: center;
   transition: all 0.3s ease;
   cursor: pointer;
-  background-color: var(--accent-color); /* 修改背景颜色 */
+  background-color: var(--accent-color);
+  /* 修改背景颜色 */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 10px;
 }
@@ -412,7 +405,8 @@ export default {
 .create-community-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
-  background-color: var(--secondary-color); /* 修改悬停背景颜色 */
+  background-color: var(--secondary-color);
+  /* 修改悬停背景颜色 */
 }
 
 /* 创建社区表单整体样式 */
@@ -432,7 +426,8 @@ export default {
 .el-input:focus,
 .el-textarea:focus,
 .el-select:hover {
-  border-color: var(--primary-color); /* 修改聚焦和悬停边框颜色 */
+  border-color: var(--primary-color);
+  /* 修改聚焦和悬停边框颜色 */
   box-shadow: 0 0 5px rgba(124, 115, 230, 0.3);
 }
 
@@ -447,19 +442,23 @@ export default {
 .btn-cancel {
   border-radius: 20px;
   color: #333;
-  background-color: var(--accent-color); /* 修改背景颜色 */
+  background-color: var(--accent-color);
+  /* 修改背景颜色 */
   border: none;
   transition: all 0.3s ease;
 }
 
 .btn-cancel:hover {
-  background-color: var(--secondary-color); /* 修改悬停背景颜色 */
+  background-color: var(--secondary-color);
+  /* 修改悬停背景颜色 */
 }
 
 .btn-submit {
   border-radius: 20px;
-  background-color: var(--primary-color); /* 修改背景颜色 */
-  border-color: var(--primary-color); /* 修改边框颜色 */
+  background-color: var(--primary-color);
+  /* 修改背景颜色 */
+  border-color: var(--primary-color);
+  /* 修改边框颜色 */
   color: #fff;
   font-weight: bold;
   transition: all 0.3s ease;

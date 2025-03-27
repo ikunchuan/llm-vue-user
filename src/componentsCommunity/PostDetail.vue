@@ -107,7 +107,7 @@
               <p class="community-desc">{{ community.communityDescription || "暂无描述" }}</p>
             </div>
           </el-card>
-          <br/>
+          <br />
           <!-- 点赞按钮 -->
           <el-button type="primary" size="middle" @click="likePost" :disabled="liked"
             :icon="liked ? 'el-icon-thumb' : 'el-icon-thumb-solid'">
@@ -210,7 +210,7 @@ export default {
           if (response.data === 1) {
             this.$message.success('点赞成功');
 
-      } else {
+          } else {
             this.$message.error('点赞失败');
           }
         })
@@ -286,7 +286,7 @@ export default {
           console.log(response.data)
           this.author = response.data;
           //查找这个作者的粉丝数量
-          this.$http.get(`/uis/v1/user/fans/${userId}`)
+          axios.get(`/uis/v1/user/fans/${userId}`)
             .then(response => {
               console.log('fans data:', response.data);
               this.fansInfo = response.data;

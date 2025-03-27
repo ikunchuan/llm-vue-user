@@ -6,45 +6,14 @@
         <div class="logo" @click="goToIndex">LINGYAN</div>
 
         <nav class="nav-menu">
-          <div
-            class="nav-item"
-            v-for="item in navItems"
-            :key="item.name"
-            @mouseenter="toggleDrawer(item)"
-            @mouseleave="toggleDrawer(item)"
-            @click="navigate(item.path)"
-          >
+          <div class="nav-item" v-for="item in navItems" :key="item.name" @mouseenter="toggleDrawer(item)"
+            @mouseleave="toggleDrawer(item)" @click="navigate(item.path)">
             <!-- 图片在左边 -->
-            <img
-              v-if="item.name === '竞赛中心'"
-              src="../assets/img/49.png"
-              alt="icon"
-              class="nav-item-icon"
-            />
-            <img
-              v-if="item.name === '资源中心'"
-              src="../assets/img/48.png"
-              alt="icon"
-              class="nav-item-icon"
-            />
-            <img
-              v-if="item.name === '灵验知道'"
-              src="../assets/img/47.png"
-              alt="icon"
-              class="nav-item-icon"
-            />
-            <img
-              v-if="item.name === '社区'"
-              src="../assets/img/50.png"
-              alt="icon"
-              class="nav-item-icon"
-            />
-            <img
-              v-if="item.name === '个人中心'"
-              src="../assets/img/46.png"
-              alt="icon"
-              class="nav-item-icon"
-            />
+            <img v-if="item.name === '竞赛中心'" src="../assets/img/49.png" alt="icon" class="nav-item-icon" />
+            <img v-if="item.name === '资源中心'" src="../assets/img/48.png" alt="icon" class="nav-item-icon" />
+            <img v-if="item.name === '灵验知道'" src="../assets/img/47.png" alt="icon" class="nav-item-icon" />
+            <img v-if="item.name === '社区'" src="../assets/img/50.png" alt="icon" class="nav-item-icon" />
+            <img v-if="item.name === '个人中心'" src="../assets/img/46.png" alt="icon" class="nav-item-icon" />
             <!-- 文字在右边 -->
             <span>{{ item.name }}</span>
           </div>
@@ -52,38 +21,21 @@
 
         <!-- 右侧用户信息 -->
         <div class="user-info" @click="goToLogin">
-          <el-popover
-            :width="55"
-            popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, 
-              rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;"
-          >
+          <el-popover :width="55" popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, 
+              rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
             <template #reference>
               <!-- shape：square； border: 1px solid #007bff;-->
-              <img
-                :src="getUserImg(userInfo.userProfilePicture)"
-                alt="user"
-                class="user-avatar"
-              />
+              <img :src="getUserImg(userInfo.userProfilePicture)" alt="user" class="user-avatar" />
             </template>
             <template #default>
-              <div
-                class="rich-conent"
-                style="display: flex; gap: 16px; flex-direction: column"
-              >
-                <img
-                  :src="getUserImg(userInfo.userProfilePicture)"
-                  alt="user"
-                  class="user-avatar"
-                />
+              <div class="rich-conent" style="display: flex; gap: 16px; flex-direction: column">
+                <img :src="getUserImg(userInfo.userProfilePicture)" alt="user" class="user-avatar" />
 
                 <div>
                   <p style="margin: 0; text-align: center">{{ userName }}</p>
                 </div>
                 <el-divider style="margin: 0" />
-                <p
-                  style="margin: 0; text-align: center; cursor: pointer"
-                  @click="openOutDialog"
-                >
+                <p style="margin: 0; text-align: center; cursor: pointer" @click="openOutDialog">
                   退出登录
                 </p>
               </div>
@@ -95,101 +47,45 @@
         </div>
       </div>
 
-      <el-drawer
-        v-model="isDrawerVisible"
-        :title="activeDrawer?.name || ''"
-        :show-close="false"
-        size="40%"
-        direction="ttb"
-        class="drawer"
-        @close="toggleDrawer(null)"
-        @mouseleave="toggleDrawer(null)"
-        append-to-body
-      >
+      <el-drawer v-model="isDrawerVisible" :title="activeDrawer?.name || ''" :show-close="false" size="40%"
+        direction="ttb" class="drawer" @close="toggleDrawer(null)" @mouseleave="toggleDrawer(null)" append-to-body>
         <!-- append-to-body 是让组件回到body中，让z-index生效-->
         <transition name="fade">
           <div v-if="isDrawerVisible && activeDrawer">
-            <div
-              v-if="activeDrawer?.name === '竞赛中心'"
-              class="resource-center"
-            >
+            <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
               <div class="title-column">
                 <h3 class="drawer-title">竞赛中心</h3>
-                <img
-                  src="../assets/img/16.png"
-                  alt="竞赛中心图标"
-                  style="width: 45px; height: 45px"
-                />
+                <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px" />
               </div>
               <div class="content-column">
-                <div
-                  class="recommend-card"
-                  v-for="(comp, index) in popularCompetitions"
-                  :key="index"
-                  @click="goToCompetitionDetail(comp.competitionId)"
-                >
-                  <el-image
-                    :src="
-                      'http://localhost:10086/images/upload/' +
-                      comp.competitionImgUrl
-                    "
-                    fit="cover"
-                    class="card-image"
-                  ></el-image>
+                <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index"
+                  @click="goToCompetitionDetail(comp.competitionId)">
+                  <el-image :src="'http://localhost:10086/images/upload/' +
+                    comp.competitionImgUrl
+                    " fit="cover" class="card-image"></el-image>
                   <div class="card-title">{{ comp.competitionName }}</div>
                 </div>
               </div>
             </div>
 
-            <div
-              v-if="activeDrawer?.name === '资源中心'"
-              class="resource-center"
-            >
+            <div v-if="activeDrawer?.name === '资源中心'" class="resource-center">
               <div class="right-column">
                 <!-- 第一列 -->
                 <div class="resource-column">
                   <div class="resource-link" @click="navigateToPath('course')">
-                    <img
-                      src="../assets/img/72.png"
-                      alt="课程资源"
-                      style="width: 20px; height: 20px"
-                    />课程资源
+                    <img src="../assets/img/72.png" alt="课程资源" style="width: 20px; height: 20px" />课程资源
                   </div>
                   <h3 class="drawer-title">更多课程网站</h3>
-                  <a
-                    href="https://www.bilibili.com/"
-                    class="resource-item"
-                    target="_blank"
-                  >
-                    <img
-                      src="../assets/img/65.png"
-                      alt="哔哩哔哩图标"
-                      style="width: 20px; height: 20px"
-                    />
+                  <a href="https://www.bilibili.com/" class="resource-item" target="_blank">
+                    <img src="../assets/img/65.png" alt="哔哩哔哩图标" style="width: 20px; height: 20px" />
                     <span>哔哩哔哩 (Bilibili)</span>
                   </a>
-                  <a
-                    href="https://www.icourse163.org/"
-                    class="resource-item"
-                    target="_blank"
-                  >
-                    <img
-                      src="../assets/img/66.png"
-                      alt="中国大学MOOC图标"
-                      style="width: 20px; height: 20px"
-                    />
+                  <a href="https://www.icourse163.org/" class="resource-item" target="_blank">
+                    <img src="../assets/img/66.png" alt="中国大学MOOC图标" style="width: 20px; height: 20px" />
                     <span>中国大学MOOC</span>
                   </a>
-                  <a
-                    href="https://study.163.com/"
-                    class="resource-item"
-                    target="_blank"
-                  >
-                    <img
-                      src="../assets/img/67.png"
-                      alt="网易云课堂图标"
-                      style="width: 20px; height: 20px"
-                    />
+                  <a href="https://study.163.com/" class="resource-item" target="_blank">
+                    <img src="../assets/img/67.png" alt="网易云课堂图标" style="width: 20px; height: 20px" />
                     <span>网易云课堂</span>
                   </a>
                 </div>
@@ -197,61 +93,27 @@
                 <div class="divider"></div>
                 <!-- 第二列 -->
                 <div class="resource-column">
-                  <div
-                    class="resource-link"
-                    @click="navigateToPath('question')"
-                  >
-                    <img
-                      src="../assets/img/73.png"
-                      alt="题库资源"
-                      style="width: 20px; height: 20px"
-                    />题库资源
+                  <div class="resource-link" @click="navigateToPath('question')">
+                    <img src="../assets/img/73.png" alt="题库资源" style="width: 20px; height: 20px" />题库资源
                   </div>
                   <h3 class="drawer-title">更多题库网站</h3>
-                  <a
-                    href="https://leetcode-cn.com/"
-                    class="resource-item"
-                    target="_blank"
-                  >
-                    <img
-                      src="../assets/img/68.png"
-                      alt="LeetCode图标"
-                      style="width: 20px; height: 20px"
-                    />
+                  <a href="https://leetcode-cn.com/" class="resource-item" target="_blank">
+                    <img src="../assets/img/68.png" alt="LeetCode图标" style="width: 20px; height: 20px" />
                     <span>LeetCode (力扣)</span>
                   </a>
-                  <a
-                    href="http://www.chinauniversitymooc.org/"
-                    class="resource-item"
-                    target="_blank"
-                  >
-                    <img
-                      src="../assets/img/69.png"
-                      alt="中国大学生在线图标"
-                      style="width: 20px; height: 20px"
-                    />
+                  <a href="http://www.chinauniversitymooc.org/" class="resource-item" target="_blank">
+                    <img src="../assets/img/69.png" alt="中国大学生在线图标" style="width: 20px; height: 20px" />
                     <span>中国大学生在线</span>
                   </a>
-                  <a
-                    href="https://www.nowcoder.com/"
-                    class="resource-item"
-                    target="_blank"
-                  >
-                    <img
-                      src="../assets/img/70.png"
-                      alt="牛客网图标"
-                      style="width: 20px; height: 20px"
-                    />
+                  <a href="https://www.nowcoder.com/" class="resource-item" target="_blank">
+                    <img src="../assets/img/70.png" alt="牛客网图标" style="width: 20px; height: 20px" />
                     <span>牛客网</span>
                   </a>
                 </div>
               </div>
             </div>
 
-            <div
-              v-if="activeDrawer?.name === '灵验知道'"
-              class="resource-center"
-            >
+            <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
               <div class="title-section">
                 <h3 class="drawer-title">灵验知道</h3>
                 <p>
@@ -260,52 +122,25 @@
               </div>
               <div class="content-section">
                 <div class="resource-box lingyan-know">
-                  <img
-                    src="../assets/img/71.png"
-                    alt="灵验知道图片"
-                    class="know-image"
-                  />
+                  <img src="../assets/img/71.png" alt="灵验知道图片" class="know-image" />
                 </div>
               </div>
             </div>
             <div v-if="activeDrawer?.name === '社区'" class="community-section">
               <div class="community-images-text">
-                <img
-                  src="../assets/img/74.png"
-                  alt="社区图片1"
-                  class="community-image"
-                />
+                <img src="../assets/img/74.png" alt="社区图片1" class="community-image" />
                 <p>创新设计官方社区</p>
                 <!-- <img src="../assets/img/75.png" alt="社区图片2" class="community-image">
               <p>这里是社区图片2的描述文本，也可以编辑大小。</p> -->
               </div>
               <div class="community-card">
                 <h3 class="drawer-title">更多竞赛社区网站</h3>
-                <a
-                  href="http://acm-icpc.org/"
-                  class="resource-item"
-                  target="_blank"
-                >
-                  <span
-                    ><img
-                      src="../assets/img/70.png"
-                      alt="中国大学生程序设计竞赛网"
-                      style="width: 20px; height: 20px"
-                    />中国大学生程序设计竞赛网</span
-                  >
+                <a href="http://acm-icpc.org/" class="resource-item" target="_blank">
+                  <span><img src="../assets/img/70.png" alt="中国大学生程序设计竞赛网"
+                      style="width: 20px; height: 20px" />中国大学生程序设计竞赛网</span>
                 </a>
-                <a
-                  href="https://tianchi.aliyun.com/"
-                  class="resource-item"
-                  target="_blank"
-                >
-                  <span
-                    ><img
-                      src="../assets/img/68.png"
-                      alt="阿里云天池"
-                      style="width: 20px; height: 20px"
-                    />阿里云天池</span
-                  >
+                <a href="https://tianchi.aliyun.com/" class="resource-item" target="_blank">
+                  <span><img src="../assets/img/68.png" alt="阿里云天池" style="width: 20px; height: 20px" />阿里云天池</span>
                 </a>
               </div>
             </div>
@@ -314,19 +149,17 @@
       </el-drawer>
     </el-header>
 
-    <el-main
-      class="main-content"
-      :style="{
-        marginTop: headerHeight + 'px',
-        height: `calc(100vh - ${headerHeight}px)`,
-      }"
-    >
+    <el-main class="main-content" :style="{
+      marginTop: headerHeight + 'px',
+      height: `calc(100vh - ${headerHeight}px)`,
+    }">
       <router-view></router-view>
     </el-main>
   </el-container>
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -488,8 +321,7 @@ export default {
 
     fetchPopularCompetitions() {
       const competitionSearch = { popular: 1 }; // 指定获取热门竞赛
-      this.$http
-        .post("comp/v1/search", competitionSearch)
+      axios.post("comp/v1/search", competitionSearch)
         .then((response) => {
           if (response.data && response.data.list) {
             // 截取前三条数据
@@ -529,8 +361,7 @@ export default {
       //未登录重定向到注册
     }
 
-    this.$http
-      .get(`/uis/v1/ui/${userId}`)
+    axios.get(`/uis/v1/ui/${userId}`)
       .then((response) => {
         console.log("User data:", response.data);
         this.userInfo = response.data;
@@ -746,7 +577,8 @@ export default {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  text-decoration: none; /* 去除下划线 */
+  text-decoration: none;
+  /* 去除下划线 */
   /* 链接之间的间距 */
   width: 100%;
   /* 占满整列宽度 */
@@ -911,23 +743,31 @@ export default {
 
 .resource-center {
   display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
-  width: 100%; /* 抽屉的总宽度 */
+  align-items: center;
+  /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中 */
+  width: 100%;
+  /* 抽屉的总宽度 */
 }
 
 .title-column {
-  margin-right: px; /* 与内容列的间距 */
+  margin-right: px;
+  /* 与内容列的间距 */
   padding: 10px;
   width: 200px;
 }
 
 .content-column {
   display: flex;
-  flex-wrap: wrap; /* 允许内容换行 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  width: 70%; /* 根据需要调整宽度以容纳三个卡片 */
+  flex-wrap: wrap;
+  /* 允许内容换行 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  width: 70%;
+  /* 根据需要调整宽度以容纳三个卡片 */
   padding: 0px;
 }
 
@@ -1000,30 +840,45 @@ export default {
 }
 
 .title-section {
-  margin-right: 20px; /* 与内容区的间距 */
-  text-align: center; /* 文本居中 */
-  justify-content: center; /* 水平居中 */
+  margin-right: 20px;
+  /* 与内容区的间距 */
+  text-align: center;
+  /* 文本居中 */
+  justify-content: center;
+  /* 水平居中 */
   width: 300px;
 }
 
 .content-section {
   display: flex;
-  flex-wrap: wrap; /* 允许内容换行 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  width: 100%; /* 根据需要调整宽度以容纳内容 */
+  flex-wrap: wrap;
+  /* 允许内容换行 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
+  width: 100%;
+  /* 根据需要调整宽度以容纳内容 */
 }
 
 .resource-box {
-  width: 100%; /* 资源框宽度 */
-  max-width: 400px; /* 最大宽度，防止过大 */
-  margin: 10px; /* 外边距 */
-  text-align: center; /* 文本居中 */
+  width: 100%;
+  /* 资源框宽度 */
+  max-width: 400px;
+  /* 最大宽度，防止过大 */
+  margin: 10px;
+  /* 外边距 */
+  text-align: center;
+  /* 文本居中 */
 }
+
 .know-image {
-  max-width: 100%; /* 图片最大宽度 */
-  height: auto; /* 高度自动 */
-  border-radius: 8px; /* 圆角边框 */
+  max-width: 100%;
+  /* 图片最大宽度 */
+  height: auto;
+  /* 高度自动 */
+  border-radius: 8px;
+  /* 圆角边框 */
 }
 
 .resource-item {

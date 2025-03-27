@@ -4,18 +4,9 @@
     <div class="top-container">
       <!-- 左侧富文本编辑器 -->
       <div class="editor-container">
-        <Toolbar
-          :editor="editorRef"
-          :defaultConfig="toolbarConfig"
-          :mode="mode"
-        />
-        <Editor
-          v-model="valueHtml"
-          :defaultConfig="editorConfig"
-          :mode="mode"
-          @onCreated="handleCreated"
-          style="height: 500px; overflow-y: hidden"
-        />
+        <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
+        <Editor v-model="valueHtml" :defaultConfig="editorConfig" :mode="mode" @onCreated="handleCreated"
+          style="height: 500px; overflow-y: hidden" />
       </div>
 
       <!-- 中间间隔 -->
@@ -23,12 +14,7 @@
 
       <!-- 右侧表单 -->
       <div class="form-container">
-        <el-form
-          label-position="top"
-          label-width="auto"
-          :model="formLabelAlign"
-          style="max-width: 600px"
-        >
+        <el-form label-position="top" label-width="auto" :model="formLabelAlign" style="max-width: 600px">
           <!-- <el-form-item label="用户id">
             <el-input
               v-model="formLabelAlign.name"
@@ -42,10 +28,7 @@
             />
           </el-form-item> -->
           <el-form-item label="帖子标题">
-            <el-input
-              v-model="formLabelAlign.type"
-              placeholder="请输入帖子标题"
-            />
+            <el-input v-model="formLabelAlign.type" placeholder="请输入帖子标题" />
           </el-form-item>
         </el-form>
       </div>
@@ -55,9 +38,7 @@
     <div class="footer-container">
       <div class="button-container">
         <el-button @click="cancel">取消</el-button>
-        <el-button type="primary" @click="publish" style="margin-left: 10px"
-          >发布</el-button
-        >
+        <el-button type="primary" @click="publish" style="margin-left: 10px">发布</el-button>
       </div>
     </div>
   </div>

@@ -17,15 +17,8 @@
         </div>
         <!-- 右侧按钮 -->
         <div class="header-buttons">
-          <el-button type="primary" size="small" @click="goToPostCreat()"
-            >发帖</el-button
-          >
-          <el-button
-            type="success"
-            size="small"
-            @click="joinCommunity"
-            :disabled="isMember"
-          >
+          <el-button type="primary" size="small" @click="goToPostCreat()">发帖</el-button>
+          <el-button type="success" size="small" @click="joinCommunity" :disabled="isMember">
             {{ isMember ? "已加入" : "+加入" }}
           </el-button>
         </div>
@@ -42,22 +35,13 @@
             <el-tab-pane label="帖子" name="all">
               <!-- 搜索框 -->
               <div class="search-bar">
-                <el-input
-                  v-model="searchQuery"
-                  placeholder="搜索帖子关键字"
-                  prefix-icon="el-icon-search"
-                  class="search-input"
-                />
+                <el-input v-model="searchQuery" placeholder="搜索帖子关键字" prefix-icon="el-icon-search"
+                  class="search-input" />
               </div>
 
               <!-- 帖子列表 -->
-              <el-card
-                v-for="(post, index) in filteredPostsList"
-                :key="index"
-                shadow="hover"
-                class="post-card"
-                @click="navigateToPostDetail(post.postId)"
-              >
+              <el-card v-for="(post, index) in filteredPostsList" :key="index" shadow="hover" class="post-card"
+                @click="navigateToPostDetail(post.postId)">
                 <div class="post-content">
                   <div class="post-header">
                     <el-tag type="success" class="post-tag">{{
@@ -70,25 +54,17 @@
                   </p>
                 </div>
                 <div class="post-info">
-                  <span
-                    ><i class="el-icon-thumb" /> 👍{{
-                      post.likeCount || 0
-                    }}</span
-                  >
-                  <span
-                    ><i class="el-icon-star-off" /> 🌟{{
-                      post.favoriteCount || 0
-                    }}</span
-                  >
-                  <span
-                    ><i class="el-icon-chat-line-round" /> 💬{{
-                      post.commentCount || 0
-                    }}</span
-                  >
-                  <span
-                    ><i class="el-icon-view" />👁️
-                    {{ post.viewCount || 0 }}</span
-                  >
+                  <span><i class="el-icon-thumb" /> 👍{{
+                    post.likeCount || 0
+                  }}</span>
+                  <span><i class="el-icon-star-off" /> 🌟{{
+                    post.favoriteCount || 0
+                  }}</span>
+                  <span><i class="el-icon-chat-line-round" /> 💬{{
+                    post.commentCount || 0
+                  }}</span>
+                  <span><i class="el-icon-view" />👁️
+                    {{ post.viewCount || 0 }}</span>
                 </div>
               </el-card>
             </el-tab-pane>
@@ -96,11 +72,7 @@
             <!-- 社区成员 Tab -->
             <el-tab-pane label="社区成员" name="members">
               <div class="community-members" v-if="communityUsers.length">
-                <div
-                  class="member-item"
-                  v-for="(user, index) in communityUsers"
-                  :key="index"
-                >
+                <div class="member-item" v-for="(user, index) in communityUsers" :key="index">
                   <el-avatar :src="user.avatarUrl" size="medium" />
                   <span class="member-name">{{ user.userName }}</span>
                 </div>
@@ -115,11 +87,7 @@
           <el-card class="ranking-card" shadow="hover">
             <h3 class="ranking-title">👁️👁️👁️</h3>
             <div class="ranking-list">
-              <div
-                class="ranking-item"
-                v-for="(user, index) in rankings"
-                :key="index"
-              >
+              <div class="ranking-item" v-for="(user, index) in rankings" :key="index">
                 <span class="ranking-number">{{ index + 1 }}</span>
                 <el-avatar :src="user.avatarUrl" size="small" />
                 <span class="ranking-username">{{ user.name }}</span>
@@ -129,32 +97,16 @@
 
             <div class="active-users">
               <h3>本周活跃</h3>
-              <div
-                v-for="user in activeUsersList"
-                :key="user.id"
-                class="user-item"
-              >
+              <div v-for="user in activeUsersList" :key="user.id" class="user-item">
                 <el-avatar :src="user.avatar" />
                 <span>{{ user.name }}</span>
                 <el-tag>{{ user.rank }}</el-tag>
               </div>
             </div>
             <div class="image-list">
-              <img
-                src="../assets/img/77.png"
-                alt="Image 1"
-                class="image-item"
-              />
-              <img
-                src="../assets/img/78.png"
-                alt="Image 2"
-                class="image-item"
-              />
-              <img
-                src="../assets/img/79.png"
-                alt="Image 3"
-                class="image-item"
-              />
+              <img src="../assets/img/77.png" alt="Image 1" class="image-item" />
+              <img src="../assets/img/78.png" alt="Image 2" class="image-item" />
+              <img src="../assets/img/79.png" alt="Image 3" class="image-item" />
             </div>
           </el-card>
         </el-col>
@@ -290,8 +242,7 @@ export default {
     },
     fetchCommunityUsers() {
       // this.$http.get(`/ucmns/v1/ucmn/user/${this.communityId}`)
-      this.$http
-        .get(`/v1/cmns/cmnpostuser/${this.communityId}`)
+      axios.get(`/v1/cmns/cmnpostuser/${this.communityId}`)
 
         .then((response) => {
           console.log("获取到的用户数据：", response.data);
@@ -446,6 +397,7 @@ export default {
   justify-content: flex-end;
   /* 使内容靠右对齐 */
 }
+
 .post-tag {
   font-size: 12px;
   color: #ffffff;
@@ -568,18 +520,23 @@ export default {
 .post-info i {
   color: #5a67d8;
 }
+
 /* 图片列表样式 */
 .image-list {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px; /* 根据需要调整图片与上方内容的间距 */
+  margin-top: 20px;
+  /* 根据需要调整图片与上方内容的间距 */
 }
 
 /* 图片项样式 */
 .image-item {
-  width: 100%; /* 可以根据需要调整图片的宽度 */
-  max-width: 200px; /* 设置图片的最大宽度 */
-  margin-bottom: 10px; /* 图片之间的间距 */
+  width: 100%;
+  /* 可以根据需要调整图片的宽度 */
+  max-width: 200px;
+  /* 设置图片的最大宽度 */
+  margin-bottom: 10px;
+  /* 图片之间的间距 */
 }
 </style>

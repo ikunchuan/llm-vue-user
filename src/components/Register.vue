@@ -70,7 +70,7 @@
 <script>
 import { User, Lock, CircleCheckFilled } from '@element-plus/icons-vue';
 import { nextTick } from 'vue';
-
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -112,7 +112,7 @@ export default {
                 return this.$message.warning('请勾选同意协议');
             }
 
-            const response = await this.$http.post('/uis/v1/register', this.registerForm);
+            const response = await axios.post('/uis/v1/register', this.registerForm);
 
             if (response.data.code === 200) {
                 this.$message.success('注册成功');

@@ -10,15 +10,9 @@
           <h1 class="large-title">
             {{ competitionBasicInfo.competitionName }}
           </h1>
-          <el-image
-            style="width: 330px; height: 170px; border-radius: 8px"
-            :src="
-              'http://localhost:10086/images/upload/' +
-              competitionBasicInfo.competitionImgUrl
-            "
-            fit="cover"
-            class="card-image"
-          ></el-image>
+          <el-image style="width: 330px; height: 170px; border-radius: 8px" :src="'http://localhost:10086/images/upload/' +
+            competitionBasicInfo.competitionImgUrl
+            " fit="cover" class="card-image"></el-image>
         </div>
 
         <!-- 原有竞赛时间和链接区域 -->
@@ -38,16 +32,8 @@
         <div class="box related-competitions">
           <h3>相关竞赛</h3>
           <ul>
-            <li
-              v-for="competition in competitionRecommends"
-              :key="competition.competitionId"
-              class="list-item"
-            >
-              <a
-                @click="gotoCompDetail(competition.competitionId)"
-                class="title"
-                >{{ competition.competitionName }}</a
-              >
+            <li v-for="competition in competitionRecommends" :key="competition.competitionId" class="list-item">
+              <a @click="gotoCompDetail(competition.competitionId)" class="title">{{ competition.competitionName }}</a>
               <p class="date">
                 上线日期：{{ formatDateShort(competition.updatedTime) }}
               </p>
@@ -85,11 +71,8 @@
           <div class="right-up">
             <ul class="three-parts">
               <li>
-                <a
-                  class="hover-effect recommended-course-link"
-                  @click="goToCourseDetailb"
-                  >{{ recommendedCourseNameb || 无 }}</a
-                >
+                <a class="hover-effect recommended-course-link" @click="goToCourseDetailb">{{ recommendedCourseNameb ||
+                  无 }}</a>
                 <a class="recommended-course-link" @click="goToCourseDetailc">{{
                   recommendedCourseNamec || 无
                 }}</a>
@@ -193,6 +176,7 @@
 
 <script>
 import { ElMessage } from "element-plus";
+import axios from 'axios';
 export default {
   name: "CompDetail",
   data() {
@@ -324,7 +308,7 @@ export default {
   methods: {
     // 获取课程信息
     fetchCourse() {
-      this.$http
+      axios
         .get(`http://localhost:10086/crs/v1`)
         .then((response) => {
           this.courseinfo = response.data;
@@ -562,7 +546,7 @@ export default {
     },
     // 获取竞赛基本信息
     fetchCompetitionBasicInfo(compId) {
-      this.$http
+      axios
         .get(`comp/v1/compe/${compId}`) // 注意这里的URL可能需要根据后端实际接口调整
         .then((response) => {
           console.log("competitionBasicInfo", response.data);
@@ -595,10 +579,8 @@ export default {
         this.$message.error("请先登录");
         return;
       }
-      this.$http
-        .post(
-          `http://localhost:10086/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`
-        )
+      axios.post(`/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`
+      )
         .then((response) => {
           // 假设后端返回 表示收藏成功
           if (response.data == 1) {
@@ -618,8 +600,7 @@ export default {
         console.error("categoryId is not defined");
         return;
       }
-      this.$http
-        .get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
+      axios.get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
         .then((response) => {
           console.log("相关的竞赛数据:", response.data);
           if (Array.isArray(response.data)) {
@@ -637,7 +618,7 @@ export default {
     },
     // 根据categoryId获取社区
     fetchCommunitiesByCategoryId() {
-      this.$http
+      axios
         .get(`v1/cmns/cmn/byParentId`, {
           params: { parentId: this.categoryId },
         })
@@ -657,8 +638,7 @@ export default {
 
     // 根据communityId获取相关帖子
     fetchRelatedPosts(communityName) {
-      this.$http
-        .post(`v1/posts/search`, { params: { communityName } })
+      axios.post(`v1/posts/search`, { params: { communityName } })
         .then((response) => {
           console.log("获取相关帖子的响应:", response.data);
           // 检查 response.data.list 是否存在且不是 undefined
@@ -1105,14 +1085,21 @@ body {
   overflow-wrap: break-word;
   /* 确保长文本可以换行 */
 }
+
 .competition-detail-text {
-  width: 100%; /* 设置宽度为100%，占据整个容器 */
-  max-width: 800px; /* 设置最大宽度，可以根据需要调整 */
-  margin: 20px auto; /* 居中显示 */
+  width: 100%;
+  /* 设置宽度为100%，占据整个容器 */
+  max-width: 800px;
+  /* 设置最大宽度，可以根据需要调整 */
+  margin: 20px auto;
+  /* 居中显示 */
   padding: 10px;
-  border-radius: 8px; /* 圆角边框 */
-  word-wrap: break-word; /* 允许在单词内换行 */
-  overflow-wrap: break-word; /* 允许在单词内换行 */
+  border-radius: 8px;
+  /* 圆角边框 */
+  word-wrap: break-word;
+  /* 允许在单词内换行 */
+  overflow-wrap: break-word;
+  /* 允许在单词内换行 */
   font-size: 16px;
   color: #666;
 }

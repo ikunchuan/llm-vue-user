@@ -2,49 +2,28 @@
   <div class="main-container">
     <!-- 返回按钮 -->
     <div class="back-button-container">
-      <el-button @click="confirmGoBack" icon="el-icon-arrow-left"
-        >返回{{ communityName }}</el-button
-      >
+      <el-button @click="confirmGoBack" icon="el-icon-arrow-left">返回{{ communityName }}</el-button>
     </div>
 
     <!-- 顶部标题输入 -->
     <div class="title-container">
       <el-form-item label="帖子标题">
-        <el-input
-          v-model="formLabelAlign.type"
-          placeholder="请输入你的帖子标题"
-        />
+        <el-input v-model="formLabelAlign.type" placeholder="请输入你的帖子标题" />
       </el-form-item>
     </div>
 
     <!-- 底部富文本编辑器 -->
     <div class="editor-container">
-      <Toolbar
-        :editor="editorRef"
-        :defaultConfig="toolbarConfig"
-        :mode="mode"
-      />
-      <Editor
-        v-model="valueHtml"
-        :defaultConfig="editorConfig"
-        :mode="mode"
-        @onCreated="handleCreated"
-        style="height: 500px; overflow-y: hidden"
-      />
+      <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
+      <Editor v-model="valueHtml" :defaultConfig="editorConfig" :mode="mode" @onCreated="handleCreated"
+        style="height: 500px; overflow-y: hidden" />
     </div>
 
     <!-- 下方容器，包含底部按钮 -->
     <div class="footer-container">
       <div class="button-container">
-        <el-button @click="confirmClear" :disabled="isEditorEmpty"
-          >清空</el-button
-        >
-        <el-button
-          type="primary"
-          @click="confirmPublish"
-          :disabled="isEditorEmpty"
-          >发布</el-button
-        >
+        <el-button @click="confirmClear" :disabled="isEditorEmpty">清空</el-button>
+        <el-button type="primary" @click="confirmPublish" :disabled="isEditorEmpty">发布</el-button>
       </div>
     </div>
   </div>
@@ -161,7 +140,7 @@ export default {
 
       // 发送POST请求添加帖子
       axios
-        .post("http://localhost:10086/v1/posts/post", postData)
+        .post("/v1/posts/post", postData)
         .then((response) => {
           console.log("帖子发布成功", response.data);
           ElMessageBox.alert("帖子发布成功", "发布成功", {

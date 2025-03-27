@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -63,7 +64,7 @@ export default {
     },
 
     fetchCourseViewHistory() {
-      this.$http.get(`/uis/v1/courseView/${this.userId}`)
+      axios.get(`/uis/v1/courseView/${this.userId}`)
         .then(response => {
           this.courseHistory = response.data;
           console.log('获取课程浏览历史:', this.courseHistory);
@@ -74,7 +75,7 @@ export default {
     },
 
     fetchPostViewHistory() {
-      this.$http.get(`/uis/v1/postsView/${this.userId}`)
+      axios.get(`/uis/v1/postsView/${this.userId}`)
         .then(response => {
           this.postHistory = response.data;
           console.log('获取帖子浏览历史:', this.postHistory);
@@ -86,7 +87,7 @@ export default {
     },
 
     removeCourseViewHistory(courseViewId) {
-      this.$http.delete(`/uis/v1/courseView/del/${courseViewId}`)
+      axios.delete(`/uis/v1/courseView/del/${courseViewId}`)
         .then(() => {
           this.fetchCourseViewHistory();
           this.$message.success('删除成功');
@@ -98,7 +99,7 @@ export default {
     },
 
     removePostViewHistory(postViewId) {
-      this.$http.delete(`/uis/v1/postView/del/${postViewId}`)
+      axios.delete(`/uis/v1/postView/del/${postViewId}`)
         .then(() => {
           this.fetchPostViewHistory();
           this.$message.success('删除成功');

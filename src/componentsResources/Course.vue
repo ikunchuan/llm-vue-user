@@ -3,25 +3,13 @@
     <!-- 图片轮播 -->
     <el-carousel :interval="5000" arrow="always" type="card" height="300px">
       <el-carousel-item>
-        <img
-          src="../assets/img/76.png"
-          alt="轮播图1"
-          style="width: 100%; height: 100%; object-fit: cover"
-        />
+        <img src="../assets/img/76.png" alt="轮播图1" style="width: 100%; height: 100%; object-fit: cover" />
       </el-carousel-item>
       <el-carousel-item>
-        <img
-          src="../assets/img/53.png"
-          alt="轮播图2"
-          style="width: 100%; height: 100%; object-fit: cover"
-        />
+        <img src="../assets/img/53.png" alt="轮播图2" style="width: 100%; height: 100%; object-fit: cover" />
       </el-carousel-item>
       <el-carousel-item>
-        <img
-          src="../assets/img/51.png"
-          alt="轮播图3"
-          style="width: 100%; height: 100%; object-fit: cover"
-        />
+        <img src="../assets/img/51.png" alt="轮播图3" style="width: 100%; height: 100%; object-fit: cover" />
       </el-carousel-item>
       <!-- 更多轮播图项目 -->
     </el-carousel>
@@ -30,21 +18,11 @@
     <section class="filters-section" shadow="hover">
       <!-- 竞赛名称搜索框 -->
       <div class="filter-item">
-        <el-input
-          placeholder="请输入相应课程名称"
-          v-model="searchName"
-          class="search-input"
-        ></el-input>
+        <el-input placeholder="请输入相应课程名称" v-model="searchName" class="search-input"></el-input>
       </div>
       <!-- 搜索按钮 -->
       <div class="filter-item">
-        <el-button
-          type="primary"
-          v-model="searchName"
-          @click="searchCourses"
-          class="search-button"
-          >搜索</el-button
-        >
+        <el-button type="primary" v-model="searchName" @click="searchCourses" class="search-button">搜索</el-button>
       </div>
     </section>
 
@@ -58,56 +36,31 @@
         <img src="../assets/img/5.png" alt="Image 5" class="logo" @click="onIconClick(5)" />
           -->
         <div class="icon-item">
-          <el-icon class="icon"
-            ><img
-              src="../assets/img/1.png"
-              alt="Logo"
-              class="logo"
-              @click="onIconClick(1)"
-          /></el-icon>
+          <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo"
+              @click="onIconClick(1)" /></el-icon>
           <p>创新创业类</p>
         </div>
         <!-- 信息技术与编程类 -->
         <div class="icon-item">
-          <el-icon class="icon"
-            ><img
-              src="../assets/img/2.png"
-              class="logo"
-              @click="onIconClick(2)"
-          /></el-icon>
+          <el-icon class="icon"><img src="../assets/img/2.png" class="logo" @click="onIconClick(2)" /></el-icon>
           <p>信息技术与编程类</p>
         </div>
 
         <!-- 数学类 -->
         <div class="icon-item">
-          <el-icon class="icon"
-            ><img
-              src="../assets/img/3.png"
-              class="logo"
-              @click="onIconClick(3)"
-          /></el-icon>
+          <el-icon class="icon"><img src="../assets/img/3.png" class="logo" @click="onIconClick(3)" /></el-icon>
           <p>数学类</p>
         </div>
 
         <!-- 经济与管理类 -->
         <div class="icon-item">
-          <el-icon class="icon"
-            ><img
-              src="../assets/img/4.png"
-              class="logo"
-              @click="onIconClick(4)"
-          /></el-icon>
+          <el-icon class="icon"><img src="../assets/img/4.png" class="logo" @click="onIconClick(4)" /></el-icon>
           <p>经济与管理类</p>
         </div>
 
         <!-- 语言与文化类 -->
         <div class="icon-item">
-          <el-icon class="icon"
-            ><img
-              src="../assets/img/5.png"
-              class="logo"
-              @click="onIconClick(5)"
-          /></el-icon>
+          <el-icon class="icon"><img src="../assets/img/5.png" class="logo" @click="onIconClick(5)" /></el-icon>
           <p>语言与文化类</p>
         </div>
       </div>
@@ -115,30 +68,19 @@
 
     <!-- 展示卡片 -->
     <section class="cards-section">
-      <div
-        class="card"
-        v-for="(card, index) in cards"
-        :key="index"
-        @click="goToDetail(card.courseId)"
-      >
-        <img
-          style="width: 360px; height: 170px"
-          :src="'http://localhost:10086/images/upload/' + card.courseImgUrl"
-          alt="Card Image"
-        />
+      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.courseId)">
+        <img style="width: 360px; height: 170px" :src="'http://localhost:10086/images/upload/' + card.courseImgUrl"
+          alt="Card Image" />
         <div class="card-title">{{ card.courseName }}</div>
         <div class="card-info">{{ card.courseDescription }}</div>
         <div class="card-footer">
            
-          <div
-            :class="
-              card.courseDifficultyLevel === '初级'
-                ? 'level-beginner'
-                : card.courseDifficultyLevel === '中级'
+          <div :class="card.courseDifficultyLevel === '初级'
+              ? 'level-beginner'
+              : card.courseDifficultyLevel === '中级'
                 ? 'level-intermediate'
                 : 'level-advanced'
-            "
-          >
+            ">
                         {{ card.courseDifficultyLevel }}          
           </div>
         </div>
@@ -177,8 +119,8 @@ export default {
       this.loading = true;
       this.error = null;
       // 发送GET请求到后端API
-      this.$http
-        .get("http://localhost:10086/crs/v1")
+      axios
+        .get("/crs/v1")
         .then((response) => {
           // 假设后端返回的数据是一个数组，每个元素都是一个卡片对象
           this.cards = response.data;
@@ -255,7 +197,7 @@ export default {
       // 使用路由跳转到CourseDetail页面，并传递ID作为参数
       const userId = sessionStorage.userId;
 
-      this.$http
+      axios
         .get("crs/course/view", {
           params: {
             userId: userId,
@@ -508,6 +450,7 @@ export default {
 .rating {
   color: #5a67d8;
 }
+
 /* 难度级别颜色定义 */
 .level-beginner {
   color: #28a745;

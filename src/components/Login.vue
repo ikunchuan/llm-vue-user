@@ -55,7 +55,7 @@
 
 <script>
 import { User, Lock } from '@element-plus/icons-vue';
-
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -84,7 +84,7 @@ export default {
         // 异步处理登录
         async handleLogin() {
             try {
-                const response = await this.$http.post('/uis/v1/login', this.loginForm);
+                const response = await axios.post('/uis/v1/login', this.loginForm);
                 if (response.data.code === 200) {
                     this.$message.success('登录成功！');
                     console.log('信息', response.data);

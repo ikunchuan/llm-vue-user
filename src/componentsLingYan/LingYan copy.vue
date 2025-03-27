@@ -75,7 +75,7 @@
 
 <script>
 import { Loading } from '@element-plus/icons-vue';
-
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -109,7 +109,7 @@ export default {
         this.eventSource.close();
       }
 
-      const url = `http://localhost:10086/chat/stream?message=${encodeURIComponent(this.inputMessage)}`
+      const url = `/chat/stream?message=${encodeURIComponent(this.inputMessage)}`
       this.eventSource = new EventSource(url);
 
       // 设置“AI 正在输入”状态

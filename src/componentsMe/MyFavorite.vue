@@ -10,7 +10,7 @@
       <div v-if="showDetails[0]" class="favorite-item-details">
         <div class="favorite-items">
           <div v-for="(comp, index) in visibleCompetitions" :key="index" class="favorite-card">
-            <el-card  @click="goToCompDetail(comp.competitionId)">
+            <el-card @click="goToCompDetail(comp.competitionId)">
               <div class="item-title">{{ comp.competitionName }}</div>
               <div class="item-content">
                 <div class="item-image">
@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -115,19 +116,19 @@ export default {
   methods: {
     fetchFavorites() {
       // 调用后端接口获取收藏的数据
-      this.$http.get(`/comp/v1/favorite/${this.userId}`) // 竞赛收藏
+      axios.get(`/comp/v1/favorite/${this.userId}`) // 竞赛收藏
         .then(response => {
           this.competitions = response.data;
           this.visibleCompetitions = this.competitions.slice(0, 4); // 初始化只显示前4个
         });
 
-      this.$http.get(`/crs/v1/favorite/${this.userId}`) // 课程收藏
+      axios.get(`/crs/v1/favorite/${this.userId}`) // 课程收藏
         .then(response => {
           this.courses = response.data;
           this.visibleCourses = this.courses.slice(0, 4); // 初始化只显示前4个
         });
 
-      this.$http.get(`/v1/posts/userpost/${this.userId}`) // 帖子收藏
+      axios.get(`/v1/posts/userpost/${this.userId}`) // 帖子收藏
         .then(response => {
           this.posts = response.data;
           this.visiblePosts = this.posts.slice(0, 4); // 初始化只显示前4个
@@ -143,7 +144,7 @@ export default {
         url = `/v1/posts/favorites/${favoriteId}`;
       }
 
-      this.$http.delete(url)
+      axios.delete(url)
         .then(() => {
           this.fetchFavorites(); // 重新获取收藏数据
           this.$message.success('删除成功');
@@ -216,7 +217,8 @@ export default {
   padding: 10px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px #faf9f9; /* 增加阴影 */
+  box-shadow: 0 2px 4px #faf9f9;
+  /* 增加阴影 */
 }
 
 .favorite-header {
@@ -226,7 +228,8 @@ export default {
   font-size: 17px;
   color: #333;
   cursor: pointer;
-  padding: 10px 20px; /* 增加内边距 */
+  padding: 10px 20px;
+  /* 增加内边距 */
   /* background-color: #e0a7a7;  */
 
   /* border-radius: 8px; 
@@ -248,12 +251,16 @@ export default {
 .favorite-card {
   display: flex;
   flex-direction: column;
-  padding: 0px; /* 减少卡片内边距 */
+  padding: 0px;
+  /* 减少卡片内边距 */
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: none; /* 去掉阴影 */
-  margin: 0; /* 去掉卡片之间的空隙 */
-  height: auto; /* 根据内容自适应高度 */
+  box-shadow: none;
+  /* 去掉阴影 */
+  margin: 0;
+  /* 去掉卡片之间的空隙 */
+  height: auto;
+  /* 根据内容自适应高度 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s;
 }
@@ -268,7 +275,8 @@ export default {
 
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; /* 限制为两行 */
+  -webkit-line-clamp: 2;
+  /* 限制为两行 */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -277,7 +285,8 @@ export default {
 .item-content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* 调整内容的排列 */
+  justify-content: space-between;
+  /* 调整内容的排列 */
 }
 
 .item-image img {
