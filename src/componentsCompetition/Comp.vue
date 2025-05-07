@@ -26,6 +26,13 @@
       </div>
 
     </section>
+    <!-- 竞赛趋势可视化图表 -->
+    <section class="chart-section">
+      <h2 class="section-title">📈 竞赛趋势图</h2>
+      <div id="trendChart" ref="chartRef" style="width: 100%; height: 400px"></div>
+    </section>
+
+
 
     <!-- 筛选条件 -->
     <section class="filters-section">
@@ -145,6 +152,8 @@
 <script>
 import axios from 'axios';
 import * as echarts from 'echarts';
+import Papa from "papaparse";
+
 export default {
   name: "MainLayout",
   data() {
@@ -193,6 +202,10 @@ export default {
         "未开始": "#FFA726", // 橙色
         "已结束": "#E53935"  // 红色
       },
+      trendRaw: null, // 读取到的原始表格数据（二维数组）
+      months: [], // x 轴类别（月／年）
+      seriesData: {}, // 各列对应的值，键名即列名
+      myChart: null,
     };
   },
   methods: {    // 加载CSV数据
@@ -662,16 +675,96 @@ export default {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CompDetail', params: { compId: compId } });
     },
-    // searchCompetitions() {
-    //   this.filteredCards = this.searchName
-    //     ? this.cards.filter(card => card.courseName.includes(this.searchName))
-    //     : this.cards;
-    // }
+    loadTrendCsv() {
+      fetch("/data/pivot_table.csv")
+        .then((res) => {
+          if (!res.ok) throw new Error("CSV 加载失败：" + res.status);
+          return res.text();
+        })
+        .then((csvText) => {
+          Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: ({ data }) => {
+              this.trendRaw = data;
+              this.formatTrendData();
+            },
+            error: (err) => console.error("CSV 解析失败：", err),
+          });
+        })
+        .catch((err) => console.error(err));
+    },
+
+    // 把格式化后的数据 set 到 ECharts
+    updateChart() {
+      if (!this.myChart || !this.months.length) return;
+      // 生成 series 数组
+      const series = Object.entries(this.seriesData).map(([col, data]) => ({
+        name: col,
+        type: "line",
+        stack: "Total",
+        data,
+      }));
+      this.myChart.setOption({
+        xAxis: { data: this.months },
+        series,
+      });
+    },
+
+    // 修改 initChart：只创建空图
+    initChart() {
+      const chartDom = this.$refs.chartRef;
+      this.myChart = echarts.init(chartDom);
+      this.myChart.setOption({
+        title: { text: "各类竞赛月度关注趋势" },
+        tooltip: { trigger: "axis" },
+        legend: {
+          // 先占位，后续 update 会根据实际列名补齐
+          data: [],
+        },
+        xAxis: { type: "category", boundaryGap: false, data: [] },
+        yAxis: { type: "value" },
+        series: [], // 先不传具体数据
+      });
+    },
+    // 把 trendRaw 转成 ECharts 需要的 months 和 series
+    formatTrendData() {
+      const data = this.trendRaw.filter((r) => r.year !== "1970");
+      this.months = data.map((r) => r.year);
+      if (!this.trendRaw || !this.trendRaw.length) return;
+      // 1) x 轴：这里用 year
+      this.months = this.trendRaw.map((row) => row.year);
+      // 2) 找到所有列名（排除 year）
+      const cols = Object.keys(this.trendRaw[0]).filter((k) => k !== "year");
+      // 3) 按列组织数据
+      cols.forEach((col) => {
+        this.seriesData[col] = this.trendRaw.map((row) => Number(row[col]));
+      });
+      // 4) 数据准备完毕，更新图表
+      this.updateChart();
+      // 更新图表：包括 legend、xAxis、series
+      this.myChart.setOption({
+        legend: { data: cols },
+        xAxis: { data: this.months },
+        series: cols.map((col) => ({
+          name: col,
+          type: "line",
+          stack: "Total",
+          data: this.seriesData[col],
+        })),
+      });
+    },
   },
+
+
+
+
 
   mounted() {
     this.fetchCards();
     this.loadCSVData();
+    this.initChart(); // 初始化图表
+    this.loadTrendCsv();
 
     // 在组件挂载时，可以自动获取推荐板块的数据
     this.sidebarItems.forEach(item => {
@@ -689,6 +782,13 @@ export default {
 </script>
 
 <style scoped>
+.chart-section {
+  margin: 40px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 /* 新增的图表布局样式 */
 .container {
   max-width: 1200px;
