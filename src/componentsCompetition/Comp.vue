@@ -26,13 +26,6 @@
       </div>
 
     </section>
-    <!-- 竞赛趋势可视化图表 -->
-    <section class="chart-section">
-      <h2 class="section-title">📈 竞赛趋势图</h2>
-      <div id="trendChart" ref="chartRef" style="width: 100%; height: 400px"></div>
-    </section>
-
-
 
     <!-- 筛选条件 -->
     <section class="filters-section">
@@ -62,7 +55,6 @@
     <!-- 图标分类 -->
     <section class="icon-section">
       <div class="icon-container">
-
         <div class="icon-item">
           <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo"
               @click="onIconClick(1)" /></el-icon>
@@ -95,6 +87,8 @@
     </section>
     <!-- 在 comp.vue 的模板中添加以下内容 -->
     <!-- 修改后的图表部分 -->
+    <!-- 在 comp.vue 的模板中添加以下内容 -->
+    <!-- 修改后的图表部分 -->
     <div class="container">
       <div class="visualization-section">
         <h3>竞赛数据分析</h3>
@@ -108,22 +102,40 @@
             <div id="categoryChart" style="width: 100%; height: 200px;"></div>
           </div>
         </div>
-
         <!-- 第二行：两个图表 -->
         <div class="chart-row">
           <div class="chart-container">
             <div id="organizerChart" style="width: 100%; height: 200px;"></div>
           </div>
           <div class="chart-container">
-            <div class="time-heatmap-section">
-              <h3>竞赛时间热力图</h3>
-              <div style="margin-bottom: 10px;">
-                <el-select v-model="selectedYear" placeholder="请选择年份" @change="renderHeatmapChart">
-                  <el-option v-for="year in availableYears" :key="year" :label="year" :value="year" />
-                </el-select>
-              </div>
-              <div id="timeHeatmapChart" style="width: 100%; height: 200px;"></div>
+            <div id="durationChart" style="width: 100%; height: 200px;"></div>
+          </div>
+        </div>
+        <!-- 第三行：两个图表 -->
+        <div class="chart-row">
+          <div class="chart-container">
+            <div id="timeTrendChart" style="width: 100%; height: 200px;"></div>
+          </div>
+          <div class="chart-container">
+            <div id="overlapBarChart" style="width: 100%; height: 200px;"></div>
+          </div>
+        </div>
+        <!-- 在现有图表部分添加 -->
+        <div class="chart-row">
+          <div class="chart-container">
+            <div id="heatTrendChart" style="width: 100%; height: 300px;"></div>
+          </div>
+        </div>
+        <!-- 第四行：重叠热力图和年份选择器 -->
+        <div class="chart-row">
+          <div class="chart-container">
+            <div class="year-selector-container">
+              <el-select v-model="selectedYear" @change="updateOverlapChart" class="year-selector">
+                <el-option v-for="year in availableYears" :key="year" :label="year" :value="year">
+                </el-option>
+              </el-select>
             </div>
+            <div id="overlapHeatmap" style="width: 100%; height: 200px;"></div>
           </div>
         </div>
       </div>
@@ -152,16 +164,28 @@
 <script>
 import axios from 'axios';
 import * as echarts from 'echarts';
-import Papa from "papaparse";
 
 export default {
   name: "MainLayout",
   data() {
     return {
+      heatData: [], // 存储热度分析数据
+      competitionNames: {
+        '1001': '创新创业类',
+        '1002': '信息技术与编程类',
+        '1003': '数学类',
+        '1004': '经济与管理类',
+        '1005': '语言与文化类'
+      },
+      selectedYear: new Date().getFullYear(),
+      availableYears: [],
       levelData: [],
       categoryData: [],
       organizerData: [],
       timeHeatmapData: [],
+      durationData: [],
+      timeData: [],
+      overlapData: [],
       selectedYear: new Date().getFullYear(),
       availableYears: [],
 
@@ -202,60 +226,481 @@ export default {
         "未开始": "#FFA726", // 橙色
         "已结束": "#E53935"  // 红色
       },
-      trendRaw: null, // 读取到的原始表格数据（二维数组）
-      months: [], // x 轴类别（月／年）
-      seriesData: {}, // 各列对应的值，键名即列名
-      myChart: null,
     };
   },
-  methods: {    // 加载CSV数据
+  methods: {
+    // 加载CSV数据
     async loadCSVData() {
       try {
-        const [levelRes, categoryRes, organizerRes, timeRes] = await Promise.all([
+        const [levelRes, categoryRes, organizerRes] = await Promise.all([
           fetch('/csv/比赛等级.csv'),
           fetch('/csv/比赛类别.csv'),
           fetch('/csv/比赛主办方.csv'),
-          fetch('/csv/比赛时间.csv'),
+
         ]);
 
         this.levelData = this.parseCSV(await levelRes.text());
         this.categoryData = this.parseCSV(await categoryRes.text());
         this.organizerData = this.parseCSV(await organizerRes.text());
-        this.timeHeatmapData = this.parseCSV(await timeRes.text());
 
-        // 提取所有涉及的年份并去重
-        const yearsSet = new Set();
-        this.timeHeatmapData.forEach(item => {
-          const startYear = new Date(item.contest_start_time).getFullYear();
-          const endYear = new Date(item.contest_end_time).getFullYear();
-          for (let y = startYear; y <= endYear; y++) yearsSet.add(y);
-        });
-        this.availableYears = Array.from(yearsSet).sort((a, b) => a - b);
 
         await this.$nextTick();
         this.renderLevelChart();
         this.renderCategoryChart();
         this.renderOrganizerChart();
-        this.renderHeatmapChart();
+
 
       } catch (error) {
         console.error('加载CSV数据失败:', error);
         this.$message.error('图表数据加载失败');
       }
     },
+    // 新增方法 - 加载所有CSV数据
+    async loadAllCSVData() {
+      try {
+        const [durationRes, timeRes, overlapRes] = await Promise.all([
+          fetch('/csv/darution.csv'),
+          fetch('/csv/time.csv'),
+          fetch('/csv/overlap.csv')
+        ]);
+
+        this.durationData = this.parseCSV(await durationRes.text());
+        this.timeData = this.parseCSV(await timeRes.text());
+        this.overlapData = this.parseCSV(await overlapRes.text());
+
+        // 提取所有可用年份
+        this.extractAvailableYears();
+
+        await this.$nextTick();
+        this.renderDurationChart();
+        this.renderTimeTrendChart();
+        this.renderOverlapCharts();
+      } catch (error) {
+        console.error('加载CSV数据失败:', error);
+        this.$message.error('图表数据加载失败');
+      }
+    },
+    async loadHeatData() {
+      try {
+        const response = await fetch('/csv/pivot_table.csv');
+        const csvText = await response.text();
+        this.heatData = this.parseCSV(csvText);
+        this.renderHeatTrendChart();
+      } catch (error) {
+        console.error('加载热度数据失败:', error);
+        this.$message.error('热度数据加载失败');
+      }
+    },
+
+    renderHeatTrendChart() {
+      const chartDom = document.getElementById('heatTrendChart');
+      if (!chartDom) return;
+
+      const myChart = echarts.init(chartDom);
+
+      // 准备数据 - 确保按年份排序
+      const sortedData = [...this.heatData].sort((a, b) => {
+        return parseInt(a.年份) - parseInt(b.年份);
+      });
+
+      // 获取年份数据，确保列名正确
+      const years = sortedData.map(item => {
+        // 检查数据中的年份列名，可能是"年份"或"year"
+        const year = item.年份 || item.year;
+        return year ? year.toString() : '';
+      }).filter(year => year); // 过滤掉空值
+
+      const series = [];
+
+      // 为每个竞赛类型创建系列
+      ['1001', '1002', '1003', '1004', '1005'].forEach(compId => {
+        series.push({
+          name: this.competitionNames[compId] || compId,
+          type: 'line',
+          smooth: true,
+          data: sortedData.map(item => parseInt(item[compId]) || 0),
+          symbolSize: 6,
+          lineStyle: {
+            width: 3
+          },
+          areaStyle: {
+            opacity: 0.1
+          }
+        });
+      });
+
+      const option = {
+        title: {
+          text: '竞赛热度趋势分析',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross'
+          },
+          formatter: function (params) {
+            let result = params[0].axisValue + '<br/>';
+            params.forEach(param => {
+              result += `${param.seriesName}: ${param.value.toLocaleString()}<br/>`;
+            });
+            return result;
+          }
+        },
+        legend: {
+          data: series.map(s => s.name),
+          top: 30
+        },
+        grid: {
+          top: 80,
+          left: 50,
+          right: 50,
+          bottom: 30,
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: years,
+          axisLabel: {
+            formatter: function (value) {
+              return value; // 直接显示年份
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          name: '浏览人数',
+          axisLabel: {
+            formatter: function (value) {
+              if (value >= 1000000) {
+                return (value / 1000000).toFixed(1) + 'M';
+              } else if (value >= 1000) {
+                return (value / 1000).toFixed(0) + 'K';
+              }
+              return value;
+            }
+          }
+        },
+        series: series,
+        color: ['#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae']
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', function () {
+        myChart.resize();
+      });
+
+      // 调试输出
+      console.log('Heat data:', this.heatData);
+      console.log('Years:', years);
+      console.log('Series data:', series.map(s => s.data));
+    },
+
+    // 提取可用年份
+    extractAvailableYears() {
+      const years = new Set();
+      this.overlapData.forEach(item => {
+        const date = new Date(item.Date);
+        if (!isNaN(date.getTime())) {
+          years.add(date.getFullYear());
+        }
+      });
+      this.availableYears = Array.from(years).sort((a, b) => b - a);
+
+      // 如果没有数据，默认使用当前年份
+      if (this.availableYears.length === 0) {
+        this.availableYears = [this.selectedYear];
+      }
+    },
+
+    // 新增方法 - 渲染竞赛时长分布图表
+    renderDurationChart() {
+      const chartDom = document.getElementById('durationChart');
+      const myChart = echarts.init(chartDom);
+
+      const option = {
+        title: {
+          text: '竞赛时长分布',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          right: 10,
+          top: 'center'
+        },
+        series: [
+          {
+            name: '时长分布',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              borderRadius: 10,
+              borderColor: '#fff',
+              borderWidth: 2
+            },
+            label: {
+              show: false,
+              position: 'center'
+            },
+            emphasis: {
+              label: {
+                show: true,
+                fontSize: '18',
+                fontWeight: 'bold'
+              }
+            },
+            labelLine: {
+              show: false
+            },
+            data: this.durationData.map(item => ({
+              value: item.数量,
+              name: item.时间范围,
+              itemStyle: {
+                color: this.getDurationColor(item.时间范围)
+              }
+            }))
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', function () {
+        myChart.resize();
+      });
+    },
+
+    // 新增方法 - 获取时长颜色
+    getDurationColor(duration) {
+      const colors = {
+        '一个月以内': '#FF9AA2',
+        '一个月至三个月': '#FFB7B2',
+        '三个月至六个月': '#FFDAC1',
+        '半年至一年': '#E2F0CB',
+        '超过一年': '#B5EAD7'
+      };
+      return colors[duration] || '#5470C6';
+    },
+
+    // 新增方法 - 渲染时间趋势图表
+    renderTimeTrendChart() {
+      const chartDom = document.getElementById('timeTrendChart');
+      const myChart = echarts.init(chartDom);
+
+      // 处理时间数据 - 只取月度数据
+      const monthData = this.timeData.filter(item => item.DateType === 'Month');
+      const dates = monthData.map(item => item.Date);
+      const values = monthData.map(item => parseInt(item.Value));
+
+      const option = {
+        title: {
+          text: '竞赛时间趋势',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: dates,
+          axisLabel: {
+            rotate: 45,
+            interval: Math.floor(dates.length / 10) // 显示部分标签避免重叠
+          }
+        },
+        yAxis: {
+          type: 'value',
+          name: '竞赛数量'
+        },
+        series: [
+          {
+            name: '竞赛数量',
+            type: 'line',
+            smooth: true,
+            data: values,
+            itemStyle: {
+              color: '#8884d8'
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(136, 132, 216, 0.5)' },
+                { offset: 1, color: 'rgba(136, 132, 216, 0.1)' }
+              ])
+            }
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', function () {
+        myChart.resize();
+      });
+    },
+
+    // 新增方法 - 渲染重叠竞赛图表
+    renderOverlapCharts() {
+      this.renderOverlapHeatmap();
+      this.renderOverlapBarChart();
+    },
+
+    // 新增方法 - 渲染重叠竞赛热力图
+    // 更新重叠图表
+    updateOverlapChart() {
+      this.renderOverlapHeatmap();
+    },
+
+    // 修改后的渲染重叠竞赛热力图方法
+    renderOverlapHeatmap() {
+      const chartDom = document.getElementById('overlapHeatmap');
+      const myChart = echarts.init(chartDom);
+
+      // 过滤出选定年份的数据
+      const yearData = this.overlapData.filter(item => {
+        const itemYear = new Date(item.Date).getFullYear();
+        return itemYear === this.selectedYear;
+      });
+
+      const types = ['1天', '1周', '1月', '长周期'];
+      const months = yearData.map(item => {
+        const date = new Date(item.Date);
+        return `${date.getMonth() + 1}月`;
+      });
+
+      // 为每种类型创建单独的系列
+      const series = types.map(type => ({
+        name: type,
+        type: 'line',
+        smooth: true,
+        data: yearData.map(item => parseInt(item[type]) || 0),
+        symbolSize: 8,
+        lineStyle: {
+          width: 3
+        }
+      }));
+
+      const option = {
+        title: {
+          text: `${this.selectedYear}年竞赛重叠趋势`,
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross'
+          }
+        },
+        legend: {
+          data: types,
+          top: 30
+        },
+        grid: {
+          top: 80,
+          left: 30,
+          right: 30,
+          bottom: 30,
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: months,
+          axisLabel: {
+            rotate: 45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          name: '重叠次数'
+        },
+        series: series
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', () => myChart.resize());
+    },
+
+
+    // 新增方法 - 渲染重叠竞赛柱状图
+    renderOverlapBarChart() {
+      const chartDom = document.getElementById('overlapBarChart');
+      const myChart = echarts.init(chartDom);
+
+      // 计算各类重叠的总数
+      const overlapTypes = ['1天', '1周', '1月', '长周期'];
+      const totals = overlapTypes.map(type => {
+        return this.overlapData.reduce((sum, item) => sum + (parseInt(item[type]) || 0), 0);
+      });
+
+      const option = {
+        title: {
+          text: '竞赛重叠类型对比',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: overlapTypes
+        },
+        yAxis: {
+          type: 'value',
+          name: '重叠次数'
+        },
+        series: [
+          {
+            name: '重叠次数',
+            type: 'bar',
+            data: totals.map((value, index) => ({
+              value,
+              itemStyle: {
+                color: ['#d94e5d', '#eac736', '#50a3ba', '#e3e4e6'][index]
+              }
+            })),
+            label: {
+              show: true,
+              position: 'top'
+            }
+          }
+        ]
+      };
+
+      myChart.setOption(option);
+      window.addEventListener('resize', function () {
+        myChart.resize();
+      });
+    },
 
     parseCSV(csvText) {
       const lines = csvText.split('\n');
-      const headers = lines[0].split(',');
+      // 处理可能的换行符和空格
+      const headers = lines[0].split(',').map(header => header.trim());
       const result = [];
 
       for (let i = 1; i < lines.length; i++) {
-        if (!lines[i]) continue;
+        if (!lines[i].trim()) continue;
+
         const obj = {};
-        const currentline = lines[i].split(',');
+        // 处理可能包含逗号的值
+        const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
         for (let j = 0; j < headers.length; j++) {
-          obj[headers[j].trim()] = currentline[j] ? currentline[j].trim() : '';
+          let value = currentline[j] ? currentline[j].trim() : '';
+          // 移除可能的引号
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1);
+          }
+          obj[headers[j]] = value;
         }
 
         result.push(obj);
@@ -264,105 +709,6 @@ export default {
       return result;
     },
 
-    getDayOfYear(date) {
-      const start = new Date(date.getFullYear(), 0, 0);
-      return Math.floor((date - start) / (1000 * 60 * 60 * 24));
-    },
-
-    renderHeatmapChart() {
-      const chartDom = document.getElementById('timeHeatmapChart');
-      if (!chartDom) return;
-      const myChart = echarts.init(chartDom);
-
-      // 过滤出有效数据
-      const validData = this.timeHeatmapData.filter(item => {
-        return item.contest_start_time && item.contest_end_time;
-      });
-
-      // 过滤出指定年份的有效数据
-      const filteredData = validData.filter(item => {
-        try {
-          const start = new Date(item.contest_start_time);
-          const end = new Date(item.contest_end_time);
-          return (
-            (start.getFullYear() === this.selectedYear || end.getFullYear() === this.selectedYear) &&
-            !isNaN(start) && !isNaN(end)
-          );
-        } catch (e) {
-          return false;
-        }
-      });
-
-      // 计算闰年
-      const isLeapYear = (this.selectedYear % 4 === 0 && this.selectedYear % 100 !== 0) || this.selectedYear % 400 === 0;
-      const daysInYear = isLeapYear ? 366 : 365;
-
-      // 构建时间轴数据
-      const heatmapData = [];
-      for (let day = 1; day <= daysInYear; day++) {
-        heatmapData.push({ name: day, value: [day, 0] });
-      }
-
-      // 填充数据
-      filteredData.forEach(item => {
-        try {
-          const start = new Date(item.contest_start_time);
-          const end = new Date(item.contest_end_time);
-
-          // 确保日期有效
-          if (isNaN(start) || isNaN(end)) return;
-
-          // 计算当年内的实际时间段
-          const startDay = this.getDayOfYear(start);
-          const endDay = this.getDayOfYear(end);
-
-          // 处理跨年情况
-          const effectiveStartDay = start.getFullYear() === this.selectedYear
-            ? Math.max(startDay, 1)
-            : 1;
-
-          const effectiveEndDay = end.getFullYear() === this.selectedYear
-            ? Math.min(endDay, daysInYear)
-            : daysInYear;
-
-          // 填充天数
-          for (let i = effectiveStartDay; i <= effectiveEndDay; i++) {
-            const idx = i - 1; // 数组索引从0开始
-            if (idx >= 0 && idx < daysInYear) {
-              heatmapData[idx].value[1] += 1;
-            }
-          }
-        } catch (e) {
-          console.error('处理日期数据出错:', e);
-        }
-      });
-
-      // ECharts配置项
-      const option = {
-        tooltip: {},
-        visualMap: {
-          min: 0,
-          max: Math.max(...heatmapData.map(d => d.value[1])),
-          calculable: true,
-          orient: 'horizontal',
-          left: 'center',
-          bottom: 20,
-          inRange: { color: ['#f7fbff', '#08306b'] },
-        },
-        calendar: {
-          year: this.selectedYear,
-          range: this.selectedYear.toString()
-        },
-        series: {
-          type: 'heatmap',
-          coordinateSystem: 'calendar',
-          data: heatmapData,
-        },
-      };
-
-      myChart.setOption(option);
-      window.addEventListener('resize', () => myChart.resize());
-    },
 
     //比赛等级图表
     renderLevelChart() {
@@ -675,96 +1021,18 @@ export default {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
       this.$router.push({ name: 'CompDetail', params: { compId: compId } });
     },
-    loadTrendCsv() {
-      fetch("/data/pivot_table.csv")
-        .then((res) => {
-          if (!res.ok) throw new Error("CSV 加载失败：" + res.status);
-          return res.text();
-        })
-        .then((csvText) => {
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            complete: ({ data }) => {
-              this.trendRaw = data;
-              this.formatTrendData();
-            },
-            error: (err) => console.error("CSV 解析失败：", err),
-          });
-        })
-        .catch((err) => console.error(err));
-    },
-
-    // 把格式化后的数据 set 到 ECharts
-    updateChart() {
-      if (!this.myChart || !this.months.length) return;
-      // 生成 series 数组
-      const series = Object.entries(this.seriesData).map(([col, data]) => ({
-        name: col,
-        type: "line",
-        stack: "Total",
-        data,
-      }));
-      this.myChart.setOption({
-        xAxis: { data: this.months },
-        series,
-      });
-    },
-
-    // 修改 initChart：只创建空图
-    initChart() {
-      const chartDom = this.$refs.chartRef;
-      this.myChart = echarts.init(chartDom);
-      this.myChart.setOption({
-        title: { text: "各类竞赛月度关注趋势" },
-        tooltip: { trigger: "axis" },
-        legend: {
-          // 先占位，后续 update 会根据实际列名补齐
-          data: [],
-        },
-        xAxis: { type: "category", boundaryGap: false, data: [] },
-        yAxis: { type: "value" },
-        series: [], // 先不传具体数据
-      });
-    },
-    // 把 trendRaw 转成 ECharts 需要的 months 和 series
-    formatTrendData() {
-      const data = this.trendRaw.filter((r) => r.year !== "1970");
-      this.months = data.map((r) => r.year);
-      if (!this.trendRaw || !this.trendRaw.length) return;
-      // 1) x 轴：这里用 year
-      this.months = this.trendRaw.map((row) => row.year);
-      // 2) 找到所有列名（排除 year）
-      const cols = Object.keys(this.trendRaw[0]).filter((k) => k !== "year");
-      // 3) 按列组织数据
-      cols.forEach((col) => {
-        this.seriesData[col] = this.trendRaw.map((row) => Number(row[col]));
-      });
-      // 4) 数据准备完毕，更新图表
-      this.updateChart();
-      // 更新图表：包括 legend、xAxis、series
-      this.myChart.setOption({
-        legend: { data: cols },
-        xAxis: { data: this.months },
-        series: cols.map((col) => ({
-          name: col,
-          type: "line",
-          stack: "Total",
-          data: this.seriesData[col],
-        })),
-      });
-    },
+    // searchCompetitions() {
+    //   this.filteredCards = this.searchName
+    //     ? this.cards.filter(card => card.courseName.includes(this.searchName))
+    //     : this.cards;
+    // }
   },
-
-
-
-
 
   mounted() {
     this.fetchCards();
     this.loadCSVData();
-    this.initChart(); // 初始化图表
-    this.loadTrendCsv();
+    this.loadAllCSVData(); // 修改为加载所有CSV数据
+    this.loadHeatData();
 
     // 在组件挂载时，可以自动获取推荐板块的数据
     this.sidebarItems.forEach(item => {
@@ -782,13 +1050,59 @@ export default {
 </script>
 
 <style scoped>
-.chart-section {
-  margin: 40px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* 新增样式 */
+/* 在样式部分添加 */
+#heatTrendChart {
+  height: 300px !important;
 }
+
+.chart-container.full-width {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* 年份选择器样式 */
+.year-selector-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.year-selector {
+  width: 120px;
+}
+
+/* 图表容器调整 */
+.chart-container {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.visualization-section {
+  margin-bottom: 40px;
+}
+
+.chart-container:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .chart-row {
+    flex-direction: column;
+  }
+
+  .chart-container {
+    margin-bottom: 20px;
+  }
+}
+
 /* 新增的图表布局样式 */
 .container {
   max-width: 1200px;
