@@ -94,7 +94,17 @@
                             <button class="edit-button" @click="openDialog">编辑资料</button>
                         </h4>
                         <p class="bio-text">{{ userInfo.userBio }}</p>
+                        <button class="knowledge-button" @click="openKnowledgeDialog">个人知识网</button>
+                        <div class="knowledge-network" v-if="userInfo.knowledgeNetwork && userInfo.knowledgeNetwork.length > 0">
+            <div v-for="(item, index) in userInfo.knowledgeNetwork" :key="index" class="knowledge-item">
+                {{ item }}
+            </div>
+        </div>
+        <div v-else class="empty-knowledge">
+            暂无知识网信息，点击上方按钮添加
+        </div>
                     </div>
+                   
 
                     <div class="badges">
                         <h4 class="section-title">
@@ -203,6 +213,26 @@
             </div>
         </template>
     </el-dialog>
+    <!-- 知识网编辑弹窗 -->
+    <el-dialog v-model="knowledgeDialogVisible" title="个人知识网" width="500">
+        <el-form :model="knowledgeForm" label-position="left">
+            <el-row :gutter="24">
+                <el-col :span="12" v-for="(item, index) in knowledgeItems" :key="index">
+                    <el-form-item>
+                        <el-checkbox v-model="item.checked">{{ item.name }}</el-checkbox>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+        </el-form>
+
+
+    <template #footer>
+        <div>
+            <el-button @click="closeKnowledgeDialog">取消</el-button>
+            <el-button type="primary" @click="saveKnowledge">确定</el-button>
+        </div>
+    </template>
+</el-dialog>
 </template>
 
 <script>
@@ -233,6 +263,15 @@ export default {
             loading: true,
             dialogFormVisible: false,
 
+            knowledgeDialogVisible: false,
+            knowledgeItems: [
+                { name: 'Python', checked: false },
+                { name: 'SQL', checked: false },
+                { name: '机器学习', checked: false },
+                { name: '团队赛', checked: false },
+                { name: '应用型', checked: false },
+                { name: '竞赛', checked: false }
+            ],
             items: [
                 { name: "创作中心", path: "" },
                 { name: "我的收藏", path: "myfavorite" },
@@ -304,6 +343,40 @@ export default {
                 return 0;
             }
         },
+        openKnowledgeDialog() {
+            this.knowledgeDialogVisible = true;
+            // 初始化勾选状态
+            this.knowledgeItems.forEach(item => {
+                item.checked = this.userInfo.knowledgeNetwork 
+                    ? this.userInfo.knowledgeNetwork.includes(item.name) 
+                    : false;
+            });
+        },
+        
+        closeKnowledgeDialog() {
+            this.knowledgeDialogVisible = false;
+        },
+        
+        async saveKnowledge() {
+            try {
+                // 获取选中的知识项
+                const selectedKnowledge = this.knowledgeItems
+                    .filter(item => item.checked)
+                    .map(item => item.name);
+                
+                // 更新用户信息中的知识网
+                this.userInfo.knowledgeNetwork = selectedKnowledge;
+                
+                // 如果需要保存到后端，可以在这里添加API调用
+                // await axios.put('/user/knowledge', { knowledge: selectedKnowledge });
+                
+                this.$message.success('知识网更新成功');
+                this.closeKnowledgeDialog();
+            } catch (error) {
+                console.error('保存知识网失败:', error);
+                this.$message.error('保存知识网失败');
+            }
+        }
     },
     components: {
         Plus,
@@ -401,6 +474,8 @@ export default {
             .catch((error) => {
                 console.error("Error fetching user data:", error);
             });
+
+    
     },
     components: {},
 };
@@ -699,5 +774,71 @@ export default {
 .activity {
     margin-bottom: 16px;
     /* 模块之间的间距统一调整为 16px */
+}
+/* 知识网按钮样式 */
+.knowledge-button {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.knowledge-button:hover {
+    background-color: #4338ca;
+    transform: translateY(-2px);
+}
+
+/* 知识网展示区域 */
+.knowledge-network {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.knowledge-item {
+    background-color: #e1f0ff;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    font-size: 14px;
+    color: #1a4b8c;
+    font-weight: 500; /* 中等粗细字体 */
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 15px;
+    border: 1px solid #b8d4ff; /* 添加浅蓝色边框 */
+}
+
+.knowledge-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    background-color: #d0e7ff;
+}
+
+.empty-knowledge {
+    margin-top: 15px;
+    padding: 15px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* 响应式设计 - 小屏幕时改为单列 */
+@media (max-width: 768px) {
+    .knowledge-network {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
