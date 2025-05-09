@@ -4,7 +4,7 @@
     <div class="control-bar">
       <h3 class="analysis-title">获奖选题趋势分析TOP10</h3>
       <div class="header-group">
-        <!-- 增强型选择器 -->
+        <!-- 数据源选择器 -->
         <div class="custom-select">
           <select v-model="dataSource" @change="handleSourceChange" class="styled-select">
             <option value="innovation">创新创业类竞赛</option>
@@ -13,7 +13,7 @@
           <span class="select-arrow">▼</span>
         </div>
 
-        <!-- 年份选择 -->
+        <!-- 年份选择组件 -->
         <div class="year-pills">
           <button v-for="year in years" :key="year" :class="{ active: selectedYear === year }" @click="changeYear(year)"
             class="year-pill">
@@ -85,6 +85,7 @@ const COLORS = [
   "#FF6B6B", // 柔粉红
 ];
 
+// 数据源管理模块
 const DATA_SOURCES = {
   innovation: {
     name: "创新创业类",
@@ -98,22 +99,21 @@ const DATA_SOURCES = {
 
 export default {
   setup() {
-    // 新增响应式数据源
-    const dataSource = ref('innovation')
-    // 响应式数据
-    const rawData = ref([]);
-    const selectedYear = ref(2022);
+    const dataSource = ref('innovation')    // 当前数据源
+    const rawData = ref([])                 // 原始数据集
+    const selectedYear = ref(2022)          // 当前选中年份
     const barChart = ref(null);
     const lineChart = ref(null);
     let barChartInstance = null;
     let lineChartInstance = null;
 
-    // 计算属性
+    // 计算属性模块
+
+    // 可用年份集合
     const years = computed(() => {
       return [...new Set(rawData.value.map((d) => d.年份))].sort();
     });
-
-    // 当前年份全部数据（用于卡片）
+    // 当前年份全部数据
     const currentYearData = computed(() => {
       return (
         rawData.value
@@ -121,8 +121,7 @@ export default {
           .sort((a, b) => b.总词频 - a.总词频) || []
       );
     });
-
-    // 图表数据（前10条）
+    // 图表控制模块
     const chartData = computed(() => {
       return currentYearData.value.slice(0, 10);
     });
@@ -284,8 +283,8 @@ export default {
             symbol: "circle",
             symbolSize: 8,
             itemStyle: {
-              color: lineColor + "33",
-              borderColor: "#3498db",
+              color: lineColor + "20",
+              borderColor: lineColor,
               borderWidth: 2
             },
             // 区域填充优化
@@ -359,16 +358,18 @@ export default {
       loadData()
     };
 
-    // 工具方法
-    const getColor = (index) => COLORS[index % 10];
+    // 工具方法模块
 
+    // 动态颜色获取
+    const getColor = (index) => COLORS[index % 10];
+    // 关键词提取
     const extractKeywords = (detail) => {
       return detail
         .split("，")
         .map((s) => s.split("(")[0])
         .slice(0, 8); // 只显示前4个关键词
     };
-
+    // 趋势文本计算
     const trendText = (theme) => {
       const prev =
         rawData.value.find(
@@ -381,16 +382,16 @@ export default {
       const percent = (((current - prev) / prev) * 100).toFixed(1);
       return `${percent}%`;
     };
-
+    // 趋势样式计算
     const trendClass = (theme) => {
       const text = trendText(theme);
       if (text === "New") return "new";
       return text.includes("-") ? "down" : "up";
     };
 
-    // 生命周期
+    // 生命周期管理
     onMounted(() => {
-      loadData();
+      loadData();// 组件挂载时加载数据
     });
 
     return {
@@ -431,7 +432,7 @@ export default {
 
 .styled-select {
   width: 100%;
-  padding: 8px 35px 8px 15px;
+  padding: 5px 30px 5px 10px;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   background: #f8f9fa;
@@ -468,7 +469,7 @@ export default {
 }
 
 .year-pill {
-  padding: 8px 35px 8px 15px;
+  padding: 5px 30px 5px 10px;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   background: #fff;
@@ -496,6 +497,7 @@ export default {
   letter-spacing: 0.5px;
 }
 
+/* 看板容器样式 */
 .dashboard {
   max-width: 1000px;
   margin: 0 auto;
@@ -503,6 +505,7 @@ export default {
   font-size: 14px;
 }
 
+/* 控制栏布局样式 */
 .control-bar {
   display: flex;
   justify-content: space-between;
@@ -514,7 +517,7 @@ export default {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-
+/* 主柱状图容器 */
 .bar-chart {
   height: 400px;
   /* 原400px增加20px给标题留空间 */
@@ -525,7 +528,6 @@ export default {
   border-radius: 5px;
 }
 
-/* 新增tooltip样式 */
 .chart-tooltip {
   padding: 8px 12px;
   border-radius: 6px;
@@ -537,10 +539,12 @@ export default {
   margin-bottom: 4px;
   display: inline-block;
 }
+
+/* 下部响应式布局 */
 .lower-section {
   height: 400px;
   display: grid;
-  margin-top: 10px;
+  margin-top: 15px;
   grid-template-columns: 1fr 300px;
   gap: 16px;
 }
@@ -554,6 +558,7 @@ export default {
   padding-right: 8px;
 }
 
+/* 数据卡片交互样式 */
 .data-card {
   padding: 12px;
   background: #fff;
@@ -579,6 +584,19 @@ export default {
   margin: 0;
 }
 
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.keyword {
+  padding: 2px 8px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  font-size: 12px;
+}
 .trend {
   font-size: 12px;
   padding: 2px 6px;
@@ -600,20 +618,8 @@ export default {
   color: #ef6c00;
 }
 
-.keywords {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
 
-.keyword {
-  padding: 2px 8px;
-  background: #f8f9fa;
-  border-radius: 10px;
-  font-size: 12px;
-}
-
+/* 趋势图容器样式 */
 .trend-chart {
   height: 420px;
   background: #fff;
