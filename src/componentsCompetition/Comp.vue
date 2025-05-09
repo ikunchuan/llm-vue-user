@@ -181,7 +181,7 @@ export default {
       availableYears: [],
       levelData: [],
       categoryData: [],
-      organizerData: [],
+      organizerData: {},//HBase中org_count表数据
       timeHeatmapData: [],
       durationData: [],
       timeData: [],
@@ -229,25 +229,42 @@ export default {
     };
   },
   methods: {
+
+    fetchHBaseTableOrganizer() {
+      axios.get('/hbase/scan', {
+        params: {
+          table: 'org_count',
+        }
+      })
+        .then(response => {
+          this.organizerData = response.data;
+          console.log('获取HBase表数据成功:', this.organizerData);
+          this.renderOrganizerChart();
+        })
+        .catch(error => {
+          console.error('获取HBase表数据失败:', error);
+        });
+    },
+
     // 加载CSV数据
     async loadCSVData() {
       try {
         const [levelRes, categoryRes, organizerRes] = await Promise.all([
           fetch('/csv/比赛等级.csv'),
           fetch('/csv/比赛类别.csv'),
-          fetch('/csv/比赛主办方.csv'),
+          // fetch('/csv/比赛主办方.csv'),
 
         ]);
 
         this.levelData = this.parseCSV(await levelRes.text());
         this.categoryData = this.parseCSV(await categoryRes.text());
-        this.organizerData = this.parseCSV(await organizerRes.text());
+        // this.organizerData = this.parseCSV(await organizerRes.text());
 
 
         await this.$nextTick();
         this.renderLevelChart();
         this.renderCategoryChart();
-        this.renderOrganizerChart();
+        // this.renderOrganizerChart();
 
 
       } catch (error) {
@@ -820,8 +837,16 @@ export default {
     renderOrganizerChart() {
       const chartDom = document.getElementById('organizerChart');
       const myChart = echarts.init(chartDom);
-      // 按计数排序并取前10
-      const sortedData = [...this.organizerData]
+
+
+      // 将 HBase 返回的数据格式化为适合 ECharts 的格式
+      const formattedData = this.organizerData.rows.map(item => ({
+        主办方: item.rowKey,
+        计数: parseInt(item.count, 10)
+      }));
+
+      // 排序取前10
+      const sortedData = formattedData
         .sort((a, b) => b.计数 - a.计数)
         .slice(0, 10);
 
@@ -830,26 +855,61 @@ export default {
           text: '主办方TOP10',
           left: 'center'
         },
+        // tooltip: {
+        //   trigger: 'item',
+        //   formatter: '{a} <br/>{b}: {c} ({d}%)'
+        // },
+
+        //   series: [
+        //     {
+        //       name: '主办方',
+        //       type: 'pie',
+        //       radius: '55%',
+        //       center: ['50%', '50%'],
+        //       data: sortedData.map(item => ({
+        //         value: item.计数,
+        //         name: item.主办方
+        //       })),
+        //       emphasis: {
+        //         itemStyle: {
+        //           shadowBlur: 10,
+        //           shadowOffsetX: 0,
+        //           shadowColor: 'rgba(0, 0, 0, 0.5)'
+        //         }
+        //       }
+        //     }
+        //   ]
+        // };
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        grid: {
+          left: '5%',   // 给 Y 轴文字留出足够空间
+          right: '5%',
+          bottom: '5%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'value',
+          name: '数量'
+        },
+        yAxis: {
+          type: 'category',
+          data: sortedData.map(item => item.主办方),
+          axisLabel: {
+            formatter: value => value.length > 20 ? value.slice(0, 20) + '…' : value  // 可选：超长主办方名称省略显示
+          }
         },
         series: [
           {
-            name: '主办方',
-            type: 'pie',
-            radius: '55%',
-            center: ['50%', '50%'],
-            data: sortedData.map(item => ({
-              value: item.计数,
-              name: item.主办方
-            })),
-            emphasis: {
-              itemStyle: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
+            name: '数量',
+            type: 'bar',
+            data: sortedData.map(item => item.计数),
+            itemStyle: {
+              color: '#73C0DE'
             }
           }
         ]
@@ -1033,6 +1093,7 @@ export default {
     this.loadCSVData();
     this.loadAllCSVData(); // 修改为加载所有CSV数据
     this.loadHeatData();
+    this.fetchHBaseTableOrganizer();
 
     // 在组件挂载时，可以自动获取推荐板块的数据
     this.sidebarItems.forEach(item => {
