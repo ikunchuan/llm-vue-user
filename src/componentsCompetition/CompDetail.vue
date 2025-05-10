@@ -78,7 +78,46 @@
 
         <!-- 右侧主内容 -->
         <!--知识树-->
-        <div class="tree">
+        <div
+          style="
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+          "
+        >
+          <div>
+            <label for="fontSelect">选择字体：</label>
+            <select v-model="selectedFont" @change="updateChartStyle">
+              <option
+                value='"Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif'
+              >
+                默认
+              </option>
+              <option value="Arial, sans-serif">Arial</option>
+              <option value="Roboto, sans-serif">Roboto</option>
+              <option value="Microsoft YaHei">微软雅黑</option>
+              <option value="SimHei">黑体</option>
+              <option value="SimSun">宋体</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="fontSize">字体大小：{{ fontSize }}px</label>
+            <input
+              id="fontSize"
+              type="range"
+              min="10"
+              max="30"
+              v-model.number="fontSize"
+              @input="updateChartStyle"
+              style="vertical-align: middle"
+            />
+          </div>
+        </div>
+        <!-- 知识图谱 -->
+        <div ref="chartRef" style="width: 100%; height: 600px"></div>
+        <!-- <div class="tree">
           <div class="left">
             <span class="left-up">{{ competitionDetail.competitionName }}</span>
           </div>
@@ -131,16 +170,16 @@
               </li>
             </ul>
           </div>
-        </div>
+        </div> -->
 
         <div class="content">
-          <div class="steps-container">
+          <!-- <div class="steps-container">
             <el-steps style="max-width: 600px" :active="1">
               <el-step title="未开始" description="摩拳擦掌" />
               <el-step title="进行中" description="火热报名中" />
               <el-step title="已结束" description="来年再战" />
             </el-steps>
-          </div>
+          </div> -->
 
           <!-- 竞赛名称 -->
           <div class="info-item">
@@ -188,7 +227,7 @@
         </div>
 
         <!-- 知识图谱 -->
-        <div ref="chartRef" style="width: 100%; height: 600px"></div>
+        <!-- <div ref="chartRef" style="width: 100%; height: 600px"></div> -->
       </section>
     </div>
   </div>
@@ -203,6 +242,11 @@ export default {
   name: "CompDetail",
   data() {
     return {
+      graphData: null,
+      chart: null,
+      selectedFont:
+        '"Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif',
+      fontSize: 11, // 默认字体大小
       chart: null,
       graphData: {
         nodes: [],
@@ -225,106 +269,6 @@ export default {
       recommendedCourseNameg: "",
       recommendedCourseNameh: "",
       recommendedCourseNamei: "",
-      courseMapping: {
-        //下方左侧第一个
-        1: 2, // 竞赛ID 1 对应 课程ID2
-        2: 1, // 竞赛ID 2 对应 课程ID 1
-        3: 3,
-        4: 4,
-        5: 5,
-        6: 6,
-        24: 2, // 竞赛ID 24 对应 课程ID
-        31: 5,
-        // 可以继续添加更多映射
-      },
-      courseMappingb: {
-        //上方左侧第一个
-        1: 5, // 竞赛ID 1 对应 课程ID 5
-        2: 2, // 竞赛ID 2 对应 课程ID 1
-        3: 3,
-        4: 4,
-        5: 5,
-        6: 6,
-        24: 3, // 竞赛ID 24 对应 课程ID 2
-        31: 25,
-      },
-      courseMappingc: {
-        //上方左侧第二个
-        1: 6, // 竞赛ID 1 对应 课程ID 5
-        2: 4, // 竞赛ID 2 对应 课程ID 1
-        3: 4,
-        4: 5,
-        5: 6,
-        6: 7,
-        24: 4, // 竞赛ID 24 对应 课程ID 2
-        31: 24,
-      },
-      courseMappingd: {
-        //上方右侧第一个
-        1: 7, // 竞赛ID 1 对应 课程ID 5
-        2: 5, // 竞赛ID 2 对应 课程ID 1
-        3: 5,
-        4: 6,
-        5: 7,
-        6: 8,
-        24: 9, // 竞赛ID 24 对应 课程ID 2
-        31: 16,
-      },
-      courseMappinge: {
-        //上方右侧第二个
-        1: 8, // 竞赛ID 1 对应 课程ID 5
-        2: 9, // 竞赛ID 2 对应 课程ID 1
-        3: 1,
-        4: 7,
-        5: 8,
-        6: 9,
-        24: 10, // 竞赛ID 24 对应 课程ID 2
-        31: 23,
-      },
-      courseMappingf: {
-        //上方右侧第三个
-        1: 9, // 竞赛ID 1 对应 课程ID 5
-        2: 10, // 竞赛ID 2 对应 课程ID 1
-        3: 8,
-        4: 8,
-        5: 9,
-        6: 10,
-        24: 11, // 竞赛ID 24 对应 课程ID 2
-        31: 12,
-      },
-      courseMappingg: {
-        //下方右侧第一个
-        1: 10, // 竞赛ID 1 对应 课程ID 5
-        2: 11, // 竞赛ID 2 对应 课程ID 1
-        3: 9,
-        4: 9,
-        5: 10,
-        6: 11,
-        24: 12, // 竞赛ID 24 对应 课程ID 2
-        31: 17,
-      },
-      courseMappingh: {
-        //下方右侧第二个
-        1: 11, // 竞赛ID 1 对应 课程ID 5
-        2: 12, // 竞赛ID 2 对应 课程ID 1
-        3: 10,
-        4: 10,
-        5: 1,
-        6: 11,
-        24: 13, // 竞赛ID 24 对应 课程ID 2
-        31: 10,
-      },
-      courseMappingi: {
-        //下方左侧第二个
-        1: 11, // 竞赛ID 1 对应 课程ID 5
-        2: 12, // 竞赛ID 2 对应 课程ID 1
-        3: 6,
-        4: 4,
-        5: 7,
-        6: 8,
-        24: 14, // 竞赛ID 24 对应 课程ID 2
-        31: 16,
-      },
     };
   },
 
@@ -338,7 +282,6 @@ export default {
   methods: {
     //知识图谱
     fetchData() {
-      // const name = this.competitionBasicInfo.competitionName
       const name = "全国大学生统计建模大赛";
       const depth = 2; // 或你可以根据需求设置动态值
 
@@ -372,27 +315,41 @@ export default {
             type: "graph",
             layout: "force",
             roam: true,
+            draggable: true,
             label: {
               show: true,
               position: "right",
+              fontFamily: this.selectedFont,
+              fontSize: this.fontSize,
+              color: "#333",
             },
             force: {
               repulsion: 200,
               edgeLength: 100,
             },
-            categories: [{ name: "Competition" }, { name: "Skill" }],
-            data: graphData.nodes.map((node) => ({
-              id: node.id,
-              name: node.name,
-              category: node.label,
-              symbolSize: node.label === "Skill" ? 30 : 50,
-            })),
+            categories: [
+              { name: "Center", itemStyle: { color: "#734E9C" } },
+              { name: "Competition", itemStyle: { color: "#E0A4DD" } },
+              { name: "Skill", itemStyle: { color: "#f79767" } },
+            ],
+            data: graphData.nodes.map((node) => {
+              const isCenter = node.name === "全国大学生统计建模大赛";
+              return {
+                id: node.id,
+                name: node.name,
+                category: isCenter ? "Center" : node.label,
+                symbolSize: isCenter ? 60 : node.label === "Skill" ? 30 : 50,
+                label: {
+                  fontFamily: this.selectedFont,
+                  fontSize: isCenter ? this.fontSize + 4 : this.fontSize,
+                  fontWeight: isCenter ? "bolder" : "normal",
+                  color: "#333",
+                },
+              };
+            }),
             links: graphData.links.map((link) => ({
-              source: link.source,
-              target: link.target,
-              label: {
-                show: false,
-              },
+              source: String(link.source),
+              target: String(link.target),
               lineStyle: {
                 color: "#aaa",
               },
@@ -402,6 +359,12 @@ export default {
       };
 
       this.chart.setOption(option);
+    },
+
+    updateChartStyle() {
+      if (this.graphData) {
+        this.initChart(this.graphData);
+      }
     },
 
     // 获取课程信息
