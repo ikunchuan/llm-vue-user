@@ -104,7 +104,7 @@
             暂无知识网信息，点击上方按钮添加
         </div>
                     </div>
-                   
+
 
                     <div class="badges">
                         <h4 class="section-title">
@@ -214,25 +214,28 @@
         </template>
     </el-dialog>
     <!-- 知识网编辑弹窗 -->
-    <el-dialog v-model="knowledgeDialogVisible" title="个人知识网" width="500">
-        <el-form :model="knowledgeForm" label-position="left">
-            <el-row :gutter="24">
-                <el-col :span="12" v-for="(item, index) in knowledgeItems" :key="index">
-                    <el-form-item>
-                        <el-checkbox v-model="item.checked">{{ item.name }}</el-checkbox>
-                    </el-form-item>
-                </el-col>
-            </el-row>
-        </el-form>
-
-
+    <el-dialog 
+  v-model="knowledgeDialogVisible"
+  title="个人知识网"
+  width="500px"
+  :close-on-click-modal="false"
+  append-to-body>
+    
+    <el-form>
+        <el-row :gutter="20">
+        <el-col :span="12" v-for="(item, index) in knowledgeItems" :key="index">
+            <el-checkbox v-model="item.checked">
+            {{ item.name }}
+            </el-checkbox>
+        </el-col>
+        </el-row>
+    </el-form>
+    
     <template #footer>
-        <div>
-            <el-button @click="closeKnowledgeDialog">取消</el-button>
-            <el-button type="primary" @click="saveKnowledge">确定</el-button>
-        </div>
+        <el-button @click="closeKnowledgeDialog">取消</el-button>
+        <el-button type="primary" @click="saveKnowledge">保存</el-button>
     </template>
-</el-dialog>
+    </el-dialog>
 </template>
 
 <script>
@@ -268,9 +271,9 @@ export default {
                 { name: 'Python', checked: false },
                 { name: 'SQL', checked: false },
                 { name: '机器学习', checked: false },
-                { name: '团队赛', checked: false },
-                { name: '应用型', checked: false },
-                { name: '竞赛', checked: false }
+                { name: '高数', checked: false },
+                { name: 'Java', checked: false },
+                { name: 'Axure', checked: false }
             ],
             items: [
                 { name: "创作中心", path: "" },
@@ -343,39 +346,64 @@ export default {
                 return 0;
             }
         },
-        openKnowledgeDialog() {
-            this.knowledgeDialogVisible = true;
-            // 初始化勾选状态
-            this.knowledgeItems.forEach(item => {
-                item.checked = this.userInfo.knowledgeNetwork 
-                    ? this.userInfo.knowledgeNetwork.includes(item.name) 
-                    : false;
-            });
+         // 打开知识网弹窗
+        async openKnowledgeDialog() {
+            console.log('知识网按钮点击'); // 调试日志
+            
+            if (!this.userInfo?.userId) {
+                console.warn('用户ID不存在:', this.userInfo);
+                this.$message.warning('用户信息未加载完成，请稍候');
+                return;
+            }
+
+            try {
+                this.loading = true;
+                console.log('正在请求知识网数据，userId:', this.userInfo.userId); // 调试日志
+                
+                const response = await axios.get(`/uis/v1/user/knowledge/${this.userInfo.userId}`);
+                console.log('知识网数据响应:', response); // 调试日志
+                
+                const savedKnowledge = response.data || [];
+                this.knowledgeItems.forEach(item => {
+                    item.checked = savedKnowledge.includes(item.name);
+                });
+                
+                this.knowledgeDialogVisible = true;
+                console.log('弹窗状态设置为true'); // 调试日志
+            } catch (error) {
+                console.error('获取知识网失败:', error);
+                this.$message.error('加载知识网失败: ' + (error.response?.data?.message || error.message));
+            } finally {
+                this.loading = false;
+            }
         },
-        
-        closeKnowledgeDialog() {
-            this.knowledgeDialogVisible = false;
-        },
-        
+
+        // 修改后的saveKnowledge方法
         async saveKnowledge() {
             try {
-                // 获取选中的知识项
                 const selectedKnowledge = this.knowledgeItems
                     .filter(item => item.checked)
                     .map(item => item.name);
                 
-                // 更新用户信息中的知识网
+                console.log('准备保存的知识网数据:', selectedKnowledge); // 调试日志
+                
+                await axios.put('/uis/v1/user/knowledge', {
+                    userId: this.userInfo.userId,
+                    knowledge: selectedKnowledge
+                });
+                
+                // 更新本地数据
                 this.userInfo.knowledgeNetwork = selectedKnowledge;
-                
-                // 如果需要保存到后端，可以在这里添加API调用
-                // await axios.put('/user/knowledge', { knowledge: selectedKnowledge });
-                
                 this.$message.success('知识网更新成功');
                 this.closeKnowledgeDialog();
             } catch (error) {
                 console.error('保存知识网失败:', error);
-                this.$message.error('保存知识网失败');
+                this.$message.error('保存失败: ' + (error.response?.data?.message || error.message));
             }
+        },
+        
+        closeKnowledgeDialog() {
+        this.knowledgeDialogVisible = false
         }
     },
     components: {
@@ -474,7 +502,26 @@ export default {
             .catch((error) => {
                 console.error("Error fetching user data:", error);
             });
-
+    // 在原有mounted中添加知识网数据初始化
+ axios.get(`/uis/v1/ui/${userId}`)
+            .then((response) => {
+                console.log("用户基本信息:", response.data);
+                this.userInfo = response.data;
+                
+                // 用户信息加载完成后再获取知识网
+                return axios.get(`/uis/v1/user/knowledge/${this.userInfo.userId}`);
+            })
+            .then(response => {
+                console.log("知识网初始化数据:", response.data);
+                this.userInfo.knowledgeNetwork = response.data || [];
+            })
+            .catch(error => {
+                console.error('初始化数据获取失败:', error);
+            })
+            .finally(() => {
+                this.loading = false;
+            });
+    
     
     },
     components: {},
