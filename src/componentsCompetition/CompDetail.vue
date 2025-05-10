@@ -10,9 +10,15 @@
           <h1 class="large-title">
             {{ competitionBasicInfo.competitionName }}
           </h1>
-          <el-image style="width: 330px; height: 170px; border-radius: 8px" :src="'http://localhost:10086/images/upload/' +
-            competitionBasicInfo.competitionImgUrl
-            " fit="cover" class="card-image"></el-image>
+          <el-image
+            style="width: 330px; height: 170px; border-radius: 8px"
+            :src="
+              'http://localhost:10086/images/upload/' +
+              competitionBasicInfo.competitionImgUrl
+            "
+            fit="cover"
+            class="card-image"
+          ></el-image>
         </div>
 
         <!-- 原有竞赛时间和链接区域 -->
@@ -32,8 +38,16 @@
         <div class="box related-competitions">
           <h3>相关竞赛</h3>
           <ul>
-            <li v-for="competition in competitionRecommends" :key="competition.competitionId" class="list-item">
-              <a @click="gotoCompDetail(competition.competitionId)" class="title">{{ competition.competitionName }}</a>
+            <li
+              v-for="competition in competitionRecommends"
+              :key="competition.competitionId"
+              class="list-item"
+            >
+              <a
+                @click="gotoCompDetail(competition.competitionId)"
+                class="title"
+                >{{ competition.competitionName }}</a
+              >
               <p class="date">
                 上线日期：{{ formatDateShort(competition.updatedTime) }}
               </p>
@@ -71,8 +85,11 @@
           <div class="right-up">
             <ul class="three-parts">
               <li>
-                <a class="hover-effect recommended-course-link" @click="goToCourseDetailb">{{ recommendedCourseNameb ||
-                  无 }}</a>
+                <a
+                  class="hover-effect recommended-course-link"
+                  @click="goToCourseDetailb"
+                  >{{ recommendedCourseNameb || 无 }}</a
+                >
                 <a class="recommended-course-link" @click="goToCourseDetailc">{{
                   recommendedCourseNamec || 无
                 }}</a>
@@ -169,6 +186,9 @@
             <div v-html="competitionDetail.detail"></div>
           </div>
         </div>
+
+        <!-- 知识图谱 -->
+        <div ref="chartRef" style="width: 100%; height: 600px"></div>
       </section>
     </div>
   </div>
@@ -176,11 +196,19 @@
 
 <script>
 import { ElMessage } from "element-plus";
-import axios from 'axios';
+import axios from "axios";
+import * as echarts from "echarts";
+
 export default {
   name: "CompDetail",
   data() {
     return {
+      chart: null,
+      graphData: {
+        nodes: [],
+        links: [],
+      },
+
       competitionBasicInfo: {}, // 存储竞赛基本信息
       competitionDetail: {}, // 存储竞赛详情数据
       competitionRecommends: {}, // 存储竞赛推荐数据
@@ -299,13 +327,83 @@ export default {
       },
     };
   },
+
   created() {
     this.fetchCompetitionDetail(this.$route.params.compId); // 获取竞赛详情
     this.fetchCompetitionBasicInfo(this.$route.params.compId); // 获取竞赛基本信息
 
     this.fetchCourse();
   },
+
   methods: {
+    //知识图谱
+    fetchData() {
+      // const name = this.competitionBasicInfo.competitionName
+      const name = "全国大学生统计建模大赛";
+      const depth = 2; // 或你可以根据需求设置动态值
+
+      // 假设你有一个后端 API 接口：/api/graph
+      fetch(
+        `http://localhost:10086/comp/v1/graph?name=${encodeURIComponent(
+          name
+        )}&depth=${depth}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          this.graphData = data;
+          this.initChart(data);
+        })
+        .catch((err) => {
+          console.error("获取图谱数据失败", err);
+        });
+    },
+
+    initChart(graphData) {
+      if (!this.chart) {
+        this.chart = echarts.init(this.$refs.chartRef);
+      }
+
+      const option = {
+        tooltip: {
+          formatter: (params) => params.data.name || "",
+        },
+        series: [
+          {
+            type: "graph",
+            layout: "force",
+            roam: true,
+            label: {
+              show: true,
+              position: "right",
+            },
+            force: {
+              repulsion: 200,
+              edgeLength: 100,
+            },
+            categories: [{ name: "Competition" }, { name: "Skill" }],
+            data: graphData.nodes.map((node) => ({
+              id: node.id,
+              name: node.name,
+              category: node.label,
+              symbolSize: node.label === "Skill" ? 30 : 50,
+            })),
+            links: graphData.links.map((link) => ({
+              source: link.source,
+              target: link.target,
+              label: {
+                show: false,
+              },
+              lineStyle: {
+                color: "#aaa",
+              },
+            })),
+          },
+        ],
+      };
+
+      this.chart.setOption(option);
+    },
+
     // 获取课程信息
     fetchCourse() {
       axios
@@ -381,19 +479,6 @@ export default {
           // 处理错误
         });
     },
-
-    // // 跳转到竞赛详情页面
-    // gotoCompDetail(compId) {
-    //   // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-    //   console.log('跳转到竞赛详情页面:', compId);
-    //   this.$router.push({ name: 'CompDetail', params: { compId } });
-    //   this.$forceUpdate();
-    // // },
-    // // 跳转到竞赛详情页面，并通过设置一个唯一的key来强制刷新
-    // gotoCompDetail(compId) {
-    //   console.log('跳转到竞赛详情页面:', compId);
-    //   this.$router.push({ name: 'CompDetail', params: { compId }, query: { key: Date.now() } });
-    // },
 
     // 跳转到竞赛详情页面，并强制刷新
     gotoCompDetail(compId) {
@@ -563,6 +648,7 @@ export default {
           this.loading = false;
         });
     },
+
     scrollTo(anchor) {
       const element = document.getElementById(anchor);
       if (element) {
@@ -579,8 +665,10 @@ export default {
         this.$message.error("请先登录");
         return;
       }
-      axios.post(`/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`
-      )
+      axios
+        .post(
+          `/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`
+        )
         .then((response) => {
           // 假设后端返回 表示收藏成功
           if (response.data == 1) {
@@ -600,7 +688,8 @@ export default {
         console.error("categoryId is not defined");
         return;
       }
-      axios.get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
+      axios
+        .get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
         .then((response) => {
           console.log("相关的竞赛数据:", response.data);
           if (Array.isArray(response.data)) {
@@ -638,7 +727,8 @@ export default {
 
     // 根据communityId获取相关帖子
     fetchRelatedPosts(communityName) {
-      axios.post(`v1/posts/search`, { params: { communityName } })
+      axios
+        .post(`v1/posts/search`, { params: { communityName } })
         .then((response) => {
           console.log("获取相关帖子的响应:", response.data);
           // 检查 response.data.list 是否存在且不是 undefined
@@ -686,6 +776,10 @@ export default {
       const options = { year: "numeric", month: "2-digit", day: "2-digit" };
       return new Date(date).toLocaleDateString("zh-CN", options); // 格式化为 "YYYY-MM-DD"
     },
+  },
+
+  mounted() {
+    this.fetchData();
   },
 };
 </script>

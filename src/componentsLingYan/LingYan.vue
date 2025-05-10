@@ -3,12 +3,23 @@
     <el-container>
       <el-header class="lingyantitle">
         灵验领航,伴您一路成长
-        <el-button type="primary" round @click="openIframe" style="margin-left: 20px">开启会话</el-button>
+        <el-button
+          type="primary"
+          round
+          @click="openIframe"
+          style="margin-left: 20px"
+          >开启会话</el-button
+        >
       </el-header>
 
       <el-main>
-        <iframe src="http://172.20.10.5/chatbot/YsfCrau3h9HVXv8e" v-show="iframeVisible"
-          style="width: 100%; height: 95%; min-height: 830px" frameborder="0" allow="microphone">
+        <iframe
+          src="http://10.8.0.15/chat/4thHuQnQeNzbBUeW"
+          v-show="iframeVisible"
+          style="width: 100%; height: 95%; min-height: 830px"
+          frameborder="0"
+          allow="microphone"
+        >
         </iframe>
       </el-main>
     </el-container>
@@ -103,11 +114,6 @@ export default {
         chatContainer.scrollTop = chatContainer.scrollHeight;
       });
     },
-    // // 格式化响应数据
-    // formatMessage(message) {
-    //   const formattedMessage = message.replace(/([a-zA-Z]+)/g, "$1 ").replace(/([。！？])/g, "$1\n");
-    //   return formattedMessage;
-    // },
   },
 
   beforeUnmount() {
@@ -284,7 +290,6 @@ body {
 }
 
 @keyframes typing {
-
   0%,
   80%,
   100% {

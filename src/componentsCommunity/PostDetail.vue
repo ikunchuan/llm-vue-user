@@ -39,7 +39,7 @@
                 <div v-if="summaryContent" class="summary-content">
                   <h3 class="summary-title">📌 帖子亮点总结</h3>
                   <p class="summary-text">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ summaryContent }}
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ displaySummary }}
                   </p>
                 </div>
                 <div v-else class="summary-empty">
@@ -246,6 +246,12 @@ export default {
         communityName: "",
         createdTime: "",
       },
+
+      summaryFull: "", // 完整总结文本
+      displaySummary: "", // 打字机展示文本
+      typing: false, // 类型状态指示
+      typeIndex: 0,
+
       summaryContent: "", //帖子总结的内容
       author: {},
       community: {},
@@ -324,6 +330,9 @@ export default {
     // 帖子ai总结
     // 帖子ai总结
     generateSummary() {
+      if (this.typing) return;
+      this.typing = true;
+      this.displaySummary = "";
       const postId = this.$route.params.postId;
       const url = `http://localhost:10086/v1/posts/post/ai/${postId}`;
 
@@ -339,6 +348,11 @@ export default {
         })
         .then((response) => {
           const data = response.data; // data是一个数组
+          this.summaryFull = response.data
+            .map((item) => item.result.output.text || "")
+            .join("");
+          this.typeIndex = 0;
+          this.typeWriter();
 
           data.forEach((item) => {
             const text = item?.result?.output?.text || "";
@@ -352,6 +366,15 @@ export default {
         .catch((error) => {
           console.error("请求失败:", error);
         });
+    },
+    typeWriter() {
+      if (this.typeIndex < this.summaryFull.length) {
+        this.displaySummary += this.summaryFull.charAt(this.typeIndex);
+        this.typeIndex++;
+        setTimeout(this.typeWriter, 50); // 每50ms输出一个字符
+      } else {
+        this.typing = false;
+      }
     },
 
     //用户收藏帖子
