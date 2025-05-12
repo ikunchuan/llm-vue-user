@@ -281,8 +281,9 @@ export default {
 
   methods: {
     //知识图谱
-    fetchData() {
-      const name = "全国大学生统计建模大赛";
+    fetchData(competitionName) {
+      console.log("获取图谱数据", competitionName);
+      const name = competitionName;
       const depth = 2; // 或你可以根据需求设置动态值
 
       // 假设你有一个后端 API 接口：/api/graph
@@ -294,14 +295,14 @@ export default {
         .then((res) => res.json())
         .then((data) => {
           this.graphData = data;
-          this.initChart(data);
+          this.initChart(data, name);
         })
         .catch((err) => {
           console.error("获取图谱数据失败", err);
         });
     },
 
-    initChart(graphData) {
+    initChart(graphData, centerName) {
       if (!this.chart) {
         this.chart = echarts.init(this.$refs.chartRef);
       }
@@ -333,7 +334,7 @@ export default {
               { name: "Skill", itemStyle: { color: "#f79767" } },
             ],
             data: graphData.nodes.map((node) => {
-              const isCenter = node.name === "全国大学生统计建模大赛";
+              const isCenter = node.name === centerName;
               return {
                 id: node.id,
                 name: node.name,
@@ -604,6 +605,7 @@ export default {
           this.loading = false;
           this.fetchCompetitionsByCategoryId(this.categoryId); // 获取相关竞赛
           this.fetchCommunitiesByCategoryId(this.categoryId); // 获取社区
+          this.fetchData(this.competitionBasicInfo.competitionName); // 获取知识图谱数据
         })
         .catch((error) => {
           this.error = "加载竞赛基本信息失败，请稍后再试。";
