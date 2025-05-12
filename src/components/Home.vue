@@ -41,8 +41,6 @@
               </div>
             </template>
           </el-popover>
-
-          <!-- https://via.placeholder.com/32 -->
           <span class="username">{{ getUserName() }}</span>
         </div>
       </div>
@@ -52,24 +50,25 @@
         <!-- append-to-body 是让组件回到body中，让z-index生效-->
         <transition name="fade">
           <div v-if="isDrawerVisible && activeDrawer">
+
             <div v-if="activeDrawer?.name === '竞赛中心'" class="resource-center">
-              <div class="title-column">
+              <div class="contest-center-title-column">
                 <h3 class="drawer-title">竞赛中心</h3>
                 <img src="../assets/img/16.png" alt="竞赛中心图标" style="width: 45px; height: 45px" />
               </div>
-              <div class="content-column">
-                <div class="recommend-card" v-for="(comp, index) in popularCompetitions" :key="index"
+              <div class="contest-center-content-column">
+                <div class="contest-recommend-card" v-for="(comp, index) in popularCompetitions" :key="index"
                   @click="goToCompetitionDetail(comp.competitionId)">
                   <el-image :src="'http://localhost:10086/images/upload/' +
                     comp.competitionImgUrl
-                    " fit="cover" class="card-image"></el-image>
-                  <div class="card-title">{{ comp.competitionName }}</div>
+                    " fit="cover" class="contest-card-image"></el-image>
+                  <div class="contest-card-title">{{ comp.competitionName }}</div>
                 </div>
               </div>
             </div>
 
             <div v-if="activeDrawer?.name === '资源中心'" class="resource-center">
-              <div class="right-column">
+              <div class="resource-container">
                 <!-- 第一列 -->
                 <div class="resource-column">
                   <div class="resource-link" @click="navigateToPath('course')">
@@ -114,24 +113,21 @@
             </div>
 
             <div v-if="activeDrawer?.name === '灵验知道'" class="resource-center">
-              <div class="title-section">
-                <h3 class="drawer-title">灵验知道</h3>
-                <p>
-                  灵验知道,以AI的力量，助您一臂之力，让学习之旅更加高效和愉快。
-                </p>
-              </div>
-              <div class="content-section">
-                <div class="resource-box lingyan-know">
+              <div class="resource-container">
+                <div class="title-section">
+                  <h3 class="drawer-title">灵验知道</h3>
+                  <p>灵验知道,以AI的力量，助您一臂之力。</p>
+                  <p>让学习之旅更加高效和愉快。</p>
+                </div>
+                <div class="content-section">
                   <img src="../assets/img/71.png" alt="灵验知道图片" class="know-image" />
                 </div>
               </div>
             </div>
-            <div v-if="activeDrawer?.name === '社区'" class="community-section">
-              <div class="community-images-text">
+
+            <div v-if="activeDrawer?.name === '社区'" class="resource-center">
+              <div class="images-content">
                 <img src="../assets/img/74.png" alt="社区图片1" class="community-image" />
-                <p>创新设计官方社区</p>
-                <!-- <img src="../assets/img/75.png" alt="社区图片2" class="community-image">
-              <p>这里是社区图片2的描述文本，也可以编辑大小。</p> -->
               </div>
               <div class="community-card">
                 <h3 class="drawer-title">更多竞赛社区网站</h3>
@@ -203,7 +199,7 @@ export default {
         },
       ],
       popularCompetitions: [],
-      userAvatarUrl: "https://via.placeholder.com/32", //默认头像
+      userAvatarUrl: "https://api.dicebear.com/9.x/fun-emoji/svg", //默认头像
       userName: sessionStorage.getItem("userName") || "user", // 从 sessionStorage 获取用户名
       activeDrawer: null,
       isDrawerVisible: false,
@@ -509,20 +505,12 @@ export default {
   transform: translateY(0);
 }
 
-.drawer-content {
-  max-width: 1000px;
-  width: 100%;
-  text-align: center;
-  /* 调整这个值来改变与抽屉顶部的距离 */
-  margin-top: 40px;
-}
-
 /* 当抽屉打开时，设置transform为0，显示抽屉 */
 :deep(.el-drawer__body) {
   padding: 10px 20px;
 }
 
-.right-column {
+.resource-container {
   display: flex;
   flex-wrap: wrap;
   /* 允许换行 */
@@ -536,6 +524,18 @@ export default {
   /* 占满宽度 */
   padding: 0px;
   /* 内边距 */
+  justify-content: space-around;
+  /* 确保图片均匀分布 */
+}
+
+/* 大标题样式，使其靠左显示 */
+.resource-container h1 {
+  text-align: left;
+  /* 文字靠右对齐 */
+  margin-top: 20px;
+  /* 与上边的间隔 */
+  margin-bottom: 20px;
+  /* 与下边的间隔 */
 }
 
 .resource-column {
@@ -634,8 +634,6 @@ export default {
   /* 与内容的间距 */
 }
 
-/* 其他样式保持不变 */
-
 /* 内容文本样式 */
 .drawer-text {
   font-size: 1.2em;
@@ -660,32 +658,6 @@ export default {
 .drawer-links a:hover {
   /* 鼠标悬停时改变链接颜色 */
   color: #4c51bf;
-}
-
-/* 社区图片样式 */
-.community-image {
-  width: 100%;
-  /* 或者你希望的宽度 */
-  height: auto;
-  /* 保持图片的纵横比 */
-  display: block;
-  /* 防止图片下方出现空隙 */
-  margin-top: 20px;
-  /* 与上方内容的间距 */
-}
-
-/* 关闭按钮 */
-/* 其他样式保持不变 */
-.drawer-content {
-  display: flex;
-  flex-direction: column;
-  /* 使内容在垂直方向上均匀分布 */
-  justify-content: space-between;
-  /* 使内容在水平方向上靠左对齐 */
-  align-items: flex-start;
-  max-width: 1000px;
-  width: 100%;
-  margin-top: 40px;
 }
 
 .button-container {
@@ -749,16 +721,18 @@ export default {
   /* 水平居中 */
   width: 100%;
   /* 抽屉的总宽度 */
+  margin: auto 0;
 }
 
-.title-column {
-  margin-right: px;
+.contest-center-title-column {
   /* 与内容列的间距 */
   padding: 10px;
   width: 200px;
+  align-content: center;
+  justify-content: center;
 }
 
-.content-column {
+.contest-center-content-column {
   display: flex;
   flex-wrap: wrap;
   /* 允许内容换行 */
@@ -771,13 +745,6 @@ export default {
   padding: 0px;
 }
 
-.left-column {
-  width: 20%;
-  text-align: center;
-  padding: 10px 0px;
-  /* 添加内边距 */
-}
-
 .drawer-title {
   font-size: 20px;
   /* 大标题字体大小 */
@@ -787,61 +754,8 @@ export default {
   /* 与内容之间的间距 */
 }
 
-/* 调整.right-column的布局为垂直排列 */
-.right-column {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-  /* 确保图片均匀分布 */
-}
-
-/* 大标题样式，使其靠左显示 */
-.right-column h1 {
-  text-align: left;
-  /* 文字靠右对齐 */
-  margin-top: 20px;
-  /* 与上边的间隔 */
-  margin-bottom: 20px;
-  /* 与下边的间隔 */
-}
-
-/* 图片区域的容器样式 */
-.image-section {
-  display: flex;
-  /* 使用flex布局 */
-  justify-content: center;
-  /* 水平居中 */
-  align-items: center;
-  /* 垂直居中 */
-  gap: 60px;
-  /* 图片之间的间隔 */
-  margin-top: 20px;
-  /* 与标题的间隔 */
-  margin-bottom: 20px;
-  /* 与下方文字的间隔 */
-}
-
-/* 图片样式 */
-.image-section img {
-  width: 240px;
-  /* 图片宽度 */
-  height: 120px;
-  /* 图片高度 */
-  object-fit: cover;
-  /* 确保图片覆盖整个区域，但可能会裁剪 */
-}
-
-/* 底部文字区域样式 */
-.text-container {
-  text-align: center;
-  /* 文字居中 */
-  margin-top: 20px;
-  /* 与图片区域的间隔 */
-}
-
 .title-section {
-  margin-right: 20px;
-  /* 与内容区的间距 */
+  flex: 1;
   text-align: center;
   /* 文本居中 */
   justify-content: center;
@@ -850,35 +764,23 @@ export default {
 }
 
 .content-section {
-  display: flex;
-  flex-wrap: wrap;
+  flex: 1;
   /* 允许内容换行 */
   justify-content: center;
   /* 水平居中 */
   align-items: center;
   /* 垂直居中 */
-  width: 100%;
-  /* 根据需要调整宽度以容纳内容 */
-}
-
-.resource-box {
-  width: 100%;
-  /* 资源框宽度 */
-  max-width: 400px;
-  /* 最大宽度，防止过大 */
-  margin: 10px;
-  /* 外边距 */
-  text-align: center;
-  /* 文本居中 */
 }
 
 .know-image {
-  max-width: 100%;
+  max-height: 200px;
   /* 图片最大宽度 */
   height: auto;
   /* 高度自动 */
   border-radius: 8px;
   /* 圆角边框 */
+  align-content: center;
+  justify-content: center;
 }
 
 .resource-item {
@@ -952,7 +854,7 @@ export default {
   border: 0px solid #e0e0e0;
 }
 
-.recommend-card {
+.contest-recommend-card {
   display: flex;
   flex-direction: column;
   /* 垂直排列图片和文字 */
@@ -967,7 +869,7 @@ export default {
   padding: 40px;
 }
 
-.card-image {
+.contest-card-image {
   width: 80%;
   /* 图片宽度 */
   height: auto;
@@ -978,7 +880,7 @@ export default {
   /* 过渡效果 */
 }
 
-.card-title {
+.contest-card-title {
   margin-top: 10px;
   /* 图片和名称之间的间距 */
   font-size: 12px;
@@ -995,18 +897,7 @@ export default {
   /* 防止文本换行 */
 }
 
-.community-section {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  /* 水平居中 */
-  align-items: center;
-  /* 垂直居中 */
-  padding: 0px;
-  /* 内边距 */
-}
-
-.community-images-text {
+.images-content {
   flex: 1;
   /* 占据可用空间 */
   text-align: center;
@@ -1014,15 +905,12 @@ export default {
 }
 
 .community-image {
-  max-width: 60%;
+  max-height: 200px;
   /* 图片最大宽度占满容器 */
   height: auto;
   /* 高度自动，保持图片比例 */
-  margin-bottom: 5px;
-  /* 图片下方间距 */
   border-radius: 8px;
   /* 圆角边框 */
-  padding: 0px 150px;
 }
 
 .community-card {
@@ -1036,7 +924,7 @@ export default {
   /* 圆角 */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   /* 阴影 */
-  margin: 0 20px;
+  margin: 0 50px;
   /* 外边距 */
   text-align: center;
   /* 文本居中 */

@@ -20,11 +20,7 @@
                                             <p style="margin: 0; font-weight: 500">
                                                 {{ userInfo.username }}
                                             </p>
-                                            <p style="
-                          margin: 0;
-                          font-size: 14px;
-                          color: var(--el-color-info);
-                        ">
+                                            <p style="margin: 0;font-size: 14px;color: var(--el-color-info);">
                                                 {{ userInfo.userLocal }}
                                             </p>
                                         </div>
@@ -95,14 +91,15 @@
                         </h4>
                         <p class="bio-text">{{ userInfo.userBio }}</p>
                         <button class="knowledge-button" @click="openKnowledgeDialog">个人知识网</button>
-                        <div class="knowledge-network" v-if="userInfo.knowledgeNetwork && userInfo.knowledgeNetwork.length > 0">
-            <div v-for="(item, index) in userInfo.knowledgeNetwork" :key="index" class="knowledge-item">
-                {{ item }}
-            </div>
-        </div>
-        <div v-else class="empty-knowledge">
-            暂无知识网信息，点击上方按钮添加
-        </div>
+                        <div class="knowledge-network"
+                            v-if="userInfo.knowledgeNetwork && userInfo.knowledgeNetwork.length > 0">
+                            <div v-for="(item, index) in userInfo.knowledgeNetwork" :key="index" class="knowledge-item">
+                                {{ item }}
+                            </div>
+                        </div>
+                        <div v-else class="empty-knowledge">
+                            暂无知识网信息，点击上方按钮添加
+                        </div>
                     </div>
 
 
@@ -214,27 +211,23 @@
         </template>
     </el-dialog>
     <!-- 知识网编辑弹窗 -->
-    <el-dialog 
-  v-model="knowledgeDialogVisible"
-  title="个人知识网"
-  width="500px"
-  :close-on-click-modal="false"
-  append-to-body>
-    
-    <el-form>
-        <el-row :gutter="20">
-        <el-col :span="12" v-for="(item, index) in knowledgeItems" :key="index">
-            <el-checkbox v-model="item.checked">
-            {{ item.name }}
-            </el-checkbox>
-        </el-col>
-        </el-row>
-    </el-form>
-    
-    <template #footer>
-        <el-button @click="closeKnowledgeDialog">取消</el-button>
-        <el-button type="primary" @click="saveKnowledge">保存</el-button>
-    </template>
+    <el-dialog v-model="knowledgeDialogVisible" title="个人知识网" width="500px" :close-on-click-modal="false"
+        append-to-body>
+
+        <el-form>
+            <el-row :gutter="20">
+                <el-col :span="12" v-for="(item, index) in knowledgeItems" :key="index">
+                    <el-checkbox v-model="item.checked">
+                        {{ item.name }}
+                    </el-checkbox>
+                </el-col>
+            </el-row>
+        </el-form>
+
+        <template #footer>
+            <el-button @click="closeKnowledgeDialog">取消</el-button>
+            <el-button type="primary" @click="saveKnowledge">保存</el-button>
+        </template>
     </el-dialog>
 </template>
 
@@ -261,7 +254,7 @@ export default {
             postLike: "",
             postFavorite: "",
             postComment: "",
-            avatarUrl: "https://via.placeholder.com/80", //默认头像
+            avatarUrl: "https://api.dicebear.com/9.x/fun-emoji/svg", //默认头像
 
             loading: true,
             dialogFormVisible: false,
@@ -346,10 +339,10 @@ export default {
                 return 0;
             }
         },
-         // 打开知识网弹窗
+        // 打开知识网弹窗
         async openKnowledgeDialog() {
             console.log('知识网按钮点击'); // 调试日志
-            
+
             if (!this.userInfo?.userId) {
                 console.warn('用户ID不存在:', this.userInfo);
                 this.$message.warning('用户信息未加载完成，请稍候');
@@ -359,15 +352,15 @@ export default {
             try {
                 this.loading = true;
                 console.log('正在请求知识网数据，userId:', this.userInfo.userId); // 调试日志
-                
+
                 const response = await axios.get(`/uis/v1/user/knowledge/${this.userInfo.userId}`);
                 console.log('知识网数据响应:', response); // 调试日志
-                
+
                 const savedKnowledge = response.data || [];
                 this.knowledgeItems.forEach(item => {
                     item.checked = savedKnowledge.includes(item.name);
                 });
-                
+
                 this.knowledgeDialogVisible = true;
                 console.log('弹窗状态设置为true'); // 调试日志
             } catch (error) {
@@ -384,14 +377,14 @@ export default {
                 const selectedKnowledge = this.knowledgeItems
                     .filter(item => item.checked)
                     .map(item => item.name);
-                
+
                 console.log('准备保存的知识网数据:', selectedKnowledge); // 调试日志
-                
+
                 await axios.put('/uis/v1/user/knowledge', {
                     userId: this.userInfo.userId,
                     knowledge: selectedKnowledge
                 });
-                
+
                 // 更新本地数据
                 this.userInfo.knowledgeNetwork = selectedKnowledge;
                 this.$message.success('知识网更新成功');
@@ -401,9 +394,9 @@ export default {
                 this.$message.error('保存失败: ' + (error.response?.data?.message || error.message));
             }
         },
-        
+
         closeKnowledgeDialog() {
-        this.knowledgeDialogVisible = false
+            this.knowledgeDialogVisible = false
         }
     },
     components: {
@@ -502,12 +495,12 @@ export default {
             .catch((error) => {
                 console.error("Error fetching user data:", error);
             });
-    // 在原有mounted中添加知识网数据初始化
- axios.get(`/uis/v1/ui/${userId}`)
+        // 在原有mounted中添加知识网数据初始化
+        axios.get(`/uis/v1/ui/${userId}`)
             .then((response) => {
                 console.log("用户基本信息:", response.data);
                 this.userInfo = response.data;
-                
+
                 // 用户信息加载完成后再获取知识网
                 return axios.get(`/uis/v1/user/knowledge/${this.userInfo.userId}`);
             })
@@ -521,8 +514,8 @@ export default {
             .finally(() => {
                 this.loading = false;
             });
-    
-    
+
+
     },
     components: {},
 };
@@ -761,6 +754,7 @@ export default {
     display: -webkit-box;
     /* 必须设置为弹性盒子 */
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     /* 限制显示两行 */
     -webkit-box-orient: vertical;
     /* 垂直排列 */
@@ -822,6 +816,7 @@ export default {
     margin-bottom: 16px;
     /* 模块之间的间距统一调整为 16px */
 }
+
 /* 知识网按钮样式 */
 .knowledge-button {
     background-color: #4f46e5;
@@ -856,14 +851,16 @@ export default {
     text-align: center;
     font-size: 14px;
     color: #1a4b8c;
-    font-weight: 500; /* 中等粗细字体 */
+    font-weight: 500;
+    /* 中等粗细字体 */
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
     height: 15px;
-    border: 1px solid #b8d4ff; /* 添加浅蓝色边框 */
+    border: 1px solid #b8d4ff;
+    /* 添加浅蓝色边框 */
 }
 
 .knowledge-item:hover {
