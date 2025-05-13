@@ -10,15 +10,9 @@
           <h1 class="large-title">
             {{ competitionBasicInfo.competitionName }}
           </h1>
-          <el-image
-            style="width: 330px; height: 170px; border-radius: 8px"
-            :src="
-              'http://localhost:10086/images/upload/' +
-              competitionBasicInfo.competitionImgUrl
-            "
-            fit="cover"
-            class="card-image"
-          ></el-image>
+          <el-image style="width: 330px; height: 170px; border-radius: 8px" :src="'http://localhost:10086/images/upload/' +
+            competitionBasicInfo.competitionImgUrl
+            " fit="cover" class="card-image"></el-image>
         </div>
 
         <!-- 原有竞赛时间和链接区域 -->
@@ -38,16 +32,8 @@
         <div class="box related-competitions">
           <h3>相关竞赛</h3>
           <ul>
-            <li
-              v-for="competition in competitionRecommends"
-              :key="competition.competitionId"
-              class="list-item"
-            >
-              <a
-                @click="gotoCompDetail(competition.competitionId)"
-                class="title"
-                >{{ competition.competitionName }}</a
-              >
+            <li v-for="competition in competitionRecommends" :key="competition.competitionId" class="list-item">
+              <a @click="gotoCompDetail(competition.competitionId)" class="title">{{ competition.competitionName }}</a>
               <p class="date">
                 上线日期：{{ formatDateShort(competition.updatedTime) }}
               </p>
@@ -78,45 +64,17 @@
 
         <!-- 右侧主内容 -->
         <!--知识树-->
-        <div
-          style="
+        <div style="
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 20px;
-          "
-        >
-          <div>
-            <label for="fontSelect">选择字体：</label>
-            <select v-model="selectedFont" @change="updateChartStyle">
-              <option
-                value='"Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif'
-              >
-                默认
-              </option>
-              <option value="Arial, sans-serif">Arial</option>
-              <option value="Roboto, sans-serif">Roboto</option>
-              <option value="Microsoft YaHei">微软雅黑</option>
-              <option value="SimHei">黑体</option>
-              <option value="SimSun">宋体</option>
-            </select>
-          </div>
+          ">
+          <h3>知识图谱</h3>
 
-          <div>
-            <label for="fontSize">字体大小：{{ fontSize }}px</label>
-            <input
-              id="fontSize"
-              type="range"
-              min="10"
-              max="30"
-              v-model.number="fontSize"
-              @input="updateChartStyle"
-              style="vertical-align: middle"
-            />
-          </div>
         </div>
         <!-- 知识图谱 -->
-        <div ref="chartRef" style="width: 100%; height: 600px"></div>
+        <div ref="chartRef" style="width: 100%; height: 500px"></div>
         <!-- <div class="tree">
           <div class="left">
             <span class="left-up">{{ competitionDetail.competitionName }}</span>
@@ -242,11 +200,6 @@ export default {
   name: "CompDetail",
   data() {
     return {
-      graphData: null,
-      chart: null,
-      selectedFont:
-        '"Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif',
-      fontSize: 11, // 默认字体大小
       chart: null,
       graphData: {
         nodes: [],
@@ -308,58 +261,147 @@ export default {
       }
 
       const option = {
-        tooltip: {
-          formatter: (params) => params.data.name || "",
-        },
-        series: [
-          {
-            type: "graph",
-            layout: "force",
-            roam: true,
-            draggable: true,
-            label: {
-              show: true,
-              position: "right",
-              fontFamily: this.selectedFont,
-              fontSize: this.fontSize,
-              color: "#333",
-            },
-            force: {
-              repulsion: 200,
-              edgeLength: 100,
-            },
-            categories: [
-              { name: "Center", itemStyle: { color: "#734E9C" } },
-              { name: "Competition", itemStyle: { color: "#E0A4DD" } },
-              { name: "Skill", itemStyle: { color: "#f79767" } },
-            ],
-            data: graphData.nodes.map((node) => {
-              const isCenter = node.name === centerName;
-              return {
-                id: node.id,
-                name: node.name,
-                category: isCenter ? "Center" : node.label,
-                symbolSize: isCenter ? 60 : node.label === "Skill" ? 30 : 50,
-                label: {
-                  fontFamily: this.selectedFont,
-                  fontSize: isCenter ? this.fontSize + 4 : this.fontSize,
-                  fontWeight: isCenter ? "bolder" : "normal",
-                  color: "#333",
-                },
-              };
-            }),
-            links: graphData.links.map((link) => ({
-              source: String(link.source),
-              target: String(link.target),
-              lineStyle: {
-                color: "#aaa",
-              },
-            })),
+        backgroundColor: '#f8fafc', // 背景色（可改为其他浅色）
+        tooltip: { show: false },   // 关闭提示框
+        series: [{
+          type: 'graph',
+          layout: 'force',
+          roam: true,               // 允许缩放拖拽
+          draggable: true,          // 允许节点拖拽
+          focusNodeAdjacency: false,
+
+          // 力引导布局参数
+          force: {
+            repulsion: 300,        // 节点间斥力（数值越大间距越大）
+            edgeLength: [10, 70], // 边长度范围[min,max]
+            gravity: 0.01,          // 向心力（数值越大节点越向中心聚集）
+            friction: 0.3,        //50 摩擦系数（0-1，数值越大移动越慢）
+            layoutAnimation: true,  // 启用布局动画
+
+            // 新增力参数（专业版配置）
+            edgeStrength: 0.8,      // 边的作用力强度（0-1）
+            nodeStrength: 0.9       // 节点作用力强度（0-1）
           },
-        ],
+
+          // 标签样式配置
+          label: {
+            show: true,
+            position: 'right',     // 标签位置（'left'/'top'/'bottom'）
+            distance: 5,          // 标签与节点距离
+            fontSize: 11,          // 基础字号
+            fontFamily: 'Arial',
+            color: '#334155',       // 文字颜色
+            backgroundColor: '#fff',// 标签背景
+            borderColor: '#e2e8f0', // 边框颜色
+            borderWidth: 2,
+            borderRadius: 4,
+            padding: [4, 4],       // 标签内边距[垂直,水平]
+
+            // 文字格式化（核心优化）
+            formatter: ({ name }) => {
+              const maxChars = 8;  // 每行最大字符数
+              const lines = [];
+              let currentLine = '';
+
+              // 智能分词换行算法
+              name.split('').forEach((char, index) => {
+                if ((currentLine + char).length > maxChars ||
+                  (index > 0 && /[·•]/.test(char))) { // 遇到特定符号强制换行
+                  lines.push(currentLine);
+                  currentLine = '';
+                }
+                currentLine += char;
+              });
+              lines.push(currentLine);
+
+              // 最多显示2行
+              return lines.slice(0, 2).join('\n') + (lines.length > 2 ? '...' : '');
+            }
+          },
+
+          // 节点分类配置
+          categories: [
+            {
+              name: 'Center',
+              itemStyle: {
+                color: '#7ED321',    // 中心节点颜色
+                borderColor: '#7ED323', // 边框颜色
+                borderWidth: 5
+              }
+            },
+            {
+              name: 'Competition',
+              itemStyle: {
+                color: '#4f46e5',    // 竞赛节点颜色
+                borderColor: '#fff'
+              }
+            },
+            {
+              name: 'Skill',
+              itemStyle: {
+                color: '#F9DC5C',    // 技能节点颜色
+                borderColor: '#fff'
+              }
+            }
+          ],
+
+          // 节点数据
+          data: graphData.nodes.map((node) => {
+            const isCenter = node.name === centerName;
+            return {
+              id: node.id,
+              name: node.name,
+              category: isCenter ? 'Center' : node.label,
+              symbolSize: isCenter ? 60 : node.label === 'Skill' ? 25 : 36, // 节点尺寸
+              itemStyle: {
+                borderWidth: isCenter ? 4 : 2  // 边框粗细
+              },
+              label: {
+                fontSize: isCenter ? 14 : 11,    // 字号分级
+                fontWeight: isCenter ? 600 : 400, // 字重分级
+                color: isCenter ? '#1e3a8a' : '#475569' // 文字颜色分级
+              },
+              // 新增引力权重配置（核心参数）
+              force: {
+                repulsion: isCenter ? 0 : 1,       // 中心节点不受斥力影响
+                gravity: isCenter ? 5 : 0.8,       // 中心节点获得5倍引力
+                edgeStrength: isCenter ? 1.2 : 0.8 // 中心节点连接线更强
+              }
+            };
+          }),
+
+          // 连接线配置
+          links: graphData.links.map((link) => ({
+            source: String(link.source),
+            target: String(link.target),
+            lineStyle: {
+              color: this.isCenterLink(link, centerName) ? '#93c5fd' : '#e2e8f0', // 连接线颜色分级
+              width: 1.5,          // 线宽
+              opacity: 0.9,         // 透明度
+              curveness: 0.3,        // 弯曲度（0-1）
+              weight: this.isCenterLink(link, centerName) ? 2 : 1 // 中心连接线权重更高
+            }
+          }))
+        }]
       };
 
+      // 新增初始化后布局调整（专业技巧）
+      setTimeout(() => {
+        this.chart.dispatchAction({
+          type: 'forceLayout',
+          animation: { duration: 1000 },
+          config: {
+            initLayout: "circular",  // 初始布局为环形
+            center: ['50%', '50%']     // 强制中心点位置
+          }
+        });
+      }, 500);
       this.chart.setOption(option);
+    },
+    // 判断是否连接中心节点的方法
+    isCenterLink(link, centerName) {
+      const centerNode = this.graphData.nodes.find(n => n.name === centerName);
+      return link.source === centerNode.id || link.target === centerNode.id;
     },
 
     updateChartStyle() {
@@ -984,7 +1026,7 @@ body {
 .tree {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 300px;
   background-color: #7c73e6;
   border-radius: 18px;
 }
