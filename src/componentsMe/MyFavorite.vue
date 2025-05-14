@@ -10,19 +10,18 @@
       <div v-if="showDetails[0]" class="favorite-item-details">
         <div class="favorite-items">
           <div v-for="(comp, index) in visibleCompetitions" :key="index" class="favorite-card">
-            <el-card @click="goToCompDetail(comp.competitionId)">
+            <el-card @click="goToCompDetail(comp.competitionId)" shadow="never" style="border: none;">
               <div class="item-title">{{ comp.competitionName }}</div>
               <div class="item-content">
                 <div class="item-image">
                   <img :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl" class="comp-img" />
                 </div>
                 <div class="item-details">
-                  <div class="update-time">收藏时间: {{ formatTime(comp.updatedTime) }}</div>
-                  <el-button type="danger" icon="el-icon-delete"
-                    @click="removeFavorite(comp.competitionId, 'competition')">删除</el-button>
+                  <div class="update-time">{{ formatTime(comp.updatedTime) }}</div>
                 </div>
               </div>
             </el-card>
+            <el-button type="danger" @click="removeFavorite(comp.competitionId, 'competition')">取消收藏</el-button>
           </div>
         </div>
         <el-button v-if="competitions.length > 4" @click="toggleShowMore(0)">
@@ -41,7 +40,7 @@
       <div v-if="showDetails[1]" class="favorite-item-details">
         <div class="favorite-items">
           <div v-for="(course, index) in visibleCourses" :key="index" class="favorite-card">
-            <el-card @click="goToCourseDetail(course.courseId)">
+            <el-card @click="goToCourseDetail(course.courseId)" shadow="never" style="border: none;">
               <div class="item-title">{{ course.courseName }}</div>
               <div class="item-content">
                 <div class="item-image">
@@ -49,12 +48,11 @@
                 </div>
                 <div class="item-details">
                   <!-- <div class="course-description">{{ shortenText(course.courseDescription) }}</div> -->
-                  <div class="update-time">收藏时间: {{ formatTime(course.updatedTime) }}</div>
-                  <el-button type="danger" icon="el-icon-delete"
-                    @click="removeFavorite(course.courseId, 'course')">删除</el-button>
+                  <div class="update-time">{{ formatTime(course.updatedTime) }}</div>
                 </div>
               </div>
             </el-card>
+            <el-button type="danger" @click="removeFavorite(course.courseFavoriteId, 'course')">取消收藏</el-button>
           </div>
         </div>
         <el-button v-if="courses.length > 4" @click="toggleShowMore(1)">
@@ -73,15 +71,14 @@
       <div v-if="showDetails[2]" class="favorite-item-details">
         <div class="favorite-items">
           <div v-for="(post, index) in visiblePosts" :key="post.postId" class="favorite-card">
-            <el-card @click="goToPostDetail(post.postId)">
+            <el-card @click="goToPostDetail(post.postId)" shadow="never" style="border: none;">
               <div class="item-title">{{ post.postTitle }}</div>
               <div class="item-content">
                 <div class="post-content">{{ shortenText(post.postContent) }}</div>
-                <div class="update-time">收藏时间: {{ formatTime(post.updatedTime) }}</div>
-                <el-button type="danger" icon="el-icon-delete"
-                  @click="removeFavorite(post.postId, 'post')">删除</el-button>
+                <div class="update-time">{{ formatTime(post.updatedTime) }}</div>
               </div>
             </el-card>
+            <el-button type="danger" @click="removeFavorite(post.postId, 'post')">取消收藏</el-button>
           </div>
         </div>
         <el-button v-if="posts.length > 4" @click="toggleShowMore(2)">
@@ -125,6 +122,7 @@ export default {
       axios.get(`/crs/v1/favorite/${this.userId}`) // 课程收藏
         .then(response => {
           this.courses = response.data;
+          console.log(this.courses);
           this.visibleCourses = this.courses.slice(0, 4); // 初始化只显示前4个
         });
 
@@ -135,23 +133,33 @@ export default {
         });
     },
     removeFavorite(favoriteId, type) {
-      let url = '';
-      if (type === 'competition') {
-        url = `/comp/v1/compe/favorite/${favoriteId}`;
-      } else if (type === 'course') {
-        url = `/crs/v1/course/favorites/${favoriteId}`;
-      } else if (type === 'post') {
-        url = `/v1/posts/favorites/${favoriteId}`;
-      }
+      this.$confirm('确定要取消收藏吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 用户点击“确定”，执行删除逻辑
+        let url = '';
+        if (type === 'competition') {
+          url = `/comp/v1/compe/favorite/${favoriteId}`;
+        } else if (type === 'course') {
+          url = `/crs/v1/favorite/${favoriteId}`;
+        } else if (type === 'post') {
+          url = `/v1/posts/favorites/${favoriteId}`;
+        }
 
-      axios.delete(url)
-        .then(() => {
-          this.fetchFavorites(); // 重新获取收藏数据
-          this.$message.success('删除成功');
-        })
-        .catch(error => {
-          this.$message.error('删除失败');
-        });
+        axios.delete(url)
+          .then(() => {
+            this.fetchFavorites(); // 重新获取收藏数据
+            this.$message.success('删除成功');
+          })
+          .catch(error => {
+            this.$message.error('删除失败');
+          });
+      }).catch(() => {
+        // 用户点击“取消”，什么也不做
+        this.$message.info('取消删除');
+      });
     },
     toggleDetail(index) {
       this.showDetails[index] = !this.showDetails[index];
@@ -229,11 +237,6 @@ export default {
   color: #333;
   cursor: pointer;
   padding: 10px 20px;
-  /* 增加内边距 */
-  /* background-color: #e0a7a7;  */
-
-  /* border-radius: 8px; 
-  border-bottom: none;  */
   border-bottom: 2px solid #ddd;
 }
 
@@ -255,12 +258,8 @@ export default {
   /* 减少卡片内边距 */
   background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: none;
-  /* 去掉阴影 */
   margin: 0;
   /* 去掉卡片之间的空隙 */
-  height: auto;
-  /* 根据内容自适应高度 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s;
 }
@@ -269,14 +268,25 @@ export default {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-.item-title,
-.course-description,
-.post-content {
-
+.item-title {
+  min-height: 44px;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   /* 限制为两行 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.post-content {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 1;
+  /* 限制为两行 */
+  font-size: 12px;
+  color: #868e96;
   overflow: hidden;
   text-overflow: ellipsis;
 }

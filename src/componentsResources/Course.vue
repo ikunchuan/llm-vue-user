@@ -76,12 +76,11 @@
         <div class="card-footer">
            
           <div :class="card.courseDifficultyLevel === '初级'
-              ? 'level-beginner'
-              : card.courseDifficultyLevel === '中级'
-                ? 'level-intermediate'
-                : 'level-advanced'
-            ">
-                        {{ card.courseDifficultyLevel }}          
+            ? 'level-beginner'
+            : card.courseDifficultyLevel === '中级'
+              ? 'level-intermediate'
+              : 'level-advanced'
+            ">{{ card.courseDifficultyLevel }}          
           </div>
         </div>
       </div>
@@ -90,7 +89,6 @@
 </template>
 
 <script>
-import { fi } from "element-plus/es/locales.mjs";
 import axios from "axios";
 export default {
   name: "MainLayout",

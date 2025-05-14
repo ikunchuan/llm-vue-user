@@ -4,8 +4,8 @@
     <div class="top-section">
       <!-- Video Section -->
       <div class="video-container">
-        <!-- <video controls :src="bvid" class="video-player"></video> -->
-        <BilibiliPlayer bvid="BV1dh411e7F7" />
+        <!-- <video controls :src="bvid" class="video-player"></video>  -->
+        <BilibiliPlayer :bvid="courseDetail.bvid" />
       </div>
       <!-- Course Info -->
       <div class="course-info">
@@ -13,7 +13,7 @@
         <p class="course-description">{{ courseDetail.courseDescription }}</p>
 
         <div class="course-buttons">
-          <el-button type="primary" @click="handleCollect" :disabled="isCollected">
+          <el-button type='primary' :plain="isCollected" @click="handleCollect">
             {{ isCollected ? "已收藏" : "收藏课程" }}
           </el-button>
           <el-button @click="onAnswerDetailClick">题目推荐</el-button>
@@ -120,16 +120,9 @@ export default {
       error: null, // 错误信息
       showChapterContent: false, // 控制章节内容的显示状态
       loadingChapter: false, // 控制章节内容的加载状态
-      courseToCategoryMapping: {
-        1: "13", // 假设课程ID 1 对应 题目类别ID 13
-        2: "14", // 假设课程ID 2 对应 题目类别ID 14
-        23: "20",
-        24: "20",
-        25: "20",
-        // 添加更多映射
-      },
       courseFavorite: {},
       isCollected: false,
+      // bvid: "BV1dh411e7F7", // 默认bv号
       // userId:'',
       // courseId:'',
       courseComment: {}, //存储课程的评论
@@ -142,9 +135,11 @@ export default {
     this.fetchChapter();
     this.getAllCourseComment();
   },
+
   mounted() {
-    const courseId = this.$route.params.courseId; // 获取传递的课程 ID
+    this.checkIfCollected();
   },
+
   methods: {
     goToCourseDetail(courseId) {
       const userId = sessionStorage.userId;
@@ -199,28 +194,34 @@ export default {
       });
     },
 
-    handleCollect() {
-      this.$message.success("课程已收藏");
+    checkIfCollected() {
       const userId = sessionStorage.getItem("userId");
       const courseId = this.$route.params.courseId;
-      this.courseFavorite = {
+
+      axios.get("/crs/v1/favorite/isCollected", {
+        params: { userId, courseId }
+      }).then(res => {
+        this.isCollected = res.data; // true / false
+      });
+    },
+
+    handleCollect() {
+      const userId = sessionStorage.getItem("userId");
+      const courseId = this.$route.params.courseId;
+
+      axios.post("/crs/v1/toggleFavorite", {
         userId: userId,
-        courseId: courseId,
-      };
-      console.log(this.courseFavorite);
-      axios
-        .post("crs/v1/favorite", this.courseFavorite)
-        .then((response) => {
-          if (response.data == 1) {
-            console.log("课程收藏成功");
-            this.isCollected = true; // 收藏成功后设置为已收藏状态
-            this.$message.success("收藏成功");
-          }
-        })
-        .catch((error) => {
-          this.$message.error("收藏失败，请重试");
-          console.error("收藏失败:", error);
-        });
+        courseId: courseId
+      }).then(() => {
+        if (this.isCollected) {
+          this.$message.success("收藏成功");
+        } else {
+          this.$message.success("取消收藏成功");
+        }
+        this.checkIfCollected(); // 重新拉取状态
+      }).catch(() => {
+        this.$message.error("收藏失败，请重试");
+      });
     },
     handleRecommend() {
       this.$message.info("推荐的题目已展示");
@@ -246,9 +247,7 @@ export default {
         .then((response) => {
           this.courseDetail = response.data; // 将获取到的数据赋值给 courseDetail
           this.getCourseWithCategory();
-
           this.loading = false; // 关闭加载状态
-          this.fetchBvid(courseId); // 获取对应的 bvid
         })
         .catch((error) => {
           this.error = error.message; // 捕获错误信息并赋值给 error
