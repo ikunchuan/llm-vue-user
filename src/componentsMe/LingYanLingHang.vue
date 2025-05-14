@@ -21,7 +21,6 @@
           </button>
         </div>
       </div>
-
     </div>
 
     <!-- 主条形图 -->
@@ -31,33 +30,28 @@
     <div class="lower-section">
       <!-- 左侧卡片列表 -->
       <div class="card-list">
-        <!-- 添加加载状态 -->
-        <div v-if="loading" class="loading">数据加载中...</div>
-        <template v-else>
-          <div v-for="(item, index) in currentYearData" :key="item.主题" class="data-card"
-            :style="{ borderColor: getColor(index) }" @mouseover="showTrend(item.主题)">
-            <div class="card-header">
-              <span class="rank">#{{ index + 1 }}</span>
-              <h3 class="title">{{ item.主题 || "未命名主题" }}</h3>
-              <span class="trend" :class="trendClass(item.主题)">
-                {{ trendText(item.主题) }}
-              </span>
-            </div>
-            <div class="stats">
-              <p />
-              <hr />
-              <div class="keywords">
-                <!-- 添加词频明细校验 -->
-                <template v-if="item.词频明细">
-                  <span v-for="(word, idx) in extractKeywords(item.词频明细)" :key="idx" class="keyword">
-                    {{ word }}
-                  </span>
-                </template>
-                <span v-else class="no-keywords">暂无关键词数据</span>
-              </div>
+        <!-- 用 chartData，保证只取前 10 条 -->
+        <div v-for="(item, index) in chartData" :key="item.主题" class="data-card"
+          :style="{ borderColor: getColor(index) }" @mouseover="showTrend(item.主题)">
+          <div class="card-header">
+            <span class="rank">#{{ index + 1 }}</span>
+            <h3 class="title">{{ item.主题 || "未命名主题" }}</h3>
+            <span class="trend" :class="trendClass(item.主题)">
+              {{ trendText(item.主题) }}
+            </span>
+          </div>
+          <div class="stats">
+            <hr />
+            <div class="keywords">
+              <template v-if="item.词频明细">
+                <span v-for="(word, idx) in extractKeywords(item.词频明细)" :key="idx" class="keyword">
+                  {{ word }}
+                </span>
+              </template>
+              <span v-else class="no-keywords">暂无关键词数据</span>
             </div>
           </div>
-        </template>
+        </div>
       </div>
 
       <!-- 右侧趋势图 -->
@@ -66,84 +60,83 @@
   </div>
 </template>
 
+
 <script>
-import { ref, onMounted, computed } from "vue";
 import * as echarts from "echarts";
 import Papa from "papaparse";
-
 // 配色方案 (10种对比色)
 const COLORS = [
-  "#7ED321", // 活力绿 
-  "#4A90E2", // 主蓝 
-  "#BD10E0", // 科技紫
-  "#F5A623", // 暖橙
-  "#50E3C2", // 青柠
-  "#B8E986", // 浅绿
-  "#9013FE", // 深紫
-  "#374785", // 钢铁蓝
-  "#F9DC5C",  // 柔和黄
-  "#FF6B6B", // 柔粉红
+  "#7ED321", "#4A90E2", "#BD10E0", "#F5A623", "#50E3C2",
+  "#B8E986", "#9013FE", "#374785", "#F9DC5C", "#FF6B6B",
 ];
-
 // 数据源管理模块
 const DATA_SOURCES = {
-  innovation: {
-    name: "创新创业类",
-    path: "/data/分年主题词频统计.csv"
-  },
-  tech: {
-    name: "信息技术与编程类",
-    path: "/data/计设主题词频统计.csv"
-  }
+  innovation: { name: "创新创业类", path: "/data/分年主题词频统计.csv" },
+  tech: { name: "信息技术与编程类", path: "/data/计设主题词频统计.csv" }
 };
-
 export default {
-  setup() {
-    const dataSource = ref('innovation')    // 当前数据源
-    const rawData = ref([])                 // 原始数据集
-    const selectedYear = ref(2022)          // 当前选中年份
-    const barChart = ref(null);
-    const lineChart = ref(null);
-    let barChartInstance = null;
-    let lineChartInstance = null;
-
-    // 计算属性模块
-
-    // 可用年份集合
-    const years = computed(() => {
-      return [...new Set(rawData.value.map((d) => d.年份))].sort();
-    });
-    // 当前年份全部数据
-    const currentYearData = computed(() => {
-      return (
-        rawData.value
-          .filter((d) => d.年份 === selectedYear.value)
-          .sort((a, b) => b.总词频 - a.总词频) || []
-      );
-    });
-    // 图表控制模块
-    const chartData = computed(() => {
-      return currentYearData.value.slice(0, 10);
-    });
-
-    // 初始化图表
-    const initCharts = () => {
-      barChartInstance = echarts.init(barChart.value);
-      lineChartInstance = echarts.init(lineChart.value);
-      updateBarChart();
+  data() {
+    return {
+      // 响应式状态
+      dataSource: 'innovation',    // 当前数据源
+      rawData: [],                 // 原始数据集
+      selectedYear: 2022,          // 当前选中年份
+      barChart: null,              // dom 引用
+      lineChart: null,             // dom 引用
+      barChartInstance: null,      // echarts 实例
+      lineChartInstance: null,     // echarts 实例
     };
+  },
+
+  computed: {
+    // 可用年份集合
+    years() {
+      const set = new Set(this.rawData.map(d => d.年份));
+      return Array.from(set).sort();
+    },
+    // 当前年份全部数据
+    currentYearData() {
+      return this.rawData
+        .filter(d => d.年份 === this.selectedYear)
+        .sort((a, b) => b.总词频 - a.总词频);
+    },
+    // 用于条形图的前10条
+    chartData() {
+      return this.currentYearData.slice(0, 10);
+    }
+  },
+
+  mounted() {
+    // 先把模板里 ref 的 DOM 节点取出来
+    this.barChart = this.$refs.barChart;
+    this.lineChart = this.$refs.lineChart;
+    // 再加载数据并初始化图表
+    this.loadData();
+  },
+
+  methods: {
+    // 初始化图表实例
+    initCharts() {
+      if (this.barChart && this.lineChart) {
+        this.barChartInstance = echarts.init(this.barChart);
+        this.lineChartInstance = echarts.init(this.lineChart);
+        this.updateBarChart();
+      }
+    },
 
     // 更新条形图
-    const updateBarChart = () => {
+    updateBarChart() {
+      if (!this.barChartInstance) return;
+
       const option = {
         tooltip: {
           trigger: "axis",
-          formatter: (params) => `
-        <div class="chart-tooltip">
-          <b>${params[0].name}</b><br>
-          总词频: ${params[0].value}
-        </div>
-      `,
+          formatter: params => `
+            <div class="chart-tooltip">
+              <b>${params[0].name}</b><br/>
+              总词频: ${params[0].value}
+            </div>
+          `,
           backgroundColor: '#fff',
           borderWidth: 0,
           borderRadius: 6,
@@ -153,40 +146,27 @@ export default {
         },
         xAxis: {
           type: "value",
-          splitLine: {
-            show: true,
-            lineStyle: {
-              color: '#f0f0f0',
-              type: 'dashed'
-            }
-          },
-          axisLabel: {
-            color: '#7f8c8d'
-          }
+          splitLine: { show: true, lineStyle: { color: '#f0f0f0', type: 'dashed' } },
+          axisLabel: { color: '#7f8c8d' }
         },
         yAxis: {
           type: "category",
-          data: chartData.value.map((d) => d.主题).reverse(),
-          axisLabel: {
-            fontSize: 13,
-            color: "#666",
-            margin: 10
-          },
+          data: this.chartData.map(d => d.主题).reverse(),
+          axisLabel: { fontSize: 13, color: "#666", margin: 10 },
           axisLine: { show: false },
           axisTick: { show: false }
         },
         series: [{
           type: "bar",
-          data: chartData.value.map((d, i) => ({
+          data: this.chartData.map((d, i) => ({
             value: d.总词频,
             itemStyle: {
-              color: COLORS[i % 10],
-              borderRadius: [0, 6, 6, 0], // 顶部圆角
+              color: COLORS[i % COLORS.length],
+              borderRadius: [0, 6, 6, 0],
               borderWidth: 0
-            },
+            }
           })).reverse(),
           barWidth: '60%',
-          // 增强悬停效果
           emphasis: {
             scale: 1.03,
             focus: 'self',
@@ -197,116 +177,31 @@ export default {
               borderColor: '#fff'
             }
           },
-          // 添加装饰元素
           showBackground: true,
           backgroundStyle: {
             color: 'rgba(240,240,240,0.4)',
             borderRadius: 6
           }
         }],
-        grid: {
-          left: "15%",
-          right: "10%",
-          top: "5%",
-          bottom: "5%",
-        }
+        grid: { left: "15%", right: "10%", top: "5%", bottom: "5%" }
       };
-      barChartInstance.setOption(option);
-    };
+      this.barChartInstance.setOption(option);
+    },
 
-    // 更新趋势图
-    const updateTrendChart = (theme) => {
-      const yearsData = years.value;
-      const trendData = yearsData.map((year) => {
-        const item = rawData.value.find(
-          (d) => d.年份 === year && d.主题 === theme
-        );
+    // 更新折线趋势图
+    updateTrendChart(theme) {
+      if (!this.lineChartInstance) return;
+
+      const years = this.years;
+      const trendData = years.map(year => {
+        const item = this.rawData.find(d => d.年份 === year && d.主题 === theme);
         return item ? item.总词频 : 0;
       });
 
-      // 获取当前主题在柱状图中的颜色索引
-      const themeIndex = chartData.value.findIndex(d => d.主题 === theme);
-      const lineColor = themeIndex !== -1 ? COLORS[themeIndex % 10] : '#3498db';
+      const idx = this.chartData.findIndex(d => d.主题 === theme);
+      const lineColor = idx !== -1 ? COLORS[idx % COLORS.length] : '#3498db';
 
       const option = {
-        // 坐标系样式优化
-        grid: {
-          left: "10%",
-
-          containLabel: true
-        },
-        xAxis: {
-          type: "category",
-          data: yearsData,
-          // 轴线样式
-          axisLine: {
-            lineStyle: {
-              color: "#e0e0e0"
-            }
-          },
-          // 标签样式
-          axisLabel: {
-            color: "#7f8c8d",
-            fontSize: 12
-          }
-        },
-        yAxis: {
-          type: "value",
-          // 隐藏y轴线
-          axisLine: { show: false },
-          // 网格线优化
-          splitLine: {
-            lineStyle: {
-              color: "#f5f5f5",
-              type: "solid"
-            }
-          },
-          axisLabel: {
-            color: "#7f8c8d",
-            fontSize: 12
-          }
-        },
-
-        series: [
-          {
-            type: "line",
-            data: trendData,
-            // 平滑曲线优化
-            smooth: 0.6,  // 调整平滑度(0-1)
-            // 线条样式
-            lineStyle: {
-              width: 4,
-              color: lineColor + "33",
-              shadowColor: "rgba(52,152,219,0.2)", // 添加发光效果
-            },
-            // 标记点样式
-            symbol: "circle",
-            symbolSize: 8,
-            itemStyle: {
-              color: lineColor + "20",
-              borderColor: lineColor,
-              borderWidth: 2
-            },
-            // 区域填充优化
-            areaStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: lineColor + "33"  // 50%透明度
-                },
-                {
-                  offset: 1,
-                  color: lineColor + "05"  // 5%透明度
-                }
-              ])
-            },
-            // 动画配置
-            animation: true,
-            animationDuration: 1500,
-            animationEasing: "cubicOut"
-          }
-        ],
-        // 标题样式优化
         title: {
           text: `“${theme}”近三年获奖趋势`,
           left: "center",
@@ -316,104 +211,125 @@ export default {
             fontWeight: "500",
             fontFamily: "Microsoft YaHei"
           }
-        }
+        },
+        grid: { left: "10%", containLabel: true },
+        xAxis: {
+          type: "category",
+          data: years,
+          axisLine: { lineStyle: { color: "#e0e0e0" } },
+          axisLabel: { color: "#7f8c8d", fontSize: 12 }
+        },
+        yAxis: {
+          type: "value",
+          axisLine: { show: false },
+          splitLine: { lineStyle: { color: "#f5f5f5", type: "solid" } },
+          axisLabel: { color: "#7f8c8d", fontSize: 12 }
+        },
+        series: [{
+          type: "line",
+          data: trendData,
+          smooth: 0.6,
+          lineStyle: {
+            width: 4,
+            color: lineColor + "33",
+            shadowColor: "rgba(52,152,219,0.2)"
+          },
+          symbol: "circle",
+          symbolSize: 8,
+          itemStyle: {
+            color: lineColor + "20",
+            borderColor: lineColor,
+            borderWidth: 2
+          },
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              { offset: 0, color: lineColor + "33" },
+              { offset: 1, color: lineColor + "05" }
+            ])
+          },
+          animation: true,
+          animationDuration: 1500,
+          animationEasing: "cubicOut"
+        }]
       };
-      lineChartInstance.setOption(option);
-    };
+      this.lineChartInstance.setOption(option);
+    },
 
-    // 加载数据
-    const loadData = async () => {
+    // 加载 CSV 并初始化
+    async loadData() {
       try {
-        const currentSource = DATA_SOURCES[dataSource.value]
-        const response = await fetch(currentSource.path)
-
-        const csv = await response.text();
+        const src = DATA_SOURCES[this.dataSource];
+        const res = await fetch(src.path);
+        const csv = await res.text();
         Papa.parse(csv, {
           header: true,
-          complete: (res) => {
-            rawData.value = res.data.map((d) => ({
+          complete: ({ data }) => {
+            this.rawData = data.map(d => ({
               ...d,
               总词频: Number(d.总词频) || 0,
-              年份: Number(d.年份) || 2022,
+              年份: Number(d.年份) || 2022
             }));
-            initCharts();
+            // 取最新年份
+            const ys = this.years;
+            if (ys.length) this.selectedYear = Math.max(...ys);
+            // 挂载 DOM 引用后初始化
+            this.$nextTick(this.initCharts);
+            // 自动展示第一个主题趋势
+            if (this.chartData[0]) {
+              this.$nextTick(() => this.updateTrendChart(this.chartData[0].主题));
+            }
           }
-        }
-        );
-        // 自动设置最新年份并立即刷新图表
-        const availableYears = [...new Set(rawData.value.map(d => d.年份))].sort()
-        selectedYear.value = Math.max(...availableYears)
-        updateBarChart()  // 新增这行立即更新图表
-        updateTrendChart(chartData.value[0]?.主题) // 自动显示第一个主题的趋势
-      } catch (error) {
-        console.error("数据加载失败:", error);
+        });
+      } catch (err) {
+        console.error("数据加载失败:", err);
       }
-    };
+    },
 
-    // 处理数据源变更
-    const handleSourceChange = () => {
-      rawData.value = [] // 清空旧数据
-      selectedYear.value = null
-      initCharts() // 重新初始化图表
-      loadData()
-    };
+    // 切换数据源
+    handleSourceChange() {
+      this.rawData = [];
+      this.selectedYear = null;
+      this.barChartInstance = this.lineChartInstance = null;
+      this.$nextTick(this.initCharts);
+      this.loadData();
+    },
 
-    // 工具方法模块
+    // 切换年份
+    changeYear(year) {
+      this.selectedYear = year;
+      this.$nextTick(this.updateBarChart);
+    },
 
-    // 动态颜色获取
-    const getColor = (index) => COLORS[index % 10];
-    // 关键词提取
-    const extractKeywords = (detail) => {
+    // 对外方法：显示趋势
+    showTrend(theme) {
+      this.updateTrendChart(theme);
+    },
+
+    // 工具方法 —— 动态颜色
+    getColor(index) {
+      return COLORS[index % COLORS.length];
+    },
+    // 工具方法 —— 提取关键词
+    extractKeywords(detail) {
       return detail
         .split("，")
-        .map((s) => s.split("(")[0])
-        .slice(0, 8); // 只显示前4个关键词
-    };
-    // 趋势文本计算
-    const trendText = (theme) => {
-      const prev =
-        rawData.value.find(
-          (d) => d.主题 === theme && d.年份 === selectedYear.value - 1
-        )?.总词频 || 0;
-      const current =
-        currentYearData.value.find((d) => d.主题 === theme)?.总词频 || 0;
-
+        .map(s => s.split("(")[0])
+        .slice(0, 8);
+    },
+    // 工具方法 —— 计算趋势文本
+    trendText(theme) {
+      const prev = this.rawData.find(d => d.主题 === theme && d.年份 === this.selectedYear - 1)?.总词频 || 0;
+      const curr = this.currentYearData.find(d => d.主题 === theme)?.总词频 || 0;
       if (prev === 0) return "New";
-      const percent = (((current - prev) / prev) * 100).toFixed(1);
-      return `${percent}%`;
-    };
-    // 趋势样式计算
-    const trendClass = (theme) => {
-      const text = trendText(theme);
-      if (text === "New") return "new";
-      return text.includes("-") ? "down" : "up";
-    };
-
-    // 生命周期管理
-    onMounted(() => {
-      loadData();// 组件挂载时加载数据
-    });
-
-    return {
-      dataSource,
-      handleSourceChange,
-
-      barChart,
-      lineChart,
-      selectedYear,
-      years,
-      currentYearData,
-      changeYear: (year) => {
-        selectedYear.value = year;
-        setTimeout(updateBarChart, 100);
-      },
-      showTrend: updateTrendChart,
-      getColor,
-      extractKeywords,
-      trendText,
-      trendClass,
-    };
-  },
+      return `${(((curr - prev) / prev) * 100).toFixed(1)}%`;
+    },
+    // 工具方法 —— 计算趋势样式
+    trendClass(theme) {
+      const txt = this.trendText(theme);
+      if (txt === "New") return "new";
+      return txt.includes("-") ? "down" : "up";
+    }
+  }
 };
 </script>
 
