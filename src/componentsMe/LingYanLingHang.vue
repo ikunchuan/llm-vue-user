@@ -1,79 +1,129 @@
 <template>
   <div class="dashboard">
-    <!-- 控制栏 -->
-    <div class="control-bar">
-      <h3 class="analysis-title">获奖选题趋势分析TOP10</h3>
-      <div class="header-group">
-        <!-- 数据源选择器 -->
-        <div class="custom-select">
-          <select v-model="dataSource" @change="handleSourceChange" class="styled-select">
-            <option value="innovation">创新创业类竞赛</option>
-            <option value="tech">信息技术与编程类竞赛</option>
-          </select>
-          <span class="select-arrow">▼</span>
-        </div>
+    <!-- 新增推荐竞赛模块 -->
+    <section class="recommend-section">
+      <h2 class="recommend-title">猜你感兴趣的竞赛</h2>
+      <div v-if="recommendedCompetitions.length > 0" class="courses-container">
+        <div
+          v-for="(comp, index) in recommendedCompetitions"
+          :key="index"
+          class="recommended-course"
+          @click="gotoCompetitionDetail(comp.competitionId)"
+        >
+          <!-- 显示竞赛图片 -->
+          <el-image
+            style="width: 230px; height: 120px; border-radius: 8px; margin-bottom: 10px"
+            :src="'http://localhost:10086/images/upload/' + comp.competitionImgUrl"
+            fit="cover"
+          >
+          </el-image>
 
-        <!-- 年份选择组件 -->
-        <div class="year-pills">
-          <button v-for="year in years" :key="year" :class="{ active: selectedYear === year }" @click="changeYear(year)"
-            class="year-pill">
-            {{ year }}
-          </button>
+          <div class="course-info">
+            <p>{{ comp.competitionName }}</p>
+          </div>
         </div>
       </div>
-    </div>
+      <div v-else-if="loadingRecommend" class="loading">
+        <span>加载中...</span>
+      </div>
+      <div v-else class="no-data">
+        <span>暂无推荐竞赛</span>
+      </div>
+    </section>
 
-    <!-- 主条形图 -->
-    <div ref="barChart" class="bar-chart"></div>
-
-    <!-- 下部布局 -->
-    <div class="lower-section">
-      <!-- 左侧卡片列表 -->
-      <div class="card-list">
-        <!-- 用 chartData，保证只取前 10 条 -->
-        <div v-for="(item, index) in chartData" :key="item.主题" class="data-card"
-          :style="{ borderColor: getColor(index) }" @mouseover="showTrend(item.主题)">
-          <div class="card-header">
-            <span class="rank">#{{ index + 1 }}</span>
-            <h3 class="title">{{ item.主题 || "未命名主题" }}</h3>
-            <span class="trend" :class="trendClass(item.主题)">
-              {{ trendText(item.主题) }}
-            </span>
+    <div class="content-area">
+      <!-- 控制栏 -->
+      <div class="control-bar">
+        <h3 class="analysis-title">获奖选题趋势分析TOP10</h3>
+        <div class="header-group">
+          <!-- 数据源选择器 -->
+          <div class="custom-select">
+            <select v-model="dataSource" @change="handleSourceChange" class="styled-select">
+              <option value="innovation">创新创业类竞赛</option>
+              <option value="tech">信息技术与编程类竞赛</option>
+            </select>
+            <span class="select-arrow">▼</span>
           </div>
-          <div class="stats">
-            <hr />
-            <div class="keywords">
-              <template v-if="item.词频明细">
-                <span v-for="(word, idx) in extractKeywords(item.词频明细)" :key="idx" class="keyword">
-                  {{ word }}
-                </span>
-              </template>
-              <span v-else class="no-keywords">暂无关键词数据</span>
+
+          <!-- 年份选择组件 -->
+          <div class="year-pills">
+            <button
+              v-for="year in years"
+              :key="year"
+              :class="{ active: selectedYear === year }"
+              @click="changeYear(year)"
+              class="year-pill"
+            >
+              {{ year }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主条形图 -->
+      <div ref="barChart" class="bar-chart"></div>
+
+      <!-- 下部布局 -->
+      <div class="lower-section">
+        <!-- 左侧卡片列表 -->
+        <div class="card-list">
+          <!-- 用 chartData，保证只取前 10 条 -->
+          <div
+            v-for="(item, index) in chartData"
+            :key="item.主题"
+            class="data-card"
+            :style="{ borderColor: getColor(index) }"
+            @mouseover="showTrend(item.主题)"
+          >
+            <div class="card-header">
+              <span class="rank">#{{ index + 1 }}</span>
+              <h3 class="title">{{ item.主题 || "未命名主题" }}</h3>
+              <span class="trend" :class="trendClass(item.主题)">
+                {{ trendText(item.主题) }}
+              </span>
+            </div>
+            <div class="stats">
+              <hr />
+              <div class="keywords">
+                <template v-if="item.词频明细">
+                  <span
+                    v-for="(word, idx) in extractKeywords(item.词频明细)"
+                    :key="idx"
+                    class="keyword"
+                  >
+                    {{ word }}
+                  </span>
+                </template>
+                <span v-else class="no-keywords">暂无关键词数据</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 右侧趋势图 -->
-      <div ref="lineChart" class="trend-chart"></div>
+        <!-- 右侧趋势图 -->
+        <div ref="lineChart" class="trend-chart"></div>
+      </div>
     </div>
   </div>
 </template>
 
-
 <script>
 import * as echarts from "echarts";
 import Papa from "papaparse";
+import axios from 'axios';
+
 // 配色方案 (10种对比色)
 const COLORS = [
   "#7ED321", "#4A90E2", "#BD10E0", "#F5A623", "#50E3C2",
   "#B8E986", "#9013FE", "#374785", "#F9DC5C", "#FF6B6B",
 ];
+
 // 数据源管理模块
 const DATA_SOURCES = {
   innovation: { name: "创新创业类", path: "/data/分年主题词频统计.csv" },
   tech: { name: "信息技术与编程类", path: "/data/计设主题词频统计.csv" }
 };
+
 export default {
   data() {
     return {
@@ -85,6 +135,8 @@ export default {
       lineChart: null,             // dom 引用
       barChartInstance: null,      // echarts 实例
       lineChartInstance: null,     // echarts 实例
+      recommendedCompetitions: [],
+      loadingRecommend: false,
     };
   },
 
@@ -107,6 +159,8 @@ export default {
   },
 
   mounted() {
+    this.getUserId();
+    this.fetchRecommendedCompetitions();
     // 先把模板里 ref 的 DOM 节点取出来
     this.barChart = this.$refs.barChart;
     this.lineChart = this.$refs.lineChart;
@@ -115,6 +169,49 @@ export default {
   },
 
   methods: {
+    getUserId() {
+      const userId = sessionStorage.getItem('userId');
+      if (!userId) {
+        this.$message.error('请先登录');
+        this.$router.push('/login');
+        throw new Error('用户未登录');
+      }
+      this.userId = userId;
+    },
+    // 新增推荐竞赛方法
+    async fetchRecommendedCompetitions() {
+      if (!this.userId) {
+        console.warn('用户未登录');
+        return;
+      }
+      
+      this.loadingRecommend = true;
+      try {
+        const response = await axios.get(`/api/recommend/${this.userId}`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`
+          }
+        });
+        this.recommendedCompetitions = response.data.slice(0, 3);
+      } catch (error) {
+        if (error.response?.status === 401) {
+          this.$router.push('/login');
+        }
+        console.error("推荐获取失败:", error);
+      } finally {
+        this.loadingRecommend = false;
+      }
+    },
+
+
+    // 新增跳转方法
+    gotoCompetitionDetail(compId) {
+      this.$router.push({ 
+        name: 'CompDetail', 
+        params: { compId: compId } 
+      });
+    },
+
     // 初始化图表实例
     initCharts() {
       if (this.barChart && this.lineChart) {
@@ -551,5 +648,84 @@ export default {
 .card-list::-webkit-scrollbar-thumb {
   background: #ddd;
   border-radius: 2px;
+}
+/* 新增推荐模块样式 */
+.recommend-section {
+  margin: 20px 0;
+  padding: 25px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  max-width: 1000px;
+}
+
+.recommend-title {
+  margin: 3px 10;
+  font-size: 22px;
+  color: #2d3436;
+  /* margin-bottom: 28px; */
+  padding-bottom: 15px;
+  border-bottom: 3px solid #7c73e6;
+  font-weight: 600;
+}
+
+.courses-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+@media (max-width: 992px) {
+  .courses-container {
+    flex-wrap: wrap;
+  }
+  .recommended-course {
+    flex-basis: 48% !important;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .recommended-course {
+    flex-basis: 100% !important;
+  }
+}
+
+.recommended-course {
+  flex-basis: 30%;
+  cursor: pointer;
+  transition: transform 0.3s;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.recommended-course:hover {
+  transform: translateY(-5px);
+}
+
+.course-info {
+  padding: 5px;
+  background: #f5f5f5;
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+}
+
+.course-info p {
+  margin: 0;
+  color: #333;
+  text-align: center;
+  font-weight: 600;
+}
+
+.loading,
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #7f8c8d;
 }
 </style>
