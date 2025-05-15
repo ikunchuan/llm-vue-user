@@ -21,7 +21,7 @@
                 </div>
               </div>
             </el-card>
-            <el-button type="danger" @click="removeFavorite(comp.competitionId, 'competition')">取消收藏</el-button>
+            <el-button type="danger" @click="removeFavorite(comp.competitionFavoriteId, 'competition')">取消收藏</el-button>
           </div>
         </div>
         <el-button v-if="competitions.length > 4" @click="toggleShowMore(0)">
@@ -122,7 +122,6 @@ export default {
       axios.get(`/crs/v1/favorite/${this.userId}`) // 课程收藏
         .then(response => {
           this.courses = response.data;
-          console.log(this.courses);
           this.visibleCourses = this.courses.slice(0, 4); // 初始化只显示前4个
         });
 
@@ -141,7 +140,7 @@ export default {
         // 用户点击“确定”，执行删除逻辑
         let url = '';
         if (type === 'competition') {
-          url = `/comp/v1/compe/favorite/${favoriteId}`;
+          url = `/comp/v1/favorite/${favoriteId}`;
         } else if (type === 'course') {
           url = `/crs/v1/favorite/${favoriteId}`;
         } else if (type === 'post') {
@@ -210,8 +209,6 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped>
 .my-favorite {

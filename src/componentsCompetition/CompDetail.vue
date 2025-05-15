@@ -20,7 +20,9 @@
           <p>竞赛开始时间：{{ formatDate(competitionDetail.startDate) }}</p>
           <p>竞赛结束时间：{{ formatDate(competitionDetail.endDate) }}</p>
           <p>官方报名链接：{{ competitionDetail.competitionUrl }}</p>
-          <el-button type="primary" @click="toggleFavorite">收藏竞赛</el-button>
+          <el-button type="primary" @click="toggleFavorite">
+            {{ isCollected ? "已收藏" : "收藏竞赛" }}
+          </el-button>
         </div>
 
         <!-- 锚点导航 -->
@@ -75,70 +77,8 @@
         </div>
         <!-- 知识图谱 -->
         <div ref="chartRef" style="width: 100%; height: 500px"></div>
-        <!-- <div class="tree">
-          <div class="left">
-            <span class="left-up">{{ competitionDetail.competitionName }}</span>
-          </div>
-          <div class="right-up">
-            <ul class="three-parts">
-              <li>
-                <a
-                  class="hover-effect recommended-course-link"
-                  @click="goToCourseDetailb"
-                  >{{ recommendedCourseNameb || 无 }}</a
-                >
-                <a class="recommended-course-link" @click="goToCourseDetailc">{{
-                  recommendedCourseNamec || 无
-                }}</a>
-              </li>
-              <li>
-                <a class="recommended-course-link" @click="goToCourseDetaild">{{
-                  recommendedCourseNamed || 无
-                }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetaile">{{
-                  recommendedCourseNamee || 无
-                }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailf">{{
-                  recommendedCourseNamef || 无
-                }}</a>
-              </li>
-            </ul>
-          </div>
-
-          <div class="line"></div>
-
-          <div class="right-down">
-            <ul class="three-columns">
-              <li>
-                <a class="recommended-course-link" @click="goToCourseDetail">{{
-                  recommendedCourseName || 无
-                }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetaili">{{
-                  recommendedCourseNamei || 无
-                }}</a>
-              </li>
-
-              <li>
-                <a class="recommended-course-link" @click="goToCourseDetailg">{{
-                  recommendedCourseNameg || 无
-                }}</a>
-                <a class="recommended-course-link" @click="goToCourseDetailh">{{
-                  recommendedCourseNameh || 无
-                }}</a>
-              </li>
-            </ul>
-          </div>
-        </div> -->
 
         <div class="content">
-          <!-- <div class="steps-container">
-            <el-steps style="max-width: 600px" :active="1">
-              <el-step title="未开始" description="摩拳擦掌" />
-              <el-step title="进行中" description="火热报名中" />
-              <el-step title="已结束" description="来年再战" />
-            </el-steps>
-          </div> -->
-
           <!-- 竞赛名称 -->
           <div class="info-item">
             竞赛名称：<span class="info-content">{{
@@ -146,9 +86,6 @@
             }}</span>
           </div>
 
-          <!-- 竞赛描述 -->
-          <!-- <div class="info-item">竞赛描述：<span class="info-content">{{ competitionDetail.competitionDescription }}</span>
-          </div> -->
           <!-- 竞赛描述 -->
           <div class="info-item">
             <div class="info-label">竞赛描述：</div>
@@ -184,15 +121,12 @@
           </div>
         </div>
 
-        <!-- 知识图谱 -->
-        <!-- <div ref="chartRef" style="width: 100%; height: 600px"></div> -->
       </section>
     </div>
   </div>
 </template>
 
 <script>
-import { ElMessage } from "element-plus";
 import axios from "axios";
 import * as echarts from "echarts";
 
@@ -205,7 +139,7 @@ export default {
         nodes: [],
         links: [],
       },
-
+      isCollected: false, // 收藏状态
       competitionBasicInfo: {}, // 存储竞赛基本信息
       competitionDetail: {}, // 存储竞赛详情数据
       competitionRecommends: {}, // 存储竞赛推荐数据
@@ -213,23 +147,17 @@ export default {
       loading: true, // 加载状态
       error: null, // 错误信息
       headerImageUrl: "", // 后端传入的图片URL
-      recommendedCourseName: "", // 存储推荐课程的名称
-      recommendedCourseNameb: "", // 存储推荐课程的名称b
-      recommendedCourseNamec: "",
-      recommendedCourseNamed: "",
-      recommendedCourseNamee: "",
-      recommendedCourseNamef: "",
-      recommendedCourseNameg: "",
-      recommendedCourseNameh: "",
-      recommendedCourseNamei: "",
     };
+  },
+
+  mounted() {
+    this.checkIfCollected();
+    this.fetchData();
   },
 
   created() {
     this.fetchCompetitionDetail(this.$route.params.compId); // 获取竞赛详情
     this.fetchCompetitionBasicInfo(this.$route.params.compId); // 获取竞赛基本信息
-
-    this.fetchCourse();
   },
 
   methods: {
@@ -240,17 +168,13 @@ export default {
       const depth = 2; // 或你可以根据需求设置动态值
 
       // 假设你有一个后端 API 接口：/api/graph
-      fetch(
-        `http://localhost:10086/comp/v1/graph?name=${encodeURIComponent(
-          name
-        )}&depth=${depth}`
-      )
-        .then((res) => res.json())
+      fetch(`http://localhost:10086/comp/v1/graph?name=${encodeURIComponent
+        (name)}&depth=${depth}`
+      ).then((res) => res.json())
         .then((data) => {
           this.graphData = data;
           this.initChart(data, name);
-        })
-        .catch((err) => {
+        }).catch((err) => {
           console.error("获取图谱数据失败", err);
         });
     },
@@ -410,85 +334,8 @@ export default {
       }
     },
 
-    // 获取课程信息
-    fetchCourse() {
-      axios
-        .get(`http://localhost:10086/crs/v1`)
-        .then((response) => {
-          this.courseinfo = response.data;
-          //  courseinfo 是一个数组，每个元素都是一个课程对象
-          const course = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMapping[this.$route.params.compId]
-          );
-          const courseb = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingb[this.$route.params.compId]
-          );
-          const coursec = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingc[this.$route.params.compId]
-          );
-          const coursed = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingd[this.$route.params.compId]
-          );
-          const coursee = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappinge[this.$route.params.compId]
-          );
-          const coursef = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingf[this.$route.params.compId]
-          );
-          const courseg = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingg[this.$route.params.compId]
-          );
-          const courseh = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingh[this.$route.params.compId]
-          );
-          const coursei = this.courseinfo.find(
-            (course) =>
-              course.courseId === this.courseMappingi[this.$route.params.compId]
-          );
-          if (courseb) {
-            this.recommendedCourseNameb = courseb.courseName;
-          }
-          if (course) {
-            this.recommendedCourseName = course.courseName;
-          }
-          if (coursec) {
-            this.recommendedCourseNamec = coursec.courseName;
-          }
-          if (coursed) {
-            this.recommendedCourseNamed = coursed.courseName;
-          }
-          if (coursee) {
-            this.recommendedCourseNamee = coursee.courseName;
-          }
-          if (coursef) {
-            this.recommendedCourseNamef = coursef.courseName;
-          }
-          if (courseg) {
-            this.recommendedCourseNameg = courseg.courseName;
-          }
-          if (courseh) {
-            this.recommendedCourseNameh = courseh.courseName;
-          }
-          if (coursei) {
-            this.recommendedCourseNamei = coursei.courseName;
-          }
-        })
-        .catch((error) => {
-          // 处理错误
-        });
-    },
-
     // 跳转到竞赛详情页面，并强制刷新
     gotoCompDetail(compId) {
-      console.log("跳转到竞赛详情页面:", compId);
       this.$router
         .replace({ name: "CompDetail", params: { compId } })
         .then(() => {
@@ -513,114 +360,6 @@ export default {
       }
     },
 
-    //跳转课程详情页
-    goToCourseDetail() {
-      const compId = this.$route.params.compId;
-      const courseMapping = this[`courseMapping${courseType}`];
-      const courseId = courseMapping[compId];
-
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
-    // 跳转推荐课程b
-    goToCourseDetailb() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingb[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-    // 跳转推荐课程c
-    goToCourseDetailc() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingc[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-    // 跳转推荐课程d
-    goToCourseDetaild() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingd[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
-    // 跳转推荐课程e
-    goToCourseDetaile() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappinge[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
-    // 跳转推荐课程f
-    goToCourseDetailf() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingf[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
-    // 跳转推荐课程g
-    goToCourseDetailg() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingg[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
-    // 跳转推荐课程h
-    goToCourseDetailh() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingh[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
-    // 跳转推荐课程
-    goToCourseDetaili() {
-      const compId = this.$route.params.compId;
-      const courseId = this.courseMappingi[compId];
-      if (courseId) {
-        this.$router.push({ path: `/home/coursedetail/${courseId}` });
-      } else {
-        // 如果没有找到对应的课程ID，可以给出提示或者跳转到默认课程
-        this.$message.error("没有找到对应的课程推荐");
-      }
-    },
-
     // 获取竞赛详情
     fetchCompetitionDetail(compId) {
       this.$http
@@ -640,8 +379,6 @@ export default {
       axios
         .get(`comp/v1/compe/${compId}`) // 注意这里的URL可能需要根据后端实际接口调整
         .then((response) => {
-          console.log("competitionBasicInfo", response.data);
-
           this.competitionBasicInfo = response.data;
           this.categoryId = this.competitionBasicInfo.categoryId; // 设置categoryId
           this.loading = false;
@@ -663,30 +400,41 @@ export default {
       }
     },
 
+    checkIfCollected() {
+      const userId = sessionStorage.getItem("userId");
+      const compId = this.$route.params.compId;
+
+      axios.get("/comp/v1/favorite/isCollected", {
+        params: { userId, compId }
+      }).then(res => {
+        console.log("收藏状态:", res.data);
+        this.isCollected = res.data; // true / false
+      });
+    },
+
     //收藏竞赛
     toggleFavorite() {
-      const userId = this.getCurrentUserId(); // 假设这个方法返回当前登录用户的ID
+      const userId = sessionStorage.getItem("userId"); // 当前登录用户的ID
       const compId = this.$route.params.compId; // 从路由参数中获取竞赛ID
 
       if (!userId) {
         this.$message.error("请先登录");
         return;
       }
-      axios
-        .post(
-          `/comp/v1/compe/favorite?userId=${userId}&competitionId=${compId}`
-        )
-        .then((response) => {
-          // 假设后端返回 表示收藏成功
-          if (response.data == 1) {
-            ElMessage({ message: "收藏成功！", type: "success" });
-          } else {
-            ElMessage({ message: "收藏失败！", type: "error" });
-          }
-        })
-        .catch((err) => {
-          ElMessage({ message: "请求失败，请重试", type: "error" });
-        });
+      axios.post("/comp/v1/toggleFavorite", {
+        userId: userId,
+        compId: compId,
+      }).then(() => {
+        this.checkIfCollected(); // 重新拉取状态
+        // 假设后端返回 表示收藏成功
+        if (this.isCollected) {
+          this.$message.success("收藏成功");
+        } else {
+          this.$message.warn("已取消收藏");
+        }
+      }).catch(() => {
+        this.$message.error("收藏失败，请重试");
+      });
     },
 
     // 根据categoryId获取竞赛
@@ -698,10 +446,8 @@ export default {
       axios
         .get(`comp/v1/comp/byParentId?parentId=${this.categoryId}`)
         .then((response) => {
-          console.log("相关的竞赛数据:", response.data);
           if (Array.isArray(response.data)) {
             this.competitionRecommends = response.data;
-            console.log("处理后的竞赛数据:", this.competitionRecommends);
           } else {
             console.warn("未获取到相关的竞赛或数据格式不正确");
             this.competitionRecommends = [];
@@ -761,11 +507,6 @@ export default {
         });
     },
 
-    // 假设你有一个获取当前用户ID的方法
-    getCurrentUserId() {
-      console.log("sessionStorage.userId:", sessionStorage.userId);
-      return sessionStorage.userId;
-    },
     // 时间格式化方法
     formatDate(date) {
       if (!date) return "-";
@@ -779,14 +520,11 @@ export default {
         second: "2-digit",
       });
     },
+
     formatDateShort(date) {
       const options = { year: "numeric", month: "2-digit", day: "2-digit" };
       return new Date(date).toLocaleDateString("zh-CN", options); // 格式化为 "YYYY-MM-DD"
     },
-  },
-
-  mounted() {
-    this.fetchData();
   },
 };
 </script>
@@ -817,41 +555,83 @@ body {
 }
 
 /* 左侧内容区样式 */
+h3 {
+  margin: 0;
+}
+
 .left-panel {
   flex: 0 0 30%;
   /* 调整左侧宽度 */
   background-color: #f9f9f9;
-  border-radius: 8px;
   overflow: hidden;
-  padding: 15px;
+  padding: 10px;
   box-sizing: border-box;
+  backdrop-filter: blur(12px);
+  /* 毛玻璃效果 */
+  box-shadow:
+    0 12px 32px -8px rgba(28, 28, 34, 0.04),
+    /* 双层投影创造深度 */
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
+
 
 .left-panel .title-block {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
-.left-panel .large-title {
-  font-size: 2.2em;
-  color: #333;
+
+.large-title {
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 10px;
+  color: #1a1d24;
+  line-height: 1.4;
+  margin: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  position: relative;
+  padding-left: 24px;
+}
+
+.large-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 80%;
+  background: #7c73e6;
+  border-radius: 0px;
+  box-shadow: 2px 0 8px rgba(124, 115, 230, 0.2);
 }
 
 .left-panel .card-image {
   width: 100%;
   height: 170px;
-  border-radius: 8px;
+  border-radius: 0px;
   object-fit: cover;
+  border: 1px solid rgba(145, 158, 171, 0.12);
+  /* 图片边框 */
+  transition: transform 0.3s ease;
+  /* 悬浮动效 */
+}
+
+.left-panel .card-image:hover {
+  transform: translateY(-3px);
 }
 
 .left-panel .box {
-  margin-bottom: 10px;
   background-color: #fafafa;
   padding: 10px;
-  border-radius: 8px;
+  margin: 10px;
+  border-radius: 0px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
+
+.box:hover {
+  box-shadow: 0 8px 16px -4px rgba(145, 158, 171, 0.12);
+  /* 悬浮投影 */
+}
+
 
 .left-panel .anchor-nav {
   margin-top: 0px;
@@ -867,7 +647,6 @@ body {
   /* 字体大小统一 */
   font-weight: normal;
   /* 普通字体 */
-  margin-bottom: 10px;
 }
 
 .left-panel .anchor-nav a:hover {
@@ -904,7 +683,7 @@ body {
   text-decoration: none;
   font-weight: normal;
   /* 普通字体 */
-  font-size: 16px;
+  font-size: 15px;
   /* 字体大小统一 */
 }
 
@@ -923,10 +702,21 @@ body {
 }
 
 .list-item {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #e0e0e0;
   /* 增加下划线分隔效果 */
   padding-bottom: 10px;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: grid;
+  gap: 6px;
+  position: relative;
+}
+
+.list-item:hover {
+  transform: translateX(12px) scale(1.02);
+  box-shadow:
+    0 12px 24px -8px rgba(18, 18, 24, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
 }
 
 .list-item:last-child {
@@ -935,34 +725,26 @@ body {
 }
 
 .title {
-  display: block;
-  font-size: 16px;
-  /* 标题字体大小 */
+  min-height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  /* 限制为两行 */
+  color: #7c73e6 !important;
   font-weight: 500;
-  /* 半粗字体 */
-  color: #7c73e6;
-  /* 链接颜色 */
-  text-decoration: none;
-  white-space: nowrap;
-  /* 单行显示 */
-  overflow: hidden;
-  /* 超出隐藏 */
-  text-overflow: ellipsis;
-  /* 显示省略号 */
-  margin-bottom: 5px;
-  /* 标题与日期间距 */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
-.title:hover {
-  text-decoration: underline;
-  /* 鼠标悬停时添加下划线 */
+.title::before {
+  content: '✦';
+  color: #7c73e6;
+  margin-right: 8px;
+  font-size: 14px;
 }
 
 .date {
-  font-size: 14px;
-  /* 日期字体大小 */
-  color: #999;
-  /* 日期颜色 */
   margin: 0;
   text-align: right;
   /* 日期靠右对齐 */
@@ -970,6 +752,17 @@ body {
   /* 禁止换行 */
   flex-shrink: 0;
   /* 防止日期被压缩 */
+  font-size: 14px !important;
+  color: #64748B !important;
+  display: right;
+  align-items: right;
+  gap: 6px;
+}
+
+.date::before {
+  content: '⏳';
+  font-size: 12px;
+  opacity: 0.7;
 }
 
 /* 右侧内容区样式 */
@@ -1008,19 +801,24 @@ body {
   color: #666;
 }
 
+/* 动态按钮设计 */
 .el-button {
-  background-color: #7c73e6;
-  color: #fff;
+  width: 100%;
+  background: #7c73e6;
   border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-radius: 8px;
+  padding: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .el-button:hover {
-  background-color: #ffe9e3;
+  background: #6962c7;
+  box-shadow: 0 6px 12px -4px rgba(124, 115, 230, 0.4);
+  /* 按钮投影 */
 }
+
 
 /* 竞赛信息知识图谱样式 */
 .tree {

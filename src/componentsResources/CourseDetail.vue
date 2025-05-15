@@ -209,16 +209,20 @@ export default {
       const userId = sessionStorage.getItem("userId");
       const courseId = this.$route.params.courseId;
 
+      if (!userId) {
+        this.$message.error("请先登录");
+        return;
+      }
       axios.post("/crs/v1/toggleFavorite", {
         userId: userId,
         courseId: courseId
       }).then(() => {
+        this.checkIfCollected(); // 重新拉取状态
         if (this.isCollected) {
           this.$message.success("收藏成功");
         } else {
-          this.$message.success("取消收藏成功");
+          this.$message.warn("已取消收藏");
         }
-        this.checkIfCollected(); // 重新拉取状态
       }).catch(() => {
         this.$message.error("收藏失败，请重试");
       });
