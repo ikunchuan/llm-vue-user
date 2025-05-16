@@ -92,7 +92,7 @@
           <!-- 作者信息模块 -->
           <el-card class="user-info-card" shadow="hover">
             <div class="user-info">
-              <el-avatar :src="author.avatar" size="large" />
+              <el-avatar :src="getImgUrl(author.userProfilePicture)" size="large" />
               <div class="action-buttons">
                 <el-button type="success" size="small" @click="followAuthor" :disabled="isFollowing">
                   {{ isFollowing ? "已关注" : "关注作者" }}
@@ -196,6 +196,7 @@ export default {
       favorited: false, // 是否收藏
       userFavoritePosts: {}, //当前用户收藏的所有帖子
       userLikePosts: {}, //  当前用户喜欢的所有帖子
+      avatarUrl: "https://api.dicebear.com/9.x/fun-emoji/svg", //默认头像
     };
   },
   created() {
@@ -420,6 +421,15 @@ export default {
             console.error("获取关注的用户失败:", error);
           });
       });
+    },
+
+    getImgUrl(url) {
+      if (url === null) {
+        return this.avatarUrl;
+      } else {
+        const touxiang = "http://localhost:10086/images/upload/" + url;
+        return touxiang;
+      }
     },
 
     //关注该作者的方法

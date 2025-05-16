@@ -78,7 +78,7 @@
                 <div class="update-time">{{ formatTime(post.updatedTime) }}</div>
               </div>
             </el-card>
-            <el-button type="danger" @click="removeFavorite(post.postId, 'post')">取消收藏</el-button>
+            <el-button type="danger" @click="removeFavorite(post.postFavoriteId, 'post')">取消收藏</el-button>
           </div>
         </div>
         <el-button v-if="posts.length > 4" @click="toggleShowMore(2)">

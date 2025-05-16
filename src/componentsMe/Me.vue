@@ -1,307 +1,295 @@
 <template>
-    <!-- 新增外层容器 -->
-    <div class="outer-layout">
-        <!-- 推荐模块移动到主布局左侧 -->
-        <!-- 悬浮侧边栏容器 -->
-        <div class="floating-sidebar glowing-border" @mouseenter="isExpanded = true" @mouseleave="isExpanded = false">
-            <!-- 推荐课程 -->
-            <el-card class="sidebar-card neon-card">
-                <div class="card-header">
-                    <i class="el-icon-notebook-2 highlight-icon"></i>
-                    <transition name="fade-slide">
-                        <span v-if="isExpanded" class="gradient-text">推荐课程</span>
-                    </transition>
-                </div>
-                <div class="compact-list">
-                    <div v-for="(course, index) in recommendedCourses.slice(0, 4)" :key="course.id"
-                        class="compact-item hover-glow" @click.stop="viewCourse(course.id)">
-                        <div class="item-index">{{ index + 1 }}</div>
-                        <div class="item-content">
-                            <div class="ellipsis-text" :title="course.title">
-                                {{ course.title }}
-                            </div>
-                            <transition name="fade">
-                                <div v-if="isExpanded" class="item-meta">
-                                    <el-rate v-model="course.rating" disabled :max="5"
-                                        :colors="['#99A9BF', '#F7BA2A', '#FF9900']" class="mini-rate" />
-                                </div>
-                            </transition>
-                        </div>
-                    </div>
-                </div>
-            </el-card>
-
-            <!-- 推荐比赛 -->
-            <el-card class="sidebar-card neon-card" style="margin-top: 12px">
-                <div class="card-header">
-                    <i class="el-icon-trophy highlight-icon"></i>
-                    <transition name="fade-slide">
-                        <span v-if="isExpanded" class="gradient-text">推荐赛事</span>
-                    </transition>
-                </div>
-                <div class="compact-list">
-                    <div v-for="(comp, index) in recommendedCompetitions.slice(0, 4)" :key="comp.id"
-                        class="compact-item hover-glow" @click.stop="viewCompetition(comp.id)">
-                        <div class="item-index">{{ index + 1 }}</div>
-                        <div class="item-content">
-                            <div class="ellipsis-text" :title="comp.title">
-                                {{ comp.title }}
-                            </div>
-                            <transition name="fade">
-                                <div v-if="isExpanded" class="item-meta">
-                                    <i class="el-icon-time fire-icon"></i>
-                                    <span class="deadline-text">{{
-                                        formatDate(comp.deadline)
-                                    }}</span>
-                                </div>
-                            </transition>
-                        </div>
-                    </div>
-                </div>
-            </el-card>
+  <!-- 新增外层容器 -->
+  <div class="outer-layout">
+    <!-- 推荐模块移动到主布局左侧 -->
+    <!-- 悬浮侧边栏容器 -->
+    <div class="floating-sidebar glowing-border" @mouseenter="isExpanded = true" @mouseleave="isExpanded = false">
+      <!-- 推荐课程 -->
+      <el-card class="sidebar-card neon-card">
+        <div class="card-header">
+          <i class="el-icon-notebook-2 highlight-icon"></i>
+          <transition name="fade-slide">
+            <span v-if="isExpanded" class="gradient-text">推荐课程</span>
+          </transition>
         </div>
-
-        <div class="main-layout">
-            <el-container class="profile">
-                <el-aside width="25%">
-                    <el-card class="profile-container">
-                        <div class="profile-header">
-                            <el-space wrap>
-                                <el-popover :width="300"
-                                    popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
-                                    <template #reference>
-                                        <el-avatar :size="80" :src="getImgUrl(userInfo.userProfilePicture)"
-                                            style="margin-left: 10" />
-                                    </template>
-                                    <template #default>
-                                        <div class="demo-rich-conent"
-                                            style="display: flex; gap: 16px; flex-direction: column">
-                                            <el-avatar :size="80" :src="getImgUrl(userInfo.userProfilePicture)"
-                                                style="margin-bottom: 5px" />
-                                            <div>
-                                                <p style="margin: 0; font-weight: 500">
-                                                    {{ userInfo.username }}
-                                                </p>
-                                                <p style="
-                            margin: 0;
-                            font-size: 14px;
-                            color: var(--el-color-info);
-                          ">
-                                                    {{ userInfo.userLocal }}
-                                                </p>
-                                            </div>
-                                            <p style="margin: 0">
-                                                {{ userInfo.userEmail }}
-                                            </p>
-                                        </div>
-                                    </template>
-                                </el-popover>
-                                <h3>{{ userInfo.userName }}</h3>
-                            </el-space>
-                            <p style="font-size: 17px; margin: 10px auto; color: #666">
-                                {{ userInfo.userEmail }}
-                            </p>
-
-                            <el-row justify="space-evenly" class="follow-fans">
-                                <el-col :span="50" class="pointer">
-                                    <el-space direction="horizonal" size="2">
-                                        <div class="stat-text">关注</div>
-                                        &nbsp;
-                                        <div class="stat-number">{{ countFollowers() }}</div>
-                                    </el-space> </el-col>&nbsp;
-                                <el-col :span="50" class="pointer">
-                                    <el-space direction="horizonal" size="2">
-                                        <div class="stat-text">粉丝</div>
-                                        &nbsp;
-                                        <div class="stat-number">{{ countFans() }}</div>
-                                    </el-space>
-                                </el-col>
-                            </el-row>
-                        </div>
-
-                        <div class="activity-stats">
-                            <div class="activity-item">
-                                <div style="display: flex; align-items: center">
-                                    <img src="../assets/img/64.png" alt="浏览图标" class="activity-icon" />
-                                    <span class="activity-text">获得浏览:</span>
-                                </div>
-                                <span class="activity-number">{{ postView }}</span>
-                            </div>
-                            <div class="activity-item">
-                                <div style="display: flex; align-items: center">
-                                    <img src="../assets/img/61.png" alt="点赞图标" class="activity-icon" />
-                                    <span class="activity-text">获得点赞:</span>
-                                </div>
-                                <span class="activity-number">{{ postLike }}</span>
-                            </div>
-                            <div class="activity-item">
-                                <div style="display: flex; align-items: center">
-                                    <img src="../assets/img/62.png" alt="收藏图标" class="activity-icon" />
-                                    <span class="activity-text">获得收藏:</span>
-                                </div>
-                                <span class="activity-number">{{ postFavorite }}</span>
-                            </div>
-                            <div class="activity-item">
-                                <div style="display: flex; align-items: center">
-                                    <img src="../assets/img/63.png" alt="评论图标" class="activity-icon" />
-                                    <span class="activity-text">获得评论:</span>
-                                </div>
-                                <span class="activity-number">{{ postComment }}</span>
-                            </div>
-                        </div>
-
-                        <div class="bio-section">
-                            <h4 class="bio-title">
-                                简介
-                                <button class="edit-button" @click="openDialog">
-                                    编辑资料
-                                </button>
-                            </h4>
-                            <p class="bio-text">{{ userInfo.userBio }}</p>
-
-                            <button class="knowledge-button" @click="openKnowledgeDialog">
-                                个人知识网
-                            </button>
-                            <div v-if="userInfo.knowledgeNetwork?.length" ref="knowledgeChart"
-                                class="compact-knowledge-graph">
-                                <!-- 添加加载提示 -->
-                                <div v-if="!chartInited" class="graph-loading">
-                                    知识网络加载中...
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="badges">
-                            <h4 class="section-title">
-                                <img src="../assets/img/60.png" alt="解锁徽章" class="activity-icon" />徽章
-                            </h4>
-                            <p class="section-text">
-                                空空如也, 看看如何<a href="#" class="link">解锁徽章></a>
-                            </p>
-                        </div>
-
-                        <div class="skills">
-                            <h4 class="section-title">
-                                <img src="../assets/img/技能树.png" alt="技能" class="activity-icon" />技能
-                            </h4>
-                            <p>技能树： <span>暂未开启</span></p>
-                            <div class="skill-details">
-                                <p class="skill-item">理论： <span>0</span></p>
-                                <p class="skill-item">应用： <span>0</span></p>
-                            </div>
-                        </div>
-
-                        <div class="activity">
-                            <h4 class="section-title">动态</h4>
-                            <p class="section-text">嚯，这个人还没有动静呢</p>
-                        </div>
-                    </el-card>
-                </el-aside>
-
-                <el-main class="right-box" style="padding: 0">
-                    <el-card>
-                        <div>
-                            <el-row justify="space-evenly" style="text-align: center">
-                                <el-col :span="4" v-for="(item, index) in items" :key="index" @click="goTo(item.path)"
-                                    class="pointer">
-                                    <div class="nav-item">{{ item.name }}</div>
-                                </el-col>
-                            </el-row>
-                        </div>
-                        <div class="view-content">
-                            <router-view />
-                        </div>
-                    </el-card>
-                </el-main>
-            </el-container>
+        <div class="compact-list">
+          <div v-for="(course, index) in recommendedCourses.slice(0, 4)" :key="course.id"
+            class="compact-item hover-glow" @click.stop="viewCourse(course.id)">
+            <div class="item-index">{{ index + 1 }}</div>
+            <div class="item-content">
+              <div class="ellipsis-text" :title="course.title">
+                {{ course.title }}
+              </div>
+              <transition name="fade">
+                <div v-if="isExpanded" class="item-meta">
+                  <el-rate v-model="course.rating" disabled :max="5" :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+                    class="mini-rate" />
+                </div>
+              </transition>
+            </div>
+          </div>
         </div>
+      </el-card>
+
+      <!-- 推荐比赛 -->
+      <el-card class="sidebar-card neon-card" style="margin-top: 12px">
+        <div class="card-header">
+          <i class="el-icon-trophy highlight-icon"></i>
+          <transition name="fade-slide">
+            <span v-if="isExpanded" class="gradient-text">推荐赛事</span>
+          </transition>
+        </div>
+        <div class="compact-list">
+          <div v-for="(comp, index) in recommendedCompetitions.slice(0, 4)" :key="comp.id"
+            class="compact-item hover-glow" @click.stop="viewCompetition(comp.id)">
+            <div class="item-index">{{ index + 1 }}</div>
+            <div class="item-content">
+              <div class="ellipsis-text" :title="comp.title">
+                {{ comp.title }}
+              </div>
+              <transition name="fade">
+                <div v-if="isExpanded" class="item-meta">
+                  <i class="el-icon-time fire-icon"></i>
+                  <span class="deadline-text">{{
+                    formatDate(comp.deadline)
+                  }}</span>
+                </div>
+              </transition>
+            </div>
+          </div>
+        </div>
+      </el-card>
     </div>
 
-    <!-- 编辑简介弹窗 -->
-    <el-dialog v-model="dialogFormVisible" title="简介编辑" width="500">
-        <el-form :model="form" label-position="left" label-width="80px" :rules="rules">
-            <el-row :gutter="24">
-                <el-col :span="14">
-                    <el-form-item v-show="false">
-                        <el-input v-model="form.userId" />
-                    </el-form-item>
+    <div class="main-layout">
+      <el-container class="profile">
+        <el-aside width="25%">
+          <el-card class="profile-container">
+            <div class="profile-header">
+              <el-space wrap>
+                <el-popover :width="300"
+                  popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;">
+                  <template #reference>
+                    <el-avatar :size="80" :src="getImgUrl(userInfo.userProfilePicture)" style="margin-left: 10" />
+                  </template>
+                  <template #default>
+                    <div class="demo-rich-conent" style="display: flex; gap: 16px; flex-direction: column">
+                      <el-avatar :size="80" :src="getImgUrl(userInfo.userProfilePicture)" style="margin-bottom: 5px" />
+                      <div>
+                        <p style="margin: 0; font-weight: 500">
+                          {{ userInfo.username }}
+                        </p>
+                        <p style="margin: 0;font-size: 14px;color: var(--el-color-info);">
+                          {{ userInfo.userLocal }}
+                        </p>
+                      </div>
+                      <p style="margin: 0">
+                        {{ userInfo.userEmail }}
+                      </p>
+                    </div>
+                  </template>
+                </el-popover>
+                <h3>{{ userInfo.userName }}</h3>
+              </el-space>
+              <p style="font-size: 17px; margin: 10px auto; color: #666">
+                {{ userInfo.userEmail }}
+              </p>
 
-                    <el-form-item label="用户名">
-                        <el-input v-model="form.userName" maxlength="20" type="textarea" placeholder="请输入用户名"
-                            show-word-limit />
-                    </el-form-item>
-
-                    <el-form-item label="性别">
-                        <el-select v-model="form.userSex" placeholder="请选择性别">
-                            <el-option label="男" value="1" />
-                            <el-option label="女" value="2" />
-                        </el-select>
-                    </el-form-item>
-
-                    <el-form-item label="年龄">
-                        <el-input v-model="form.userAge" type="number" placeholder="请选择年龄" :min="1" />
-                    </el-form-item>
-
-                    <el-form-item label="电话">
-                        <el-input v-model="form.userPhone" type="text" placeholder="请输入邮箱" />
-                    </el-form-item>
-
-                    <el-form-item label="邮箱">
-                        <el-input v-model="form.userEmail" type="email" placeholder="请输入邮箱" />
-                    </el-form-item>
-
-                    <el-form-item label="所在地">
-                        <el-input v-model="form.userLocal" maxlength="50" type="textarea" placeholder="请输入所在地"
-                            show-word-limit />
-                    </el-form-item>
-
-                    <el-form-item label="简介">
-                        <el-input v-model="form.userBio" maxlength="50" type="textarea" placeholder="请输入简介"
-                            show-word-limit />
-                    </el-form-item>
+              <el-row justify="space-evenly" class="follow-fans">
+                <el-col :span="50" class="pointer">
+                  <el-space direction="horizonal" size="2">
+                    <div class="stat-text">关注</div>
+                    &nbsp;
+                    <div class="stat-number">{{ countFollowers() }}</div>
+                  </el-space> </el-col>&nbsp;
+                <el-col :span="50" class="pointer">
+                  <el-space direction="horizonal" size="2">
+                    <div class="stat-text">粉丝</div>
+                    &nbsp;
+                    <div class="stat-number">{{ countFans() }}</div>
+                  </el-space>
                 </el-col>
-                <el-col :span="1">
-                    <el-upload class="avatar-uploader" action="http://localhost:10086/uis/v1/upload"
-                        :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                        <img v-if="form.userProfilePicture" :src="getImgUrl(form.userProfilePicture)" class="avatar" />
-                        <i v-else class="el-icon-plus avatar-uploader-icon">
-                            <Plus />
-                        </i>
-                    </el-upload>
-                </el-col>
-            </el-row>
-        </el-form>
-
-        <template #footer>
-            <div>
-                <el-button @click="closeDialog">取消</el-button>
-                <el-button type="primary" @click="editProfile">确定</el-button>
+              </el-row>
             </div>
+
+            <div class="activity-stats">
+              <div class="activity-item">
+                <div style="display: flex; align-items: center">
+                  <img src="../assets/img/64.png" alt="浏览图标" class="activity-icon" />
+                  <span class="activity-text">获得浏览:</span>
+                </div>
+                <span class="activity-number">{{ postView }}</span>
+              </div>
+              <div class="activity-item">
+                <div style="display: flex; align-items: center">
+                  <img src="../assets/img/61.png" alt="点赞图标" class="activity-icon" />
+                  <span class="activity-text">获得点赞:</span>
+                </div>
+                <span class="activity-number">{{ postLike }}</span>
+              </div>
+              <div class="activity-item">
+                <div style="display: flex; align-items: center">
+                  <img src="../assets/img/62.png" alt="收藏图标" class="activity-icon" />
+                  <span class="activity-text">获得收藏:</span>
+                </div>
+                <span class="activity-number">{{ postFavorite }}</span>
+              </div>
+              <div class="activity-item">
+                <div style="display: flex; align-items: center">
+                  <img src="../assets/img/63.png" alt="评论图标" class="activity-icon" />
+                  <span class="activity-text">获得评论:</span>
+                </div>
+                <span class="activity-number">{{ postComment }}</span>
+              </div>
+            </div>
+
+            <div class="bio-section">
+              <h4 class="bio-title">
+                简介
+                <button class="edit-button" @click="openDialog">
+                  编辑资料
+                </button>
+              </h4>
+              <p class="bio-text">{{ userInfo.userBio }}</p>
+
+              <button class="knowledge-button" @click="openKnowledgeDialog">
+                个人知识网
+              </button>
+              <div v-if="userInfo.knowledgeNetwork?.length" ref="knowledgeChart" class="compact-knowledge-graph">
+                <!-- 添加加载提示 -->
+                <div v-if="!chartInited" class="graph-loading">
+                  知识网络加载中...
+                </div>
+              </div>
+            </div>
+
+            <div class="badges">
+              <h4 class="section-title">
+                <img src="../assets/img/60.png" alt="解锁徽章" class="activity-icon" />徽章
+              </h4>
+              <p class="section-text">
+                空空如也, 看看如何<a href="#" class="link">解锁徽章></a>
+              </p>
+            </div>
+
+            <div class="skills">
+              <h4 class="section-title">
+                <img src="../assets/img/技能树.png" alt="技能" class="activity-icon" />技能
+              </h4>
+              <p>技能树： <span>暂未开启</span></p>
+              <div class="skill-details">
+                <p class="skill-item">理论： <span>0</span></p>
+                <p class="skill-item">应用： <span>0</span></p>
+              </div>
+            </div>
+
+            <div class="activity">
+              <h4 class="section-title">动态</h4>
+              <p class="section-text">嚯，这个人还没有动静呢</p>
+            </div>
+          </el-card>
+        </el-aside>
+
+        <el-main class="right-box" style="padding: 0">
+          <el-card>
+            <div>
+              <el-row justify="space-evenly" style="text-align: center">
+                <el-col :span="4" v-for="(item, index) in items" :key="index" @click="goTo(item.path)" class="pointer">
+                  <div class="nav-item">{{ item.name }}</div>
+                </el-col>
+              </el-row>
+            </div>
+            <div class="view-content">
+              <router-view />
+            </div>
+          </el-card>
+        </el-main>
+      </el-container>
+    </div>
+  </div>
+
+  <!-- 编辑简介弹窗 -->
+  <el-dialog v-model="dialogFormVisible" title="简介编辑" width="500">
+    <el-form :model="form" label-position="left" label-width="80px" :rules="rules">
+      <el-row :gutter="24">
+        <el-col :span="14">
+          <el-form-item v-show="false">
+            <el-input v-model="form.userId" />
+          </el-form-item>
+
+          <el-form-item label="用户名">
+            <el-input v-model="form.userName" maxlength="20" type="textarea" placeholder="请输入用户名" show-word-limit />
+          </el-form-item>
+
+          <el-form-item label="性别">
+            <el-select v-model="form.userSex" placeholder="请选择性别">
+              <el-option label="男" value="1" />
+              <el-option label="女" value="2" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="年龄">
+            <el-input v-model="form.userAge" type="number" placeholder="请选择年龄" :min="1" />
+          </el-form-item>
+
+          <el-form-item label="电话">
+            <el-input v-model="form.userPhone" type="text" placeholder="请输入邮箱" />
+          </el-form-item>
+
+          <el-form-item label="邮箱">
+            <el-input v-model="form.userEmail" type="email" placeholder="请输入邮箱" />
+          </el-form-item>
+
+          <el-form-item label="所在地">
+            <el-input v-model="form.userLocal" maxlength="50" type="textarea" placeholder="请输入所在地" show-word-limit />
+          </el-form-item>
+
+          <el-form-item label="简介">
+            <el-input v-model="form.userBio" maxlength="50" type="textarea" placeholder="请输入简介" show-word-limit />
+          </el-form-item>
+        </el-col>
+        <el-col :span="1">
+          <el-upload class="avatar-uploader" action="http://localhost:10086/uis/v1/upload" :show-file-list="false"
+            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+            <img v-if="form.userProfilePicture" :src="getImgUrl(form.userProfilePicture)" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon">
+              <Plus />
+            </i>
+          </el-upload>
+        </el-col>
+      </el-row>
+    </el-form>
+
+    <template #footer>
+      <div>
+        <el-button @click="closeDialog">取消</el-button>
+        <el-button type="primary" @click="editProfile">确定</el-button>
+      </div>
+    </template>
+  </el-dialog>
+  <!-- 知识网编辑弹窗 -->
+  <el-dialog v-model="knowledgeDialogVisible" title="个人知识网" width="700px" @closed="onDialogClosed">
+    <el-tabs type="border-card">
+      <el-tab-pane v-for="(category, index) in Object.values(knowledgeItems)" :key="index">
+        <template #label>
+          <span style="font-weight: bold">{{ category.name }}</span>
         </template>
-    </el-dialog>
-    <!-- 知识网编辑弹窗 -->
-    <el-dialog v-model="knowledgeDialogVisible" title="个人知识网" width="700px" @closed="onDialogClosed">
-        <el-tabs type="border-card">
-            <el-tab-pane v-for="(category, index) in Object.values(knowledgeItems)" :key="index">
-                <template #label>
-                    <span style="font-weight: bold">{{ category.name }}</span>
-                </template>
-                <el-checkbox-group v-model="selectedKnowledge" style="padding: 15px">
-                    <el-row :gutter="20">
-                        <el-col :span="12" v-for="(item, itemIndex) in category.items" :key="itemIndex">
-                            <el-checkbox :label="item.name" style="margin: 8px 0">
-                                {{ item.name }}
-                            </el-checkbox>
-                        </el-col>
-                    </el-row>
-                </el-checkbox-group>
-            </el-tab-pane>
-        </el-tabs>
-        <template #footer>
-            <el-button @click="knowledgeDialogVisible = false">取消</el-button>
-            <el-button type="primary" @click="saveKnowledge">保存</el-button>
-        </template>
-    </el-dialog>
+        <el-checkbox-group v-model="selectedKnowledge" style="padding: 15px">
+          <el-row :gutter="20">
+            <el-col :span="12" v-for="(item, itemIndex) in category.items" :key="itemIndex">
+              <el-checkbox :label="item.name" style="margin: 8px 0">
+                {{ item.name }}
+              </el-checkbox>
+            </el-col>
+          </el-row>
+        </el-checkbox-group>
+      </el-tab-pane>
+    </el-tabs>
+    <template #footer>
+      <el-button @click="knowledgeDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="saveKnowledge">保存</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
@@ -332,7 +320,7 @@ export default {
       postLike: "",
       postFavorite: "",
       postComment: "",
-      avatarUrl: "https://via.placeholder.com/80", //默认头像
+      avatarUrl: "https://api.dicebear.com/9.x/fun-emoji/svg", //默认头像
 
       loading: true,
       dialogFormVisible: false,
@@ -1087,11 +1075,9 @@ export default {
   width: 90px;
   z-index: 999;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(245, 245, 245, 0.9)
-  );
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(245, 245, 245, 0.9));
   box-shadow: 0 0 12px rgba(0, 102, 255, 0.2);
   border-radius: 0;
 
@@ -1151,7 +1137,7 @@ export default {
   /* 侧边栏宽度 + 间距 */
   transition: margin 0.3s;
 
-  .floating-sidebar:hover + & {
+  .floating-sidebar:hover+& {
     margin-left: 256px;
   }
 }
@@ -1360,6 +1346,7 @@ export default {
   display: -webkit-box;
   /* 必须设置为弹性盒子 */
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   /* 限制显示两行 */
   -webkit-box-orient: vertical;
   /* 垂直排列 */
