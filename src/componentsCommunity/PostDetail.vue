@@ -285,6 +285,10 @@ export default {
     checkIfCollected() {
       const userId = sessionStorage.getItem("userId");
       const postId = this.$route.params.postId;
+      if (!userId) {
+        this.$message.error("请先登录");
+        return;
+      }
 
       return Promise.all([
         axios.get("/v1/posts/favorite/isCollected", {

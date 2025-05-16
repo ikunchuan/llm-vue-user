@@ -197,6 +197,10 @@ export default {
     checkIfCollected() {
       const userId = sessionStorage.getItem("userId");
       const courseId = this.$route.params.courseId;
+      if (!userId) {
+        this.$message.error("请先登录");
+        return;
+      }
 
       axios.get("/crs/v1/favorite/isCollected", {
         params: { userId, courseId }
