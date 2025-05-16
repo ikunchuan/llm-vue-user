@@ -1,188 +1,306 @@
 <template>
-  <div class="main-layout">
+  <div class="competition-platform">
+    <!-- 粘性搜索栏 -->
+    <div class="sticky-search">
+      <div class="search-container">
+        <el-input
+          v-model="searchName"
+          placeholder="搜索竞赛..."
+          class="smart-search"
+          clearable
+        >
+          <template #prefix>
+            <el-icon>
+              <Search />
+            </el-icon>
+          </template>
+        </el-input>
+        <el-button
+          type="primary"
+          class="advanced-filter"
+          @click="showAdvanced = !showAdvanced"
+        >
+          高级筛选 ▼
+        </el-button>
+      </div>
 
+      <!-- 高级筛选面板 -->
+      <transition name="slide-fade">
+        <div v-show="showAdvanced" class="advanced-panel">
+          <div class="filter-group">
+            <el-date-picker
+              v-model="searchStartDate"
+              type="date"
+              placeholder="开始日期"
+              value-format="YYYY-MM-DD"
+            />
+            <el-date-picker
+              v-model="searchEndDate"
+              type="date"
+              placeholder="结束日期"
+              value-format="YYYY-MM-DD"
+            />
+          </div>
+          <div class="filter-actions">
+            <el-button @click="resetFilters">重置</el-button>
+            <el-button type="primary" @click="searchCompetitions"
+              >应用</el-button
+            >
+          </div>
+        </div>
+      </transition>
+    </div>
 
     <!-- 推荐模块 -->
     <section class="recommend-section">
       <h2 class="section-title">🔥 精选推荐</h2>
       <div class="recommend-container">
-
         <!-- 左侧推荐导航 -->
         <div class="recommend-sidebar">
-
-          <div class="recommend-sidebar-item" v-for="(item, index) in sidebarItems" :key="index"
-            :class="{ active: index === currentIndex }" @click="selectSidebarItem(item)">
+          <div
+            class="recommend-sidebar-item"
+            v-for="(item, index) in sidebarItems"
+            :key="index"
+            :class="{ active: index === currentIndex }"
+            @click="selectSidebarItem(item)"
+          >
             {{ item.name }} &nbsp &nbsp 🔥
           </div>
         </div>
         <!-- 右侧推荐卡片 -->
         <div class="recommend-cards">
-          <div class="recommend-card" v-for="(card, index) in recommendCards" :key="index">
-            <el-image style="width: 250px; height: 170px; border-radius: 8px"
-              :src="'http://localhost:10086/images/upload/' + card.imageUrl" fit="cover" class="card-image"></el-image>
-            <div class="card-title">{{ card.name }}</div> <!-- 显示卡片名称 -->
+          <div
+            class="recommend-card"
+            v-for="(card, index) in recommendCards"
+            :key="index"
+          >
+            <el-image
+              style="width: 250px; height: 170px; border-radius: 8px"
+              :src="'http://localhost:10086/images/upload/' + card.imageUrl"
+              fit="cover"
+              class="card-image"
+            ></el-image>
+            <div class="card-title">{{ card.name }}</div>
+            <!-- 显示卡片名称 -->
           </div>
         </div>
       </div>
-
     </section>
-
-    <!-- 筛选条件 -->
-    <section class="filters-section">
-      <h2 class="section-title">🔎筛选你的目标竞赛</h2>
-
-      <div class="filters-container">
-        <!-- 竞赛名称搜索框 -->
-        <div class="filter-item">
-          <el-input placeholder="请输入相应竞赛名称" v-model="searchName" class="search-input"></el-input>
-        </div>
-        <!-- 开始日期选择器 -->
-        <div class="filter-item">
-          <el-date-picker v-model="searchStartDate" type="date" placeholder="选择开始日期"
-            class="search-input"></el-date-picker>
-        </div>
-        <!-- 结束日期选择器 -->
-        <div class="filter-item">
-          <el-date-picker v-model="searchEndDate" type="date" placeholder="选择结束日期"
-            class="search-input"></el-date-picker>
-        </div>
-      </div>
-      <!-- 搜索按钮 -->
-      <div class="filter-item search-button-item">
-        <el-button type="primary" @click="searchCompetitions" class="search-button">搜索</el-button>
-      </div>
-    </section>
-    <!-- 图标分类 -->
-    <section class="icon-section">
-      <div class="icon-container">
-        <div class="icon-item">
-          <el-icon class="icon"><img src="../assets/img/1.png" alt="Logo" class="logo"
-              @click="onIconClick(1)" /></el-icon>
-          <p>创新创业类</p>
-        </div>
-        <!-- 信息技术与编程类 -->
-        <div class="icon-item">
-          <el-icon class="icon"><img src="../assets/img/2.png" class="logo" @click="onIconClick(2)" /></el-icon>
-          <p>信息技术与编程类</p>
-        </div>
-
-        <!-- 数学类 -->
-        <div class="icon-item">
-          <el-icon class="icon"><img src="../assets/img/3.png" class="logo" @click="onIconClick(3)" /></el-icon>
-          <p>数学类</p>
-        </div>
-
-        <!-- 经济与管理类 -->
-        <div class="icon-item">
-          <el-icon class="icon"><img src="../assets/img/4.png" class="logo" @click="onIconClick(4)" /></el-icon>
-          <p>经济与管理类</p>
-        </div>
-
-        <!-- 语言与文化类 -->
-        <div class="icon-item">
-          <el-icon class="icon"><img src="../assets/img/5.png" class="logo" @click="onIconClick(5)" /></el-icon>
-          <p>语言与文化类</p>
-        </div>
-      </div>
-    </section>
-    <!-- 在 comp.vue 的模板中添加以下内容 -->
-    <!-- 修改后的图表部分 -->
-    <!-- 在 comp.vue 的模板中添加以下内容 -->
-    <!-- 修改后的图表部分 -->
+    <!-- 图表容器结构 -->
+    <div class="chart-controls">
+      <el-radio-group
+        v-model="activeTab"
+        size="medium"
+        @change="handleTabChange"
+      >
+        <el-radio-button label="basic">基础数据</el-radio-button>
+        <el-radio-button label="trend">趋势分析</el-radio-button>
+        <el-radio-button label="overlap">重叠分析</el-radio-button>
+      </el-radio-group>
+    </div>
+    <!-- 图表容器 -->
     <div class="container">
       <div class="visualization-section">
-        <h3>竞赛数据分析</h3>
-
-        <!-- 第一行：两个图表 -->
-        <div class="chart-row">
-          <div class="chart-container">
-            <div id="levelChart" style="width: 100%; height: 200px;"></div>
-          </div>
-          <div class="chart-container">
-            <div id="categoryChart" style="width: 100%; height: 200px;"></div>
-          </div>
-        </div>
-        <!-- 第二行：两个图表 -->
-        <div class="chart-row">
-          <div class="chart-container">
-            <div id="organizerChart" style="width: 100%; height: 200px;"></div>
-          </div>
-          <div class="chart-container">
-            <div id="durationChart" style="width: 100%; height: 200px;"></div>
-          </div>
-        </div>
-        <!-- 第三行：两个图表 -->
-        <div class="chart-row">
-          <div class="chart-container">
-            <div id="timeTrendChart" style="width: 100%; height: 200px;"></div>
-          </div>
-          <div class="chart-container">
-            <div id="heatTrendChart" style="width: 100%; height: 200px;"></div>
-          </div>
-        </div>
-        <!-- 第四行趋势图表 -->
-        <div class="chart-row">
-          <div class="chart-container">
-            <div id="overlapBarChart" style="width: 100%; height: 400px;"></div>
-          </div>
-        </div>
-        <!-- 第五行：重叠热力图和年份选择器 -->
-        <div class="chart-row">
-          <div class="chart-container full-width">
-            <h3>竞赛重叠分析</h3>
-            <div class="year-selector">
-              <el-select v-model="selectedYear" placeholder="选择年份" @change="updateOverlapChart">
-                <el-option v-for="year in availableYears" :key="year" :label="year" :value="year">
-                </el-option>
-              </el-select>
+        <!-- 基础数据 -->
+        <div v-show="activeTab === 'basic'">
+          <h3>基础数据分析</h3>
+          <div class="chart-row">
+            <div class="chart-container">
+              <div id="levelChart" style="width: 100%; height: 200px"></div>
             </div>
-            <div id="overlapChart" style="width: 100%; height: 300px;"></div>
+            <div class="chart-container">
+              <div id="categoryChart" style="width: 100%; height: 200px"></div>
+            </div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-container">
+              <div id="organizerChart" style="width: 100%; height: 200px"></div>
+            </div>
+            <div class="chart-container">
+              <div id="durationChart" style="width: 100%; height: 200px"></div>
+            </div>
           </div>
         </div>
 
+        <!-- 趋势分析 -->
+        <div v-show="activeTab === 'trend'">
+          <h3>趋势分析</h3>
+          <div class="chart-row">
+            <div class="chart-container">
+              <div id="timeTrendChart" style="width: 100%; height: 300px"></div>
+            </div>
+            <div class="chart-container">
+              <div id="heatTrendChart" style="width: 100%; height: 300px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 重叠分析 -->
+        <div v-show="activeTab === 'overlap'">
+          <h3>重叠分析</h3>
+          <div class="chart-row">
+            <div class="chart-container">
+              <div
+                id="overlapBarChart"
+                style="width: 100%; height: 400px"
+              ></div>
+            </div>
+          </div>
+          <div class="chart-row">
+            <div class="chart-container full-width">
+              <div class="year-selector">
+                <el-select
+                  v-model="selectedYear"
+                  placeholder="选择年份"
+                  @change="updateOverlapChart"
+                >
+                  <el-option
+                    v-for="year in availableYears"
+                    :key="year"
+                    :label="year"
+                    :value="year"
+                  ></el-option>
+                </el-select>
+              </div>
+              <div id="overlapChart" style="width: 100%; height: 300px"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <!-- 展示卡片 -->
-    <section class="cards-section">
-      <!-- <h2 class="section-title">📋 竞赛列表</h2> -->
-      <div class="card" v-for="(card, index) in cards" :key="index" @click="goToDetail(card.competitionId)">
-        <img style="width: 360px; height: 170px" :src="'http://localhost:10086/images/upload/' + card.competitionImgUrl"
-          alt="Card Image" />
-        <div class="card-title">{{ card.competitionName }}</div>
-        <div class="card-info">{{ card.levelName }}</div>
-        <div class="card-footer">
-          <!-- 动态绑定颜色样式 -->
-          <div class="status" :style="{ color: statusColors[card.competitionStatus] || '#333' }">
-            {{ card.competitionStatus }}
+    <!-- 竞赛列表 -->
+    <section class="competition-list">
+      <div class="list-header">
+        <h3>全部竞赛</h3>
+        <el-tag type="info">共 {{ cards.length }} 个赛事</el-tag>
+      </div>
+      <section class="icon-section">
+        <div class="icon-container">
+          <div class="icon-item">
+            <el-icon class="icon"
+              ><img
+                src="../assets/img/1.png"
+                alt="Logo"
+                class="logo"
+                @click="onIconClick(1)"
+            /></el-icon>
+            <p>创新创业类</p>
+          </div>
+          <!-- 信息技术与编程类 -->
+          <div class="icon-item">
+            <el-icon class="icon"
+              ><img
+                src="../assets/img/2.png"
+                class="logo"
+                @click="onIconClick(2)"
+            /></el-icon>
+            <p>信息技术与编程类</p>
+          </div>
+
+          <!-- 数学类 -->
+          <div class="icon-item">
+            <el-icon class="icon"
+              ><img
+                src="../assets/img/3.png"
+                class="logo"
+                @click="onIconClick(3)"
+            /></el-icon>
+            <p>数学类</p>
+          </div>
+
+          <!-- 经济与管理类 -->
+          <div class="icon-item">
+            <el-icon class="icon"
+              ><img
+                src="../assets/img/4.png"
+                class="logo"
+                @click="onIconClick(4)"
+            /></el-icon>
+            <p>经济与管理类</p>
+          </div>
+
+          <!-- 语言与文化类 -->
+          <div class="icon-item">
+            <el-icon class="icon"
+              ><img
+                src="../assets/img/5.png"
+                class="logo"
+                @click="onIconClick(5)"
+            /></el-icon>
+            <p>语言与文化类</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="card-grid">
+        <div
+          v-for="(card, index) in cards"
+          :key="index"
+          class="competition-card"
+          @click="goToDetail(card.competitionId)"
+        >
+          <div class="card-image">
+            <el-image
+              :src="
+                'http://localhost:10086/images/upload/' + card.competitionImgUrl
+              "
+              :lazy="true"
+              fit="cover"
+            >
+              <template #placeholder>
+                <div class="skeleton-box"></div>
+              </template>
+            </el-image>
+          </div>
+          <div class="card-content">
+            <h4>{{ card.competitionName }}</h4>
+            <div class="card-meta">
+              <el-tag>{{ card.levelName }}</el-tag>
+              <!-- <span class="date">{{ formatDate(card.startDate) }}</span> -->
+            </div>
+            <div
+              class="card-status"
+              :style="{ color: statusColors[card.competitionStatus] }"
+            >
+              {{ card.competitionStatus }}
+            </div>
           </div>
         </div>
       </div>
     </section>
   </div>
-  <!-- 在 comp.vue 的模板中添加以下内容 -->
-
 </template>
 
 <script>
-import axios from 'axios';
-import * as echarts from 'echarts';
+import axios from "axios";
+import * as echarts from "echarts";
+import { Search } from "@element-plus/icons-vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Autoplay, EffectCreative } from "swiper/modules";
 
 export default {
   name: "MainLayout",
+
   data() {
     return {
+      activeTab: "basic", // 新增当前激活标签
+      chartCleanupHandlers: [],
+      activeChartGroup: "basic",
+      chartInstances: new Map(),
+      observer: null,
+      showAdvanced: false,
       heatData: [], // 存储热度分析数据
       competitionNames: {
-        '1001': '创新创业类',
-        '1002': '信息技术与编程类',
-        '1003': '数学类',
-        '1004': '经济与管理类',
-        '1005': '语言与文化类'
+        1001: "创新创业类",
+        1002: "信息技术与编程类",
+        1003: "数学类",
+        1004: "经济与管理类",
+        1005: "语言与文化类",
       },
       availableYears: [],
       levelData: [],
       categoryData: [],
-      organizerData: {},//HBase中org_count表数据
+      organizerData: {}, //HBase中org_count表数据
       timeHeatmapData: [],
       durationData: [],
       timeData: [],
@@ -192,19 +310,29 @@ export default {
 
       //推荐板块
       sidebarItems: [
-        { name: "热门竞赛", type: "competition", popular: true, recommendCards: [] },
+        {
+          name: "热门竞赛",
+          type: "competition",
+          popular: true,
+          recommendCards: [],
+        },
         { name: "热门课程", type: "course", popular: true, recommendCards: [] },
-        { name: "热门社区", type: "community", popular: true, recommendCards: [] },
+        {
+          name: "热门社区",
+          type: "community",
+          popular: true,
+          recommendCards: [],
+        },
       ],
       recommendCards: [],
       currentType: null,
 
       iconCategories: {
-        '1': 1,
-        '2': 2,
-        '3': 3,
-        '4': 4,
-        '5': 5,
+        1: 1,
+        2: 2,
+        3: 3,
+        4: 4,
+        5: 5,
       },
       // 展示卡片的内容
       cards: [],
@@ -212,59 +340,93 @@ export default {
       currentIndex: 0, // 当前激活的导航索引
 
       //条件查询数据
-      searchName: '',       // 竞赛名称
-      searchStartDate: '',  // 开始日期
-      searchEndDate: '',    // 结束日期
-      searchStatus: '',     // 参赛状态
-      searchLevel: '',      // 难度级别
+      searchName: "", // 竞赛名称
+      searchStartDate: "", // 开始日期
+      searchEndDate: "", // 结束日期
+      searchStatus: "", // 参赛状态
+      searchLevel: "", // 难度级别
 
       activeDrawer: null, // 当前激活的抽屉
-      cards: [],//存储后端查询后返回数据
 
       // 参赛状态与颜色的映射
       statusColors: {
-        "进行中": "#17C964", // 绿色
-        "未开始": "#FFA726", // 橙色
-        "已结束": "#E53935"  // 红色
+        进行中: "#17C964", // 绿色
+        未开始: "#FFA726", // 橙色
+        已结束: "#E53935", // 红色
       },
     };
   },
   methods: {
-
+    // 处理图表的 resize 事件中调用该方法
+    handleTabChange() {
+      this.$nextTick(() => {
+        this.handleChartResize();
+        // 对需要延迟加载的图表进行特殊处理
+        setTimeout(() => {
+          [
+            "timeTrendChart",
+            "heatTrendChart",
+            "overlapBarChart",
+            "overlapChart",
+          ].forEach((chartId) => {
+            const chart = echarts.getInstanceByDom(
+              document.getElementById(chartId)
+            );
+            if (chart) chart.resize();
+          });
+        }, 300);
+      });
+    },
+    //处理图表
+    handleChartResize() {
+      this.$nextTick(() => {
+        [
+          "levelChart",
+          "categoryChart",
+          "organizerChart",
+          "durationChart",
+          "timeTrendChart",
+          "heatTrendChart",
+          "overlapBarChart",
+          "overlapChart",
+        ].forEach((chartId) => {
+          const chart = echarts.getInstanceByDom(
+            document.getElementById(chartId)
+          );
+          if (chart) chart.resize();
+        });
+      });
+    },
 
     //---------- 加载获取数据 ------>
     // 加载CSV数据
     async loadCSVData() {
       try {
         const [levelRes, categoryRes, organizerRes] = await Promise.all([
-          fetch('/csv/比赛等级.csv'),
-          fetch('/csv/比赛类别.csv'),
+          fetch("/csv/比赛等级.csv"),
+          fetch("/csv/比赛类别.csv"),
           // fetch('/csv/比赛主办方.csv'),
-
         ]);
 
         this.levelData = this.parseCSV(await levelRes.text());
         this.categoryData = this.parseCSV(await categoryRes.text());
         // this.organizerData = this.parseCSV(await organizerRes.text());
 
-
         await this.$nextTick();
         this.renderLevelChart();
         this.renderCategoryChart();
         // this.renderOrganizerChart();
-
-
       } catch (error) {
-        console.error('加载CSV数据失败:', error);
-        this.$message.error('图表数据加载失败');
+        console.error("加载CSV数据失败:", error);
+        this.$message.error("图表数据加载失败");
       }
     },
     //  加载所有CSV数据
     async loadAllCSVData() {
       try {
         const [durationRes, timeRes, overlapRes] = await Promise.all([
-          fetch('/csv/darution.csv'),
-          fetch('/csv/time.csv'),
+          fetch("/csv/darution.csv"),
+          fetch("/csv/time.csv"),
           // fetch('/csv/overlap.csv')
         ]);
 
@@ -280,61 +442,61 @@ export default {
         this.renderTimeTrendChart();
         // this.renderOverlapCharts();
       } catch (error) {
-        console.error('加载CSV数据失败:', error);
-        this.$message.error('图表数据加载失败');
+        console.error("加载CSV数据失败:", error);
+        this.$message.error("图表数据加载失败");
       }
     },
     async loadHeatData() {
       try {
-        const response = await fetch('/csv/pivot_table.csv');
+        const response = await fetch("/csv/pivot_table.csv");
         const csvText = await response.text();
         this.heatData = this.parseCSV(csvText);
         this.renderHeatTrendChart();
       } catch (error) {
-        console.error('加载热度数据失败:', error);
-        this.$message.error('热度数据加载失败');
+        console.error("加载热度数据失败:", error);
+        this.$message.error("热度数据加载失败");
       }
     },
     // 加载重叠数据
     async loadOverlapData() {
       try {
-        const response = await fetch('/csv/重叠.csv');
+        const response = await fetch("/csv/重叠.csv");
         const csvText = await response.text();
-        this.overlapData = this.parseCSV(csvText)
-          .filter(item => {
-            // 验证日期格式为YYYY-MM-DD
-            const valid = item.年份 && /\d{4}-\d{2}-\d{2}/.test(item.年份);
-            if (!valid) console.warn('无效日期数据:', item);
-            return valid;
-          });
+        this.overlapData = this.parseCSV(csvText).filter((item) => {
+          // 验证日期格式为YYYY-MM-DD
+          const valid = item.年份 && /\d{4}-\d{2}-\d{2}/.test(item.年份);
+          if (!valid) console.warn("无效日期数据:", item);
+          return valid;
+        });
         this.extractAvailableYears();
         this.renderOverlapChart();
         this.renderFullOverlapChart();
       } catch (error) {
-        console.error('加载重叠数据失败:', error);
+        console.error("加载重叠数据失败:", error);
       }
     },
     fetchHBaseTableOrganizer() {
-      axios.get('/hbase/scan', {
-        params: {
-          table: 'org_count',
-        }
-      })
-        .then(response => {
+      axios
+        .get("/hbase/scan", {
+          params: {
+            table: "org_count",
+          },
+        })
+        .then((response) => {
           this.organizerData = response.data;
-          console.log('获取HBase表数据成功:', this.organizerData);
+          console.log("获取HBase表数据成功:", this.organizerData);
           this.renderOrganizerChart();
         })
-        .catch(error => {
-          console.error('获取HBase表数据失败:', error);
+        .catch((error) => {
+          console.error("获取HBase表数据失败:", error);
         });
     },
     //------工具方法------------->
 
     parseCSV(csvText) {
-      const lines = csvText.split('\n');
+      const lines = csvText.split("\n");
       // 处理可能的换行符和空格
-      const headers = lines[0].split(',').map(header => header.trim());
+      const headers = lines[0].split(",").map((header) => header.trim());
       const result = [];
 
       for (let i = 1; i < lines.length; i++) {
@@ -345,7 +507,7 @@ export default {
         const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
         for (let j = 0; j < headers.length; j++) {
-          let value = currentline[j] ? currentline[j].trim() : '';
+          let value = currentline[j] ? currentline[j].trim() : "";
           // 移除可能的引号
           if (value.startsWith('"') && value.endsWith('"')) {
             value = value.slice(1, -1);
@@ -361,20 +523,19 @@ export default {
     // 提取可用年份
     extractAvailableYears() {
       const years = new Set();
-      this.overlapData.forEach(item => {
+      this.overlapData.forEach((item) => {
         try {
           // 修改日期分隔符为破折号
-          const yearPart = item.年份.split('-')[0];
+          const yearPart = item.年份.split("-")[0];
           const year = parseInt(yearPart, 10);
           if (!isNaN(year)) years.add(year);
         } catch (e) {
-          console.warn('年份解析失败:', item.年份);
+          console.warn("年份解析失败:", item.年份);
         }
       });
       this.availableYears = Array.from(years).sort((a, b) => b - a);
 
       // 设置默认选择数据中存在的年份
-
     },
     // 更新图表
     updateOverlapChart() {
@@ -384,129 +545,137 @@ export default {
     // 新增方法 - 获取时长颜色
     getDurationColor(duration) {
       const colors = {
-        '一个月以内': '#FF9AA2',
-        '一个月至三个月': '#FFB7B2',
-        '三个月至六个月': '#FFDAC1',
-        '半年至一年': '#E2F0CB',
-        '超过一年': '#B5EAD7'
+        一个月以内: "#FF9AA2",
+        一个月至三个月: "#FFB7B2",
+        三个月至六个月: "#FFDAC1",
+        半年至一年: "#E2F0CB",
+        超过一年: "#B5EAD7",
       };
-      return colors[duration] || '#5470C6';
+      return colors[duration] || "#5470C6";
     },
     //----------渲染图表--------->
     //比赛等级图表
     renderLevelChart() {
-      const chartDom = document.getElementById('levelChart');
+      const chartDom = document.getElementById("levelChart");
       const myChart = echarts.init(chartDom);
       const option = {
         title: {
-          text: '比赛等级分布',
-          left: 'center'
+          text: "比赛等级分布",
+          left: "center",
         },
         tooltip: {
-          trigger: 'item'
+          trigger: "item",
         },
         legend: {
-          orient: 'vertical',
+          orient: "vertical",
           right: 10,
-          top: 'center'
+          top: "center",
         },
         series: [
           {
-            name: '比赛等级',
-            type: 'pie',
-            radius: ['40%', '70%'],
+            name: "比赛等级",
+            type: "pie",
+            radius: ["40%", "70%"],
             avoidLabelOverlap: false,
             itemStyle: {
               borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
+              borderColor: "#fff",
+              borderWidth: 2,
             },
             label: {
               show: false,
-              position: 'center'
+              position: "center",
             },
             emphasis: {
               label: {
                 show: true,
-                fontSize: '18',
-                fontWeight: 'bold'
-              }
+                fontSize: "18",
+                fontWeight: "bold",
+              },
             },
             labelLine: {
-              show: false
+              show: false,
             },
-            data: this.levelData.map(item => ({
+            data: this.levelData.map((item) => ({
               value: item.总计,
-              name: item.比赛等级
-            }))
-          }
-        ]
+              name: item.比赛等级,
+            })),
+          },
+        ],
       };
+      this.initChart("levelChart", option);
 
       myChart.setOption(option);
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     },
     //比赛类别图表
     renderCategoryChart() {
-      const chartDom = document.getElementById('categoryChart');
+      const chartDom = document.getElementById("categoryChart");
       const myChart = echarts.init(chartDom);
       const option = {
         title: {
-          text: '比赛类别分布',
-          left: 'center'
+          text: "比赛类别分布",
+          left: "center",
         },
         tooltip: {
-          trigger: 'axis',
+          trigger: "axis",
           axisPointer: {
-            type: 'shadow'
-          }
+            type: "shadow",
+          },
         },
         grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true,
         },
         xAxis: {
-          type: 'value',
-          boundaryGap: [0, 0.01]
+          type: "value",
+          boundaryGap: [0, 0.01],
         },
         yAxis: {
-          type: 'category',
-          data: this.categoryData.map(item => item.比赛类别)
+          type: "category",
+          data: this.categoryData.map((item) => item.比赛类别),
         },
         series: [
           {
-            name: '数量',
-            type: 'bar',
-            data: this.categoryData.map(item => item.总计),
+            name: "数量",
+            type: "bar",
+            data: this.categoryData.map((item) => item.总计),
             itemStyle: {
               color: function (params) {
-                const colorList = ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#73C0DE'];
+                const colorList = [
+                  "#5470C6",
+                  "#91CC75",
+                  "#FAC858",
+                  "#EE6666",
+                  "#73C0DE",
+                ];
                 return colorList[params.dataIndex % colorList.length];
-              }
-            }
-          }
-        ]
+              },
+            },
+          },
+        ],
       };
 
+      this.initChart("categoryChart", option);
+
       myChart.setOption(option);
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     },
     //比赛主办方图表
     renderOrganizerChart() {
-      const chartDom = document.getElementById('organizerChart');
+      const chartDom = document.getElementById("organizerChart");
       const myChart = echarts.init(chartDom);
 
-
       // 将 HBase 返回的数据格式化为适合 ECharts 的格式
-      const formattedData = this.organizerData.rows.map(item => ({
+      const formattedData = this.organizerData.rows.map((item) => ({
         主办方: item.rowKey,
-        计数: parseInt(item.count, 10)
+        计数: parseInt(item.count, 10),
       }));
 
       // 排序取前10
@@ -516,192 +685,174 @@ export default {
 
       const option = {
         title: {
-          text: '主办方TOP10',
-          left: 'center'
+          text: "主办方TOP10",
+          left: "center",
         },
-        // tooltip: {
-        //   trigger: 'item',
-        //   formatter: '{a} <br/>{b}: {c} ({d}%)'
-        // },
 
-        //   series: [
-        //     {
-        //       name: '主办方',
-        //       type: 'pie',
-        //       radius: '55%',
-        //       center: ['50%', '50%'],
-        //       data: sortedData.map(item => ({
-        //         value: item.计数,
-        //         name: item.主办方
-        //       })),
-        //       emphasis: {
-        //         itemStyle: {
-        //           shadowBlur: 10,
-        //           shadowOffsetX: 0,
-        //           shadowColor: 'rgba(0, 0, 0, 0.5)'
-        //         }
-        //       }
-        //     }
-        //   ]
-        // };
         tooltip: {
-          trigger: 'axis',
+          trigger: "axis",
           axisPointer: {
-            type: 'shadow'
-          }
+            type: "shadow",
+          },
         },
         grid: {
-          left: '5%',   // 给 Y 轴文字留出足够空间
-          right: '5%',
-          bottom: '5%',
-          containLabel: true
+          left: "5%", // 给 Y 轴文字留出足够空间
+          right: "5%",
+          bottom: "5%",
+          containLabel: true,
         },
         xAxis: {
-          type: 'value',
-          name: '数量'
+          type: "value",
+          name: "数量",
         },
         yAxis: {
-          type: 'category',
-          data: sortedData.map(item => item.主办方),
+          type: "category",
+          data: sortedData.map((item) => item.主办方),
           axisLabel: {
-            formatter: value => value.length > 20 ? value.slice(0, 20) + '…' : value  // 可选：超长主办方名称省略显示
-          }
+            formatter: (value) =>
+              value.length > 20 ? value.slice(0, 20) + "…" : value, // 可选：超长主办方名称省略显示
+          },
         },
         series: [
           {
-            name: '数量',
-            type: 'bar',
-            data: sortedData.map(item => item.计数),
+            name: "数量",
+            type: "bar",
+            data: sortedData.map((item) => item.计数),
             itemStyle: {
-              color: '#73C0DE'
-            }
-          }
-        ]
+              color: "#73C0DE",
+            },
+          },
+        ],
       };
 
+      this.initChart("organizerChart", option);
       myChart.setOption(option);
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     },
     // 渲染竞赛时长分布图表
     renderDurationChart() {
-      const chartDom = document.getElementById('durationChart');
+      const chartDom = document.getElementById("durationChart");
       const myChart = echarts.init(chartDom);
 
       const option = {
         title: {
-          text: '竞赛时长分布',
-          left: 'center'
+          text: "竞赛时长分布",
+          left: "center",
         },
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          trigger: "item",
+          formatter: "{a} <br/>{b}: {c} ({d}%)",
         },
         legend: {
-          orient: 'vertical',
+          orient: "vertical",
           right: 10,
-          top: 'center'
+          top: "center",
         },
         series: [
           {
-            name: '时长分布',
-            type: 'pie',
-            radius: ['40%', '70%'],
+            name: "时长分布",
+            type: "pie",
+            radius: ["40%", "70%"],
             avoidLabelOverlap: false,
             itemStyle: {
               borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
+              borderColor: "#fff",
+              borderWidth: 2,
             },
             label: {
               show: false,
-              position: 'center'
+              position: "center",
             },
             emphasis: {
               label: {
                 show: true,
-                fontSize: '18',
-                fontWeight: 'bold'
-              }
+                fontSize: "18",
+                fontWeight: "bold",
+              },
             },
             labelLine: {
-              show: false
+              show: false,
             },
-            data: this.durationData.map(item => ({
+            data: this.durationData.map((item) => ({
               value: item.数量,
               name: item.时间范围,
               itemStyle: {
-                color: this.getDurationColor(item.时间范围)
-              }
-            }))
-          }
-        ]
+                color: this.getDurationColor(item.时间范围),
+              },
+            })),
+          },
+        ],
       };
 
+      this.initChart("durationChart", option);
       myChart.setOption(option);
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     },
     //渲染时间趋势图表
     renderTimeTrendChart() {
-      const chartDom = document.getElementById('timeTrendChart');
+      const chartDom = document.getElementById("timeTrendChart");
       const myChart = echarts.init(chartDom);
-      const monthData = this.timeData.filter(item => item.DateType === 'Month');
-      const dates = monthData.map(item => item.Date);
-      const values = monthData.map(item => parseInt(item.Value));
+      const monthData = this.timeData.filter(
+        (item) => item.DateType === "Month"
+      );
+      const dates = monthData.map((item) => item.Date);
+      const values = monthData.map((item) => parseInt(item.Value));
 
       const option = {
         title: {
-          text: '竞赛时间趋势',
-          left: 'center'
+          text: "竞赛时间趋势",
+          left: "center",
         },
         tooltip: {
-          trigger: 'axis',
+          trigger: "axis",
           axisPointer: {
-            type: 'shadow'
-          }
+            type: "shadow",
+          },
         },
         xAxis: {
-          type: 'category',
+          type: "category",
           data: dates,
           axisLabel: {
             rotate: 45,
-            interval: Math.floor(dates.length / 10) // 显示部分标签避免重叠
-          }
+            interval: Math.floor(dates.length / 10), // 显示部分标签避免重叠
+          },
         },
         yAxis: {
-          type: 'value',
-          name: '竞赛数量'
+          type: "value",
+          name: "竞赛数量",
         },
         series: [
           {
-            name: '竞赛数量',
-            type: 'line',
+            name: "竞赛数量",
+            type: "line",
             smooth: true,
             data: values,
             itemStyle: {
-              color: '#8884d8'
+              color: "#8884d8",
             },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: 'rgba(136, 132, 216, 0.5)' },
-                { offset: 1, color: 'rgba(136, 132, 216, 0.1)' }
-              ])
-            }
-          }
-        ]
+                { offset: 0, color: "rgba(136, 132, 216, 0.5)" },
+                { offset: 1, color: "rgba(136, 132, 216, 0.1)" },
+              ]),
+            },
+          },
+        ],
       };
 
+      this.initChart("timeTrendChart", option);
       myChart.setOption(option);
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
     },
     //渲染竞赛热度趋势图表
     renderHeatTrendChart() {
-      const chartDom = document.getElementById('heatTrendChart');
+      const chartDom = document.getElementById("heatTrendChart");
       if (!chartDom) return;
 
       const myChart = echarts.init(chartDom);
@@ -712,393 +863,502 @@ export default {
       });
 
       // 获取年份数据，确保列名正确
-      const years = sortedData.map(item => {
-        // 检查数据中的年份列名，可能是"年份"或"year"
-        const year = item.年份 || item.year;
-        return year ? year.toString() : '';
-      }).filter(year => year); // 过滤掉空值
+      const years = sortedData
+        .map((item) => {
+          // 检查数据中的年份列名，可能是"年份"或"year"
+          const year = item.年份 || item.year;
+          return year ? year.toString() : "";
+        })
+        .filter((year) => year); // 过滤掉空值
 
       const series = [];
 
       // 为每个竞赛类型创建系列
-      ['1001', '1002', '1003', '1004', '1005'].forEach(compId => {
+      ["1001", "1002", "1003", "1004", "1005"].forEach((compId) => {
         series.push({
           name: this.competitionNames[compId] || compId,
-          type: 'line',
+          type: "line",
           smooth: true,
-          data: sortedData.map(item => parseInt(item[compId]) || 0),
+          data: sortedData.map((item) => parseInt(item[compId]) || 0),
           symbolSize: 6,
           lineStyle: {
-            width: 3
+            width: 3,
           },
           areaStyle: {
-            opacity: 0.1
-          }
+            opacity: 0.1,
+          },
         });
       });
 
       const option = {
         title: {
-          text: '竞赛热度趋势分析',
-          left: 'center'
+          text: "竞赛热度趋势分析",
+          left: "center",
         },
         tooltip: {
-          trigger: 'axis',
+          trigger: "axis",
           axisPointer: {
-            type: 'cross'
+            type: "cross",
           },
           formatter: function (params) {
-            let result = params[0].axisValue + '<br/>';
-            params.forEach(param => {
-              result += `${param.seriesName}: ${param.value.toLocaleString()}<br/>`;
+            let result = params[0].axisValue + "<br/>";
+            params.forEach((param) => {
+              result += `${
+                param.seriesName
+              }: ${param.value.toLocaleString()}<br/>`;
             });
             return result;
-          }
+          },
         },
         legend: {
-          data: series.map(s => s.name),
-          top: 30
+          data: series.map((s) => s.name),
+          top: 30,
         },
         grid: {
           top: 80,
           left: 50,
           right: 50,
           bottom: 30,
-          containLabel: true
+          containLabel: true,
         },
         xAxis: {
-          type: 'category',
+          type: "category",
           boundaryGap: false,
           data: years,
           axisLabel: {
             formatter: function (value) {
               return value; // 直接显示年份
-            }
-          }
+            },
+          },
         },
         yAxis: {
-          type: 'value',
-          name: '浏览人数',
+          type: "value",
+          name: "浏览人数",
           axisLabel: {
             formatter: function (value) {
               if (value >= 1000000) {
-                return (value / 1000000).toFixed(1) + 'M';
+                return (value / 1000000).toFixed(1) + "M";
               } else if (value >= 1000) {
-                return (value / 1000).toFixed(0) + 'K';
+                return (value / 1000).toFixed(0) + "K";
               }
               return value;
-            }
-          }
+            },
+          },
         },
         series: series,
-        color: ['#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae']
+        color: ["#c23531", "#2f4554", "#61a0a8", "#d48265", "#91c7ae"],
       };
 
+      this.initChart("heatTrendChart", option);
+
       myChart.setOption(option);
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         myChart.resize();
       });
 
       // 调试输出
-      console.log('Heat data:', this.heatData);
-      console.log('Years:', years);
-      console.log('Series data:', series.map(s => s.data));
+      console.log("Heat data:", this.heatData);
+      console.log("Years:", years);
+      console.log(
+        "Series data:",
+        series.map((s) => s.data)
+      );
     },
     // 渲染全时段重叠分析图表
     renderFullOverlapChart() {
-      const chartDom = document.getElementById('overlapBarChart');
+      const chartDom = document.getElementById("overlapBarChart");
       if (!chartDom) return;
 
       const myChart = echarts.init(chartDom);
 
       // 1. 数据处理
       const sortedData = this.overlapData
-        .map(item => ({
+        .map((item) => ({
           ...item,
-          date: new Date(item.年份) // 转换为Date对象用于排序
+          date: new Date(item.年份), // 转换为Date对象用于排序
         }))
         .sort((a, b) => a.date - b.date);
 
       // 2. 日期格式化
-      const dates = sortedData.map(item => {
-        try {
-          const [year, month, day] = item.年份.split('-');
-          const monthNum = parseInt(month, 10);
-          const dayNum = parseInt(day, 10);
-          return `${year}/${monthNum}/${dayNum}`;
-        } catch (e) {
-          console.warn('日期解析失败:', item.年份);
-          return null;
-        }
-      }).filter(date => date);
+      const dates = sortedData
+        .map((item) => {
+          try {
+            const [year, month, day] = item.年份.split("-");
+            const monthNum = parseInt(month, 10);
+            const dayNum = parseInt(day, 10);
+            return `${year}/${monthNum}/${dayNum}`;
+          } catch (e) {
+            console.warn("日期解析失败:", item.年份);
+            return null;
+          }
+        })
+        .filter((date) => date);
 
       // 3. 数据准备
       const overlaps = sortedData
         .filter((_, index) => dates[index] !== null)
-        .map(item => parseInt(item.重叠次数));
+        .map((item) => parseInt(item.重叠次数));
 
       // 4. 图表配置
       const option = {
         title: {
-          text: '全时段竞赛重叠趋势',
-          left: 'center',
+          text: "全时段竞赛重叠趋势",
+          left: "center",
           textStyle: {
             fontSize: 14,
-            fontWeight: 'normal'
-          }
+            fontWeight: "normal",
+          },
         },
         tooltip: {
-          trigger: 'axis',
-          formatter: params => {
+          trigger: "axis",
+          formatter: (params) => {
             const date = params[0].axisValue;
             const value = params[0].data;
             return `<strong>${date}</strong><br/>重叠次数: ${value}`;
-          }
+          },
         },
         grid: {
-          left: '3%',
-          right: '3%',
-          bottom: '15%',
-          containLabel: true
+          left: "3%",
+          right: "3%",
+          bottom: "15%",
+          containLabel: true,
         },
         xAxis: {
-          type: 'category',
+          type: "category",
           data: dates,
           axisLabel: {
             rotate: 45,
-            formatter: value => {
-              const parts = value.split('/');
+            formatter: (value) => {
+              const parts = value.split("/");
               return parts.length === 2
-                ? `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}`
+                ? `${parts[0].padStart(2, "0")}/${parts[1].padStart(2, "0")}`
                 : value;
-            }
+            },
           },
           axisTick: {
-            alignWithLabel: true
-          }
+            alignWithLabel: true,
+          },
         },
         yAxis: {
-          type: 'value',
-          name: '重叠次数'
+          type: "value",
+          name: "重叠次数",
         },
-        series: [{
-          type: 'bar',
-          data: overlaps,
-          itemStyle: {
-            color: params => {
-              const value = params.data;
-              if (value >= 100) return '#ff4d4f';
-              if (value >= 50) return '#faad14';
-              return '#73d13d';
+        series: [
+          {
+            type: "bar",
+            data: overlaps,
+            itemStyle: {
+              color: (params) => {
+                const value = params.data;
+                if (value >= 100) return "#ff4d4f";
+                if (value >= 50) return "#faad14";
+                return "#73d13d";
+              },
+              borderRadius: [2, 2, 0, 0],
             },
-            borderRadius: [2, 2, 0, 0]
+            barWidth: "40%",
           },
-          barWidth: '40%'
-        }],
-        dataZoom: [{
-          type: 'slider',
-          start: 0,
-          end: 100,
-          bottom: '5%',
-          height: 15
-        }]
+        ],
+        dataZoom: [
+          {
+            type: "slider",
+            start: 0,
+            end: 100,
+            bottom: "5%",
+            height: 15,
+          },
+        ],
       };
 
+      this.initChart("overlapBarChart", option);
       myChart.setOption(option);
-      window.addEventListener('resize', () => myChart.resize());
+      window.addEventListener("resize", () => myChart.resize());
     },
     // 渲染重叠图表
     renderOverlapChart() {
-      const chartDom = document.getElementById('overlapChart');
+      const chartDom = document.getElementById("overlapChart");
       if (!chartDom) return;
 
       const myChart = echarts.init(chartDom);
 
       // 1. 数据过滤
-      const filteredData = this.overlapData.filter(item => {
+      const filteredData = this.overlapData.filter((item) => {
         try {
-          const year = parseInt(item.年份.split('-')[0], 10);
+          const year = parseInt(item.年份.split("-")[0], 10);
           return year === this.selectedYear;
         } catch (e) {
-          console.warn('年份解析失败:', item.年份);
+          console.warn("年份解析失败:", item.年份);
           return false;
         }
       });
 
       // 2. 日期处理
-      const dates = filteredData.map(item => {
-        try {
-          const [year, month, day] = item.年份.split('-');
+      const dates = filteredData
+        .map((item) => {
+          try {
+            const [year, month, day] = item.年份.split("-");
 
-          // 有效性验证
-          if (!year || !month || !day) {
-            console.warn('日期格式错误:', item.年份);
+            // 有效性验证
+            if (!year || !month || !day) {
+              console.warn("日期格式错误:", item.年份);
+              return null;
+            }
+
+            // 转换为数字并去除前导零
+            const monthNum = parseInt(month, 10);
+            const dayNum = parseInt(day, 10);
+
+            // 范围验证
+            if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) {
+              console.warn("日期数值异常:", item.年份);
+              return null;
+            }
+
+            return `${monthNum}/${dayNum}`;
+          } catch (e) {
+            console.warn("日期解析异常:", item.年份, e);
             return null;
           }
-
-          // 转换为数字并去除前导零
-          const monthNum = parseInt(month, 10);
-          const dayNum = parseInt(day, 10);
-
-          // 范围验证
-          if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) {
-            console.warn('日期数值异常:', item.年份);
-            return null;
-          }
-
-          return `${monthNum}/${dayNum}`;
-        } catch (e) {
-          console.warn('日期解析异常:', item.年份, e);
-          return null;
-        }
-      }).filter(date => date !== null); // 过滤无效日期
+        })
+        .filter((date) => date !== null); // 过滤无效日期
 
       // 3. 数据准备
       const overlaps = filteredData
         .filter((_, index) => dates[index] !== null) // 保持数据与日期对齐
-        .map(item => parseInt(item.重叠次数));
+        .map((item) => parseInt(item.重叠次数));
 
       // 4. 完整图表配置
       const option = {
         title: {
           text: `${this.selectedYear}年竞赛重叠分析`,
-          left: 'center',
+          left: "center",
           textStyle: {
             fontSize: 16,
-            fontWeight: 'bold'
-          }
+            fontWeight: "bold",
+          },
         },
         tooltip: {
-          trigger: 'axis',
-          formatter: params => {
+          trigger: "axis",
+          formatter: (params) => {
             const date = params[0].axisValue;
             const value = params[0].data;
             return `<strong>${date}</strong><br/>重叠次数: ${value}`;
-          }
+          },
         },
         grid: {
-          left: '3%',
-          right: '3%',
-          bottom: '15%',
-          containLabel: true
+          left: "3%",
+          right: "3%",
+          bottom: "15%",
+          containLabel: true,
         },
         xAxis: {
-          type: 'category',
+          type: "category",
           data: dates,
           axisLabel: {
             rotate: 45,
-            formatter: value => {
-              const parts = value.split('/');
+            formatter: (value) => {
+              const parts = value.split("/");
               if (parts.length === 2) {
                 // 显示为两位数格式（03/11）
-                return `${parts[0].padStart(2, '0')}/${parts[1].padStart(2, '0')}`;
+                return `${parts[0].padStart(2, "0")}/${parts[1].padStart(
+                  2,
+                  "0"
+                )}`;
               }
               return value;
             },
-            margin: 15
+            margin: 15,
           },
           axisTick: {
-            alignWithLabel: true
-          }
+            alignWithLabel: true,
+          },
         },
         yAxis: {
-          type: 'value',
-          name: '重叠次数',
-          nameLocation: 'end',
+          type: "value",
+          name: "重叠次数",
+          nameLocation: "end",
           nameTextStyle: {
-            padding: [0, 0, 10, 0] // 调整坐标轴名称位置
-          }
-        },
-        series: [{
-          name: '重叠次数',
-          type: 'bar',
-          data: overlaps,
-          itemStyle: {
-            color: params => {
-              const value = params.data;
-              if (value >= 30) return '#ff4d4f';
-              if (value >= 20) return '#faad14';
-              return '#73d13d';
-            },
-            borderRadius: [3, 3, 0, 0] // 顶部圆角
+            padding: [0, 0, 10, 0], // 调整坐标轴名称位置
           },
-          barWidth: '60%' // 调整柱宽
-        }],
-        dataZoom: [{
-          type: 'inside',
-          start: 0,
-          end: 100,
-          zoomLock: true // 禁止缩放过度
-        }, {
-          type: 'slider',
-          start: 0,
-          end: 100,
-          bottom: '5%',
-          height: 15
-        }]
+        },
+        series: [
+          {
+            name: "重叠次数",
+            type: "bar",
+            data: overlaps,
+            itemStyle: {
+              color: (params) => {
+                const value = params.data;
+                if (value >= 30) return "#ff4d4f";
+                if (value >= 20) return "#faad14";
+                return "#73d13d";
+              },
+              borderRadius: [3, 3, 0, 0], // 顶部圆角
+            },
+            barWidth: "60%", // 调整柱宽
+          },
+        ],
+        dataZoom: [
+          {
+            type: "inside",
+            start: 0,
+            end: 100,
+            zoomLock: true, // 禁止缩放过度
+          },
+          {
+            type: "slider",
+            start: 0,
+            end: 100,
+            bottom: "5%",
+            height: 15,
+          },
+        ],
       };
+      this.initChart("overlapChart", option);
 
       myChart.setOption(option);
 
       // 5. 响应式处理
-      window.addEventListener('resize', () => myChart.resize());
+      window.addEventListener("resize", () => myChart.resize());
 
       // 调试信息
-      console.log('有效日期数据:', dates);
-      console.log('对应数值:', overlaps);
-      console.log('原始过滤数据:', filteredData);
+      console.log("有效日期数据:", dates);
+      console.log("对应数值:", overlaps);
+      console.log("原始过滤数据:", filteredData);
     },
-
 
     autoSlideSidebar() {
       this.currentIndex = (this.currentIndex + 1) % this.sidebarItems.length;
-      console.log('Current Index:', this.currentIndex); // 调试输出
+      console.log("Current Index:", this.currentIndex); // 调试输出
       this.$forceUpdate(); // 强制视图更新
     },
 
     fetchRecommendItems(type) {
       const payload = { popular: 1, type: type };
-      let apiEndpoint = '';
+      let apiEndpoint = "";
       switch (type) {
-        case 'community':
-          apiEndpoint = '/v1/cmns/search';
+        case "community":
+          apiEndpoint = "/v1/cmns/search";
           break;
-        case 'competition':
-          apiEndpoint = 'comp/v1/search';
+        case "competition":
+          apiEndpoint = "comp/v1/search";
           break;
-        case 'course':
-          apiEndpoint = 'crs/search';
+        case "course":
+          apiEndpoint = "crs/search";
           break;
         default:
-          console.error('未知类型:', type);
+          console.error("未知类型:", type);
           return;
       }
-      axios.post(apiEndpoint, payload)
-        .then(response => {
-          console.log('获取推荐数据成功:', response.data);
+      axios
+        .post(apiEndpoint, payload)
+        .then((response) => {
+          console.log("获取推荐数据成功:", response.data);
           if (response.data && Array.isArray(response.data.list)) {
             // 使用 slice 方法获取前5条数据
             const items = response.data.list.slice(0, 3);
-            console.log('推荐详情数据5条:', items);
-            this.recommendCards = items.map(item => {
-              const imageUrl = type === 'community' ? item.communityImageUrl :
-                type === 'competition' ? item.competitionImgUrl :
-                  item.courseImgUrl;
+            console.log("推荐详情数据5条:", items);
+            this.recommendCards = items.map((item) => {
+              const imageUrl =
+                type === "community"
+                  ? item.communityImageUrl
+                  : type === "competition"
+                  ? item.competitionImgUrl
+                  : item.courseImgUrl;
               // 直接提取名称
-              const name = type === 'community' ? item.communityName :
-                type === 'competition' ? item.competitionName :
-                  item.courseName;
+              const name =
+                type === "community"
+                  ? item.communityName
+                  : type === "competition"
+                  ? item.competitionName
+                  : item.courseName;
 
               return { imageUrl, name }; // 返回一个对象，包含图片和名称
-
             });
           } else {
-            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+            console.error(
+              "后端返回的数据格式不正确或 list 属性不存在:",
+              response.data
+            );
           }
         })
-        .catch(error => {
-          console.error('获取数据失败:', error.response ? error.response.data : error.message);
+        .catch((error) => {
+          console.error(
+            "获取数据失败:",
+            error.response ? error.response.data : error.message
+          );
         });
+    },
+
+    initChart(chartId, option) {
+      const dom = document.getElementById(chartId);
+      if (!dom) return null;
+
+      const chart = echarts.init(dom);
+      chart.setOption(option);
+      this.chartInstances.set(chartId, chart);
+
+      // 添加resize监听
+      const resizeHandler = () => chart.resize();
+      window.addEventListener("resize", resizeHandler);
+
+      // 存储清理函数
+      const cleanup = () => {
+        window.removeEventListener("resize", resizeHandler);
+        chart.dispose();
+      };
+      this.chartCleanupHandlers.push(cleanup);
+
+      return chart;
+    },
+
+    // 新增懒加载逻辑
+    setupIntersectionObserver() {
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const chartId = entry.target.id;
+              switch (chartId) {
+                case "levelChart":
+                  this.renderLevelChart();
+                  break;
+                case "categoryChart":
+                  this.renderCategoryChart();
+                  break;
+                case "organizerChart":
+                  this.renderOrganizerChart();
+                  break;
+                case "durationChart":
+                  this.renderDurationChart();
+                  break;
+                case "timeTrendChart":
+                  this.renderTimeTrendChart();
+                  break;
+                case "heatTrendChart":
+                  this.renderHeatTrendChart();
+                  break;
+                case "overlapBarChart":
+                  this.renderFullOverlapChart();
+                  break;
+                case "overlapChart":
+                  this.renderOverlapChart();
+                  break;
+              }
+              entry.target.classList.add("loaded");
+              this.observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      // 在nextTick中确保DOM已渲染
+      this.$nextTick(() => {
+        document.querySelectorAll(".chart-item").forEach((el) => {
+          this.observer.observe(el);
+        });
+      });
     },
 
     // 推荐板块的热门社区和热门竞赛
@@ -1109,26 +1369,32 @@ export default {
       }
     },
 
-
     searchCompetitions() {
       const payload = {
         competitionName: this.searchName, // 按竞赛名称搜索
-        startDate: this.searchStartDate,  // 按开始日期筛选
-        endDate: this.searchEndDate,      // 按结束日期筛选
-        status: this.searchStatus,        // 按参赛状态筛选
-        level: this.searchLevel           // 按难度级别筛选
+        startDate: this.searchStartDate, // 按开始日期筛选
+        endDate: this.searchEndDate, // 按结束日期筛选
+        status: this.searchStatus, // 按参赛状态筛选
+        level: this.searchLevel, // 按难度级别筛选
       };
 
-      axios.post('comp/v1/search', payload)
-        .then(response => {
+      axios
+        .post("comp/v1/search", payload)
+        .then((response) => {
           if (response.data && Array.isArray(response.data.list)) {
             this.cards = response.data.list; // 更新搜索结果
           } else {
-            console.error('后端返回的数据格式不正确或 list 属性不存在:', response.data);
+            console.error(
+              "后端返回的数据格式不正确或 list 属性不存在:",
+              response.data
+            );
           }
         })
-        .catch(error => {
-          console.error('查询失败:', error.response ? error.response.data : error.message);
+        .catch((error) => {
+          console.error(
+            "查询失败:",
+            error.response ? error.response.data : error.message
+          );
         });
     },
 
@@ -1137,20 +1403,21 @@ export default {
       this.loading = true;
       this.error = null;
       // 发送GET请求到后端API
-      axios.get('/comp/v1/compe')
-        .then(response => {
+      axios
+        .get("/comp/v1/compe")
+        .then((response) => {
           // 假设后端返回的数据是一个数组，每个元素都是一个卡片对象
           this.cards = response.data;
         })
-        .catch(error => {
-          this.error = '加载卡片数据失败，请稍后再试。';
+        .catch((error) => {
+          this.error = "加载卡片数据失败，请稍后再试。";
         })
         .finally(() => {
           this.loading = false;
         });
     },
 
-    // 
+    //
     toggleDrawer(menu) {
       this.activeDrawer = menu;
     },
@@ -1167,81 +1434,109 @@ export default {
       const url = `comp/v1/comp/byParentId?parentId=${parentId}`;
 
       // 发送GET请求到后端接口
-      axios.get(url)
-        .then(response => {
-          if (response.data) { // 确保后端返回的 list 是数组
+      axios
+        .get(url)
+        .then((response) => {
+          if (response.data) {
+            // 确保后端返回的 list 是数组
             // 成功获取数据，更新前端的卡片数据
-            console.log(response.data)
+            console.log(response.data);
             this.cards = response.data; // 更新为正确的属性名
-
           } else {
             // 后端返回的数据格式不正确
-            console.error('后端返回的数据格式不正确:', response.data);
-            this.$message.error('数据加载失败，请稍后再试。');
+            console.error("后端返回的数据格式不正确:", response.data);
+            this.$message.error("数据加载失败，请稍后再试。");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // 请求失败处理
-          console.error('获取数据失败:', error.response ? error.response.data : error.message);
-          this.$message.error('数据加载失败，请稍后再试。');
+          console.error(
+            "获取数据失败:",
+            error.response ? error.response.data : error.message
+          );
+          this.$message.error("数据加载失败，请稍后再试。");
         });
     },
     searchByCategory(categoryId) {
       const competitionSearch = { categoryId };
-      axios.post('comp/v1/search', competitionSearch, {
-        params: {
-          pageNum: 1,
-          pageSize: 5
-        }
-      })
-        .then(response => {
+      axios
+        .post("comp/v1/search", competitionSearch, {
+          params: {
+            pageNum: 1,
+            pageSize: 5,
+          },
+        })
+        .then((response) => {
           if (response.data) {
             this.cards = response.data.list;
             this.filteredCards = response.data.list;
           } else {
-            console.error('后端返回的数据格式不正确:', response.data);
+            console.error("后端返回的数据格式不正确:", response.data);
           }
         })
-        .catch(error => {
-          console.error('查询失败:', error.response ? error.response.data : error.message);
+        .catch((error) => {
+          console.error(
+            "查询失败:",
+            error.response ? error.response.data : error.message
+          );
         });
     },
     goToDetail(compId) {
       // 使用路由跳转到CompDetail页面，并传递竞赛ID作为参数
-      this.$router.push({ name: 'CompDetail', params: { compId: compId } });
+      this.$router.push({ name: "CompDetail", params: { compId: compId } });
     },
-    // searchCompetitions() {
-    //   this.filteredCards = this.searchName
-    //     ? this.cards.filter(card => card.courseName.includes(this.searchName))
-    //     : this.cards;
-    // }
   },
 
   mounted() {
+    this.setupIntersectionObserver(); // 新增
     this.fetchCards();
     this.loadCSVData();
     this.loadAllCSVData(); // 修改为加载所有CSV数据
     this.loadHeatData();
     this.fetchHBaseTableOrganizer();
-    this.loadOverlapData(); // 
+    this.loadOverlapData(); //
 
     // 在组件挂载时，可以自动获取推荐板块的数据
-    this.sidebarItems.forEach(item => {
+    this.sidebarItems.forEach((item) => {
       if (item.popular) {
         this.fetchRecommendItems(item.type);
       }
     });
-    this.slideInterval = setInterval(this.autoSlideSidebar, 3000);// 每3秒自动切换导航栏索引
-
+    this.slideInterval = setInterval(this.autoSlideSidebar, 3000); // 每3秒自动切换导航栏索引
+    window.addEventListener("resize", this.handleChartResize);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearInterval(this.slideInterval);
+    // 清理图表实例
+    this.chartCleanupHandlers.forEach((cleanup) => cleanup());
+    this.chartCleanupHandlers = [];
+    window.removeEventListener("resize", this.handleChartResize);
+
+    // 清理观察者
+    if (this.observer) this.observer.disconnect();
   },
 };
 </script>
 
 <style scoped>
-/* 新增样式 */
+.chart-controls {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.el-radio-group {
+  margin-bottom: 20px;
+}
+
+.el-radio-button {
+  margin: 0 10px;
+}
+
+/* 调整图表容器间距 */
+.visualization-section > div {
+  margin-top: 20px;
+}
+
 #overlapBarChart {
   height: 400px !important;
 }
@@ -1276,15 +1571,21 @@ export default {
   margin-right: 0;
 }
 
-
 /* 图表容器调整 */
+/* 修改chart-container样式 */
 .chart-container {
-  position: relative;
+  width: 100% !important;
+  min-width: 300px;
+  margin: 10px;
+  padding: 15px;
   background: white;
   border-radius: 8px;
-  padding: 15px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+}
+
+/* 全宽图表特殊处理 */
+.chart-container.full-width {
+  width: calc(100% - 20px) !important;
 }
 
 .visualization-section {
@@ -1363,33 +1664,43 @@ export default {
   height: 200px;
 }
 
-
-/* 页面背景 */
-body {
-  background: linear-gradient(135deg, #fafafa, #ffe9e3);
-  margin: 0;
-  font-family: Arial, sans-serif;
-}
-
-/* 页面顶部 */
-
-
-/* 外部容器，控制整体布局的宽度和居中 */
-.main-layout {
-  max-width: 1200px;
-  /* 限制页面的最大宽度 */
+/* 新增样式系统 */
+.competition-platform {
+  max-width: 1400px;
   margin: 0 auto;
-  /* 居中对齐 */
-  padding: 5px;
-  /* 增加内边距，避免贴边 */
-  background-color: #f4f6f8;
-  /* 设置背景颜色 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  /* 可选：添加阴影效果 */
-  border-radius: 10px;
-  /* 可选：添加圆角效果 */
+  padding: 20px;
 }
 
+/* 粘性搜索栏 */
+.sticky-search {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 20px 0;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  display: flex;
+  gap: 15px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.smart-search {
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.advanced-filter {
+  background: linear-gradient(135deg, #5a67d8, #7c73e6);
+  border: none;
+  box-shadow: 0 4px 6px rgba(90, 103, 216, 0.2);
+}
+
+/* 优化后的轮播样式 */
 /* 推荐模块样式 */
 .recommend-section {
   display: flex;
@@ -1397,7 +1708,7 @@ body {
   margin: 10px 0;
   padding: 0px;
   /* background-color: #f9f9f9; */
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   box-shadow: 0 8px 16px rgba(223, 190, 190, 0.1);
   border-radius: 15px;
   flex-wrap: wrap;
@@ -1444,13 +1755,11 @@ body {
 }
 
 .recommend-sidebar-item.active {
-
-  background-color: #E0E6F8;
-  color: #5A67D8;
+  background-color: #e0e6f8;
+  color: #5a67d8;
   font-weight: bold;
-  border-left: 5px solid #5A67D8;
+  border-left: 5px solid #5a67d8;
 }
-
 
 /* 右侧推荐卡片容器 */
 .recommend-cards {
@@ -1486,98 +1795,83 @@ body {
   box-shadow: 0 6px 12px rgba(237, 155, 255, 0.15);
 }
 
-.card-image {
-  width: 240px;
-  height: 160px;
-  object-fit: cover;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
+/* 数据看板 */
+/* 整体布局 */
+.visualization-dashboard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+  margin: 20px 0;
 }
 
-.card-title {
-  font-size: 13px;
-  color: #333;
-  padding: 0;
+.chart-nav {
+  margin-bottom: 24px;
   text-align: center;
-  visibility: visible;
-  /* 确保可见 */
+}
+
+/* 图表容器动效 */
+.chart-group {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.chart-item {
+  height: 300px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+.chart-item.loaded {
   opacity: 1;
-  /* 确保不透明 */
+  transform: none;
 }
 
-/* 筛选条件样式 */
-.filters-section {
-  display: flex;
-  justify-content: center;
-  /* 水平居中 */
-  align-items: center;
-  /* 垂直居中 */
-  justify-content: space-evenly;
-  width: 100%;
-  /* 占满整个宽度 */
-  padding: 25px 0;
-  /* 增加上下内边距 */
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 30px;
-  margin: 10px 0;
-  /* 增加上下外边距 */
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .chart-group {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-card {
+    margin-bottom: 16px;
+  }
 }
 
-.filters-container {
-  display: flex;
-  flex-wrap: wrap;
-  /* 允许内容换行 */
-  gap: 10px;
-  /* 设置元素之间的间距 */
-  justify-content: center;
-  /* 水平居中 */
-  max-width: 1000px;
-  /* 限制最大宽度 */
+/* 过渡动画 */
+.chart-group-enter-active,
+.chart-group-leave-active {
+  transition: all 0.5s ease;
 }
 
-.search-button-item {
-  margin-right: 10px;
-  /* 将搜索按钮推到最右边 */
+.chart-group-enter-from,
+.chart-group-leave-to {
+  opacity: 0;
+  transform: translateY(20px);
 }
 
-/* 搜索输入框和日期选择器样式 */
-.search-input {
-  width: 180px;
-  /* 根据需要调整宽度 */
+.wide {
+  grid-column: span 2;
 }
 
-/* 搜索按钮样式 */
-.search-button {
-  padding: 20px 20px;
-  /* 增加内边距 */
-  font-size: 18px;
-  /* 增加字体大小 */
-  font-weight: bold;
-  /* 加粗字体 */
-  color: #ffffff;
-  /* 设置文字颜色 */
-  background-color: #5A67D8;
-  /* 按钮背景色 */
-  border: none;
-  /* 去掉边框 */
-  border-radius: 5px;
-  /* 增加圆角 */
-  transition: all 0.3s ease;
-  /* 平滑过渡效果 */
-  cursor: pointer;
-  /* 鼠标悬停时显示指针 */
+.full {
+  grid-column: 1 / -1;
 }
-
-.search-button:hover {
-  background-color: #4A54C0;
-  /* 按钮悬停背景色 */
-  box-shadow: 0 15px 25px rgba(96, 48, 147, 0.4);
-  /* 悬停时的阴影 */
-  transform: translateY(-2px);
-  /* 轻微上移，增加点击感 */
-}
-
 
 /* 图标分类样式 */
 .icon-section {
@@ -1608,7 +1902,7 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  color: #5A67D8;
+  color: #5a67d8;
   font-size: 12px;
   transition: all 0.3s ease;
 }
@@ -1650,69 +1944,80 @@ body {
   /* 鼠标悬停放大图片（可选） */
 }
 
-/* 展示卡片样式 */
-.cards-section {
-  background-color: #fff;
+/* 竞赛列表 */
+.competition-list {
+  margin-top: 40px;
+}
+
+.card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 15px;
-  margin: 0px auto;
-  max-width: 1200px;
-  /* 限制展示区域的最大宽度 */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
 
-/* 单个卡片样式 */
-.card {
-  background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  padding: 10px;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  cursor: pointer;
+.competition-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.card:hover {
+.competition-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px rgba(90, 103, 216, 0.15);
 }
 
-.card img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  /* 图片圆角 */
+.card-image {
+  height: 200px;
+  background: #f8f9fa;
 }
 
-.card-title {
-  font-size: 1.2em;
-  margin: 10px 0;
+.card-content {
+  padding: 15px;
 }
 
-.card-info {
-  color: #777;
-  font-size: 0.9em;
-}
-
-.card-footer {
-  margin-top: 10px;
+.card-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin: 10px 0;
 }
 
-.price {
-  color: #e53935;
-  font-weight: bold;
+.date {
+  font-size: 0.9em;
+  color: #666;
 }
 
-.rating {
-  color: #5a67d8;
+/* 骨架屏加载 */
+.skeleton-box {
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
 }
 
-.status {
-  font-size: 15px;
-  color: #5a67d8;
-  font-weight: bold;
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .swiper-slide {
+    width: 80% !important;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
