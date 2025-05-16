@@ -166,13 +166,13 @@ export default {
       console.log("获取图谱数据", competitionName);
       const name = competitionName;
       const depth = 2; // 或你可以根据需求设置动态值
-
-      // 假设你有一个后端 API 接口：/api/graph
       fetch(`http://localhost:10086/comp/v1/graph?name=${encodeURIComponent
         (name)}&depth=${depth}`
       ).then((res) => res.json())
         .then((data) => {
           this.graphData = data;
+          console.log("tupu",this.graphData);
+          
           this.initChart(data, name);
         }).catch((err) => {
           console.error("获取图谱数据失败", err);
@@ -321,7 +321,48 @@ export default {
         });
       }, 500);
       this.chart.setOption(option);
+        // 添加点击事件监听
+        this.chart.on('click', async (params) => {
+        const clickedName = params.name;
+
+        try {
+          const response = await axios.get('/comp/v1/comp/competitionName', {
+            params: { competitionName: clickedName }
+          });
+
+          const competitionReturned = response.data[0];
+          console.log("比赛ID:", competitionReturned.competitionId);
+            if (competitionReturned.competitionId) {
+              this.$router.push({
+                name: 'CompDetail',
+                params: { compId: competitionReturned.competitionId }
+              }).then(() => {
+                window.location.reload();
+              })
+            }else {
+              this.$message.warning('未找到对应的竞赛信息');
+            }
+        } catch (error) {
+          console.error('获取竞赛信息失败', error);
+          this.$message.error('获取竞赛信息失败，请稍后重试');
+        }
+});
     },
+    watch: {
+  '$route.params.compId': {
+    immediate: true,
+    handler(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.fetchCompetitionDetail(newVal);
+        this.fetchCompetitionBasicInfo(newVal);
+        this.fetchData(this.competitionBasicInfo.name); // 先获取基本信息，再加载图谱
+        this.checkIfCollected();
+      }
+    }
+  }
+},
+
+
     // 判断是否连接中心节点的方法
     isCenterLink(link, centerName) {
       const centerNode = this.graphData.nodes.find(n => n.name === centerName);
@@ -379,6 +420,8 @@ export default {
       axios
         .get(`comp/v1/compe/${compId}`) // 注意这里的URL可能需要根据后端实际接口调整
         .then((response) => {
+          console.log("竞赛jiben",response.data);
+          
           this.competitionBasicInfo = response.data;
           this.categoryId = this.competitionBasicInfo.categoryId; // 设置categoryId
           this.loading = false;
@@ -403,6 +446,10 @@ export default {
     checkIfCollected() {
       const userId = sessionStorage.getItem("userId");
       const compId = this.$route.params.compId;
+      if (!userId) { 
+        this.$message.error("请先登录"); 
+        return; 
+      }
 
       axios.get("/comp/v1/favorite/isCollected", {
         params: { userId, compId }
