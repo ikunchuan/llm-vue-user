@@ -9,29 +9,11 @@
           <el-card class="post-detail-card" shadow="hover">
             <h2 class="post-title">{{ post.postTitle }}</h2>
 
-            <!-- 帖子正文结束后 -->
-            <!-- <div style="margin-top: 20px">
-              <el-button type="primary" @click="generateSummary"
-                >生成总结</el-button
-              >
-
-              <div v-if="summaryContent" style="margin-top: 10px">
-                <h3>帖子总结</h3>
-                <div>{{ summaryContent }}</div>
-              </div>
-            </div> -->
-
             <div class="summary-section">
               <el-card shadow="hover" class="summary-card">
                 <div class="summary-header">
-                  <el-button
-                    type="primary"
-                    icon="document"
-                    @click="generateSummary"
-                    plain
-                    size="small"
-                    class="summary-btn"
-                  >
+                  <el-button type="primary" icon="document" @click="generateSummary" plain size="small"
+                    class="summary-btn">
                     AI小贴士
                   </el-button>
                 </div>
@@ -50,18 +32,12 @@
 
             <!-- 点赞、收藏、浏览量 -->
             <div class="post-stats">
-              <span
-                ><i class="el-icon-thumb"></i>
-                {{ post.likeCount || 0 }} 点赞</span
-              >
-              <span
-                ><i class="el-icon-star-on"></i>
-                {{ post.favoriteCount || 0 }} 收藏</span
-              >
-              <span
-                ><i class="el-icon-view"></i>
-                {{ post.commentCount || 0 }} 评论</span
-              >
+              <span><i class="el-icon-thumb"></i>
+                {{ post.likeCount || 0 }} 点赞</span>
+              <span><i class="el-icon-star-on"></i>
+                {{ post.favoriteCount || 0 }} 收藏</span>
+              <span><i class="el-icon-view"></i>
+                {{ post.commentCount || 0 }} 评论</span>
               <span>作者: {{ post.authorName }}</span>
               <span>社区: {{ post.communityName }}</span>
               <span>发布时间: {{ formatDate(post.createdTime) }}</span>
@@ -75,51 +51,26 @@
 
             <!-- 排序选项 -->
             <div class="comment-actions">
-              <el-button type="text" size="mini" @click="sortComments('asc')"
-                >正序</el-button
-              >
+              <el-button type="text" size="mini" @click="sortComments('asc')">正序</el-button>
               <span>/</span>
-              <el-button type="text" size="mini" @click="sortComments('desc')"
-                >倒序</el-button
-              >
+              <el-button type="text" size="mini" @click="sortComments('desc')">倒序</el-button>
             </div>
 
             <!-- 添加评论 -->
             <div class="add-comment">
-              <el-avatar
-                src="https://via.placeholder.com/40"
-                size="medium"
-                class="user-avatar"
-              />
-              <el-input
-                type="textarea"
-                placeholder="写下你的评论..."
-                v-model="newComment"
-                autosize
-                class="comment-input"
-                :maxlength="100"
-              ></el-input>
-              <el-button
-                type="primary"
-                size="small"
-                @click="addComment"
-                :disabled="newComment.length === 0 || newComment.length > 100"
-              >
+              <el-avatar src="https://via.placeholder.com/40" size="medium" class="user-avatar" />
+              <el-input type="textarea" placeholder="写下你的评论..." v-model="newComment" autosize class="comment-input"
+                :maxlength="100"></el-input>
+              <el-button type="primary" size="small" @click="addComment"
+                :disabled="newComment.length === 0 || newComment.length > 100">
                 提交评论
               </el-button>
             </div>
 
             <!-- 评论列表 -->
-            <div
-              v-for="comment in visibleComments"
-              :key="comment.commentId"
-              class="comment-card"
-            >
-              <el-avatar
-                :src="comment.avatar || 'https://via.placeholder.com/40'"
-                size="small"
-                class="comment-avatar"
-              />
+            <div v-for="comment in visibleComments" :key="comment.commentId" class="comment-card">
+              <el-avatar :src="comment.avatar || 'https://via.placeholder.com/40'" size="small"
+                class="comment-avatar" />
               <div class="comment-content">
                 <div class="comment-header">
                   <span class="comment-author">{{ comment.userName }}</span>
@@ -130,13 +81,8 @@
                 <p>{{ comment.commentContent }}</p>
               </div>
             </div>
-            <div
-              v-if="comments.length > displayedComments"
-              class="more-comments"
-            >
-              <el-button type="text" @click="displayAllComments"
-                >显示更多</el-button
-              >
+            <div v-if="comments.length > displayedComments" class="more-comments">
+              <el-button type="text" @click="displayAllComments">显示更多</el-button>
             </div>
           </div>
         </el-col>
@@ -148,12 +94,7 @@
             <div class="user-info">
               <el-avatar :src="author.avatar" size="large" />
               <div class="action-buttons">
-                <el-button
-                  type="success"
-                  size="small"
-                  @click="followAuthor"
-                  :disabled="isFollowing"
-                >
+                <el-button type="success" size="small" @click="followAuthor" :disabled="isFollowing">
                   {{ isFollowing ? "已关注" : "关注作者" }}
                 </el-button>
               </div>
@@ -169,8 +110,7 @@
                     <div class="stat-number">
                       {{ this.fansInfo.length || 0 }}
                     </div>
-                  </el-space> </el-col
-                >&nbsp;
+                  </el-space> </el-col>&nbsp;
                 <el-col :span="50" class="pointer">
                   <el-space direction="horizonal" size="2">
                     <div class="stat-text">发帖数</div>
@@ -183,11 +123,7 @@
           </el-card>
 
           <!-- 社区信息模块 -->
-          <el-card
-            class="community-info-card"
-            shadow="hover"
-            @click="navigateToCommuDetail(community)"
-          >
+          <el-card class="community-info-card" shadow="hover" @click="navigateToCommuDetail(community)">
             <div class="community-info">
               <h4 class="community-name">{{ community.communityName }}</h4>
               <div class="action-buttons">
@@ -202,24 +138,14 @@
           </el-card>
           <br />
           <!-- 点赞按钮 -->
-          <el-button
-            type="primary"
-            size="middle"
-            @click="likePost"
-            :disabled="liked"
-            :icon="liked ? 'el-icon-thumb' : 'el-icon-thumb-solid'"
-          >
+          <el-button type="primary" size="middle" @click="likePost" :plain="liked"
+            :icon="liked ? 'el-icon-thumb' : 'el-icon-thumb-solid'">
             {{ liked ? "已点赞" : "点赞" }}
           </el-button>
 
           <!-- 收藏按钮 -->
-          <el-button
-            type="success"
-            size="middle"
-            @click="favoritePost"
-            :disabled="favorited"
-            :icon="favorited ? 'el-icon-star-on' : 'el-icon-star-off'"
-          >
+          <el-button type="success" size="middle" @click="favoritePost" :plain="favorited"
+            :icon="favorited ? 'el-icon-star-on' : 'el-icon-star-off'">
             {{ favorited ? "已收藏" : "收藏" }}
           </el-button>
         </el-col>
@@ -275,6 +201,12 @@ export default {
   created() {
     this.fetchPostDetails();
     this.fetchComments();
+    this.fetchUserFavoriteLikePosts();
+  },
+
+  mounted() {
+    // 页面加载完成后，检查是否已收藏或点赞
+    this.checkIfCollected();
   },
 
   computed: {
@@ -300,34 +232,8 @@ export default {
       return sorted.slice(0, this.displayedComments);
     },
   },
-  methods: {
-    //用户点赞帖子
-    likePost() {
-      this.liked = true;
-      const postId = this.$route.params.postId;
-      const userId = this.currentUserId;
-      // 调用点赞接口
-      axios
-        .get("/v1/posts/post/like", {
-          params: {
-            userId: userId,
-            postId: postId,
-          },
-        })
-        .then((response) => {
-          if (response.data === 1) {
-            this.$message.success("点赞成功");
-          } else {
-            this.$message.error("点赞失败");
-          }
-        })
-        .catch((error) => {
-          console.error("点赞失败:", error);
-          this.$message.error("点赞失败");
-        });
-    },
 
-    // 帖子ai总结
+  methods: {
     // 帖子ai总结
     generateSummary() {
       if (this.typing) return;
@@ -342,11 +248,9 @@ export default {
       axios
         .get(url, {
           headers: {
-            "Content-Type": "application/json",
-            // 根据需要添加token等认证头
+            "Content-Type": "application/json",// 根据需要添加token等认证头
           },
-        })
-        .then((response) => {
+        }).then((response) => {
           const data = response.data; // data是一个数组
           this.summaryFull = response.data
             .map((item) => item.result.output.text || "")
@@ -360,13 +264,12 @@ export default {
               this.summaryContent += text;
             }
           });
-
           console.log("总结内容:", this.summaryContent);
-        })
-        .catch((error) => {
+        }).catch((error) => {
           console.error("请求失败:", error);
         });
     },
+
     typeWriter() {
       if (this.typeIndex < this.summaryFull.length) {
         this.displaySummary += this.summaryFull.charAt(this.typeIndex);
@@ -377,41 +280,81 @@ export default {
       }
     },
 
-    //用户收藏帖子
-    favoritePost() {
-      this.favorited = true;
+    //查询是否收藏点赞
+    checkIfCollected() {
+      const userId = sessionStorage.getItem("userId");
       const postId = this.$route.params.postId;
-      const userId = this.currentUserId;
-      // 调用收藏接口
-      axios
-        .get("/v1/posts/post/favorite", {
-          params: {
-            userId: userId,
-            postId: postId,
-          },
+
+      return Promise.all([
+        axios.get("/v1/posts/favorite/isCollected", {
+          params: { userId, postId }
+        }).then(res => {
+          this.favorited = res.data;
+        }),
+
+        axios.get("/v1/posts/isLiked", {
+          params: { userId, postId }
+        }).then(res => {
+          this.liked = res.data;
         })
-        .then((response) => {
-          if (response.data === 1) {
-            this.$message.success("收藏成功");
-            this.isFavorited = true; // 更新收藏状态
-            // this.post.favoriteCount += 1; // 更新收藏数量
+      ]);
+    },
+
+    //用户点赞帖子，可以取消点赞
+    likePost() {
+      const userId = sessionStorage.getItem("userId");
+      const postId = this.$route.params.postId;
+      if (!userId) {
+        this.$message.error("请先登录");
+        return;
+      }
+      //调用点赞接口
+      axios.post("/v1/posts/like", {
+        userId: userId,
+        postId: postId,
+      }).then(() => {
+        this.checkIfCollected().then(() => {// 重新拉取状态
+          if (this.isCollected) {
+            this.$message.success("点赞成功");
           } else {
-            this.$message.error("收藏失败");
+            this.$message.warn("已取消点赞");
           }
-        })
-        .catch((error) => {
-          console.error("收藏失败:", error);
-          this.$message.error("收藏失败");
         });
+      }).catch(() => {
+        this.$message.error("点赞失败");
+      });
+    },
+
+    //用户收藏帖子，可以取消收藏
+    favoritePost() {
+      const userId = sessionStorage.getItem("userId");
+      const postId = this.$route.params.postId;
+      if (!userId) {
+        this.$message.error("请先登录");
+        return;
+      }
+      // 调用收藏接口
+      axios.post("/v1/posts/toggleFavorite", {
+        userId: userId,
+        postId: postId,
+      }).then(() => {
+        this.checkIfCollected().then(() => { // 重新拉取状态
+          if (this.isCollected) {
+            this.$message.success("收藏成功");
+          } else {
+            this.$message.warn("已取消收藏");
+          }
+        });
+      }).catch(() => {
+        this.$message.error("收藏失败");
+      });
     },
 
     // 获取当前用户的收藏帖子列表和喜欢帖子列表
     fetchUserFavoriteLikePosts() {
-      this.currentUserId = sessionStorage.getItem("userId");
-      const userId = this.currentUserId; // 获取当前用户的ID
-
+      const userId = sessionStorage.getItem("userId");
       axios
-        .get(`/v1/posts/userpost/${userId}`)
+        .get(`/v1/posts/favorite/${userId}`)
         .then((response) => {
           this.userFavoritePosts = response.data; // 存储返回的收藏帖子
           console.log("用户收藏的帖子:", this.userFavoritePosts);
@@ -421,7 +364,7 @@ export default {
         });
 
       axios
-        .get(`/v1/posts/userlike/${userId}`)
+        .get(`/v1/posts/like/${userId}`)
         .then((response) => {
           this.userLikePosts = response.data; // 存储返回的喜欢帖子
           console.log("用户点赞的帖子:", this.userLikePosts);
@@ -434,10 +377,9 @@ export default {
     //获取该帖子作者的信息
     fetchAuthorDetails(userId) {
       this.authorId = userId;
-      console.log("该作者的userId" + this.authorId);
       // 获取作者的详细信息
       axios.get(`/uis/v1/ui/${this.authorId}`).then((response) => {
-        console.log(response.data);
+        console.log("作者信息", response.data);
         this.author = response.data;
         //查找这个作者的粉丝数量
         axios
@@ -528,24 +470,10 @@ export default {
         this.post = response.data;
 
         this.fetchUserFavoriteLikePosts();
-
-        // 判断是否点赞过
-        this.liked =
-          Array.isArray(this.userLikePosts) &&
-          this.userLikePosts.some((post) => post.postId === postId);
-        // 判断是否收藏过
-        this.favorited =
-          Array.isArray(this.userFavoritePosts) &&
-          this.userFavoritePosts.some((post) => post.postId === postId);
-        console.log(this.liked, this.favorited);
-
         this.fetchAuthorDetails(this.post.userId);
         this.fetchCommunityDetails(this.post.communityId);
         this.getPostCounts(postId); // 获取帖子统计信息
       });
-      // .catch((error) => {
-      //   console.error("获取帖子详情失败:", error);
-      // });
     },
 
     // 获取帖子的点赞数、评论数和收藏数
@@ -561,21 +489,11 @@ export default {
           } else {
             console.error("获取帖子统计信息失败:", response.data.message);
           }
-        })
-        .catch((error) => {
+        }).catch((error) => {
           console.error("获取帖子统计信息失败:", error);
         });
     },
 
-    // fetchAuthorDetails(userId) {
-    //   axios.get(`/uis/v1/ui/${userId}`)
-    //     .then((response) => {
-    //       this.author = response.data;
-    //     })
-    //     .catch((error) => {
-    //       console.error("获取作者信息失败:", error);
-    //     });
-    // },
     fetchCommunityDetails(communityId) {
       axios
         .get(`/v1/cmns/cmn/${communityId}`)
@@ -587,6 +505,7 @@ export default {
           console.error("获取社区信息失败:", error);
         });
     },
+
     fetchComments() {
       const postId = this.$route.params.postId;
       axios
@@ -730,12 +649,10 @@ export default {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.3),
-    rgba(255, 255, 255, 0.1)
-  );
+  background: linear-gradient(to right,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.1));
   transition: all 0.5s ease;
 }
 
@@ -769,7 +686,8 @@ export default {
   line-height: 1.7;
   white-space: pre-line;
   margin-bottom: 16px;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); /* 添加轻微的阴影 */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  /* 添加轻微的阴影 */
 }
 
 /* 无内容时的样式 */

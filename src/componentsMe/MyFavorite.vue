@@ -125,7 +125,7 @@ export default {
           this.visibleCourses = this.courses.slice(0, 4); // 初始化只显示前4个
         });
 
-      axios.get(`/v1/posts/userpost/${this.userId}`) // 帖子收藏
+      axios.get(`/v1/posts/favorite/${this.userId}`) // 帖子收藏
         .then(response => {
           this.posts = response.data;
           this.visiblePosts = this.posts.slice(0, 4); // 初始化只显示前4个
@@ -144,7 +144,7 @@ export default {
         } else if (type === 'course') {
           url = `/crs/v1/favorite/${favoriteId}`;
         } else if (type === 'post') {
-          url = `/v1/posts/favorites/${favoriteId}`;
+          url = `/v1/posts/favorite/${favoriteId}`;
         }
 
         axios.delete(url)
